@@ -64,22 +64,25 @@ public class PlayerService {
         authRepository.save(user);
         playerRepository.save(player);
 
-        String subject = "Welcome to LevelUp Academy ";
-        String message = "<html><body style='font-family: Arial, sans-serif; color: #fff; line-height: 1.6; background-color: #A53A10; padding: 40px 20px;'>" +
-                "<div style='max-width: 600px; margin: auto; background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; text-align: center;'>" +
-                "<img src='https://i.imgur.com/Q6FtCEu.jpeg' alt='LevelUp Academy Logo' style='width:90px; border-radius: 10px; margin-bottom: 20px;'/>" +
-                "<h2 style='color: #fff;'>🎮 Welcome to <span style='color: #FFD700;'>LevelUp Academy</span>, " + playerDTO.getFirstName() + "!</h2>" +
-                "<p style='font-size: 16px;'>We're thrilled to have you on board. Get ready to train, play, and level up your skills with an amazing community of players just like you!</p>" +
-                "<p style='font-size: 16px;'>👉 <a href='https://discord.gg/3KQPVdrv' style='color: #FFD700; text-decoration: none;'>Join our Discord server</a> to chat, learn, and team up with other LevelUp members!</p>" +
-                "<p style='font-size: 15px;'>🚀 Let’s grow stronger together.<br/><b>– The LevelUp Academy Team</b></p>" +
-                "</div>" +
-                "</body></html>";
+        // Try to send welcome email (non-blocking - registration succeeds even if email fails)
+        try {
+            String subject = "Welcome to LevelUp Academy ";
+            String message = "<html><body style='font-family: Arial, sans-serif; color: #fff; line-height: 1.6; background-color: #A53A10; padding: 40px 20px;'>" +
+                    "<div style='max-width: 600px; margin: auto; background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; text-align: center;'>" +
+                    "<img src='https://i.imgur.com/Q6FtCEu.jpeg' alt='LevelUp Academy Logo' style='width:90px; border-radius: 10px; margin-bottom: 20px;'/>" +
+                    "<h2 style='color: #fff;'>🎮 Welcome to <span style='color: #FFD700;'>LevelUp Academy</span>, " + playerDTO.getFirstName() + "!</h2>" +
+                    "<p style='font-size: 16px;'>We're thrilled to have you on board. Get ready to train, play, and level up your skills with an amazing community of players just like you!</p>" +
+                    "<p style='font-size: 16px;'>👉 <a href='https://discord.gg/3KQPVdrv' style='color: #FFD700; text-decoration: none;'>Join our Discord server</a> to chat, learn, and team up with other LevelUp members!</p>" +
+                    "<p style='font-size: 15px;'>🚀 Let's grow stronger together.<br/><b>– The LevelUp Academy Team</b></p>" +
+                    "</div>" +
+                    "</body></html>";
 
-        EmailRequest emailRequest = new EmailRequest(playerDTO.getEmail(),message, subject);
-        emailNotificationService.sendEmail(emailRequest);
-
-        authRepository.save(user);
-        playerRepository.save(player);
+            EmailRequest emailRequest = new EmailRequest(playerDTO.getEmail(),message, subject);
+            emailNotificationService.sendEmail(emailRequest);
+        } catch (Exception e) {
+            // Log email failure but don't stop registration
+            System.out.println("Warning: Could not send welcome email to " + playerDTO.getEmail() + " - " + e.getMessage());
+        }
 //        String proPhoneNumber = "+447723275615";
 //        String whatsAppMessage = " New player registered: " + playerDTO.getFirstName() + " " + playerDTO.getLastName() + ".";
 //        ultraMsgService.sendWhatsAppMessage(proPhoneNumber, whatsAppMessage);

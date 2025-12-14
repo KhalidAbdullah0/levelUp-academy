@@ -12,11 +12,13 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 
+@RestControllerAdvice
 public class AdviceController {
 
     // Our Exception
@@ -59,6 +61,20 @@ public class AdviceController {
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     public ResponseEntity<ApiResponse> DataIntegrityViolationException(DataIntegrityViolationException e){
         String msg = e.getMessage();
+        
+        // Check for duplicate username
+        if (msg.contains("username") && (msg.contains("Duplicate") || msg.contains("duplicate"))) {
+            msg = "❌ Username already exists. Please choose a different username.";
+        }
+        // Check for duplicate email
+        else if (msg.contains("email") && (msg.contains("Duplicate") || msg.contains("duplicate"))) {
+            msg = "❌ Email already registered. Please use a different email or login.";
+        }
+        // Generic duplicate error
+        else if (msg.contains("Duplicate") || msg.contains("duplicate")) {
+            msg = "❌ This information already exists in the system. Please check your username and email.";
+        }
+        
         return ResponseEntity.status(400).body(new ApiResponse(msg));
     }
 
@@ -85,8 +101,9 @@ public class AdviceController {
 
     @ExceptionHandler(value = MailSendException.class)
     public ResponseEntity<ApiResponse> MailSendException(MailSendException e) {
-        String msg = e.getMessage();
-        return ResponseEntity.status(400).body(new ApiResponse(msg));
+        // Don't fail registration just because email failed
+        String msg = "Account created successfully! (Email notification may be delayed)";
+        return ResponseEntity.status(200).body(new ApiResponse(msg));
     }
 
 
