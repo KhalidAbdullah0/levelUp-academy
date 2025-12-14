@@ -35,10 +35,10 @@ public ResponseEntity premiumSubscription(@AuthenticationPrincipal User user, @R
 //    public ResponseEntity subscribeWithPayment(@PathVariable Integer userId,@RequestParam String packageType, @RequestBody PaymentRequest paymentRequest) {
 //        return subscriptionService.subscribeWithPayment(userId, packageType, paymentRequest);
 //    }
-    @GetMapping("/get-subs")
-    public ResponseEntity gatAllSubs(@AuthenticationPrincipal User user){
-        return ResponseEntity.status(200).body(subscriptionService.gatAllSubs(user.getId()));
-    }
+//    @GetMapping("/get-subs")
+//    public ResponseEntity gatAllSubs(@AuthenticationPrincipal User user){
+//        return ResponseEntity.status(200).body(subscriptionService.gatAllSubs(user.getId()));
+//    }
 
 
 }

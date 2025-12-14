@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LevelUp Academy | Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #22d3ee;
+      --accent-2: #a855f7;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(34,211,238,0.08), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(168,85,247,0.08), transparent 35%),
+                  linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+    }
+    .card {
+      width: min(420px, 90vw);
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(34,211,238,0.09), transparent 40%),
+                  radial-gradient(circle at 80% 0%, rgba(168,85,247,0.09), transparent 35%);
+      pointer-events: none;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+    p.subtitle {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.01em;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(15,23,42,0.7);
+      color: var(--text);
+      font-size: 14px;
+      transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(34,211,238,0.15);
+      transform: translateY(-1px);
+    }
+    .field {
+      margin-bottom: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(34,211,238,0.25); }
+    button:active { transform: translateY(0); }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .status {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      min-height: 18px;
+    }
+    .status.success { color: #4ade80; }
+    .status.error { color: #f87171; }
+    .link-text {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .link-text a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .link-text a:hover {
+      color: var(--accent-2);
+    }
+    .token-preview {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.6);
+      border: 1px solid rgba(255,255,255,0.05);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: var(--muted);
+      word-break: break-all;
+    }
+    .token-preview strong {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="card">
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to LevelUp Academy</p>
+
+    <form @submit.prevent="handleLogin">
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" v-model="form.username" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" v-model="form.password" autocomplete="current-password" required />
+      </div>
+      <button type="submit" :disabled="loading">
+        {{ loading ? 'Signing in…' : 'Login' }}
+      </button>
+    </form>
+
+    <div class="status" :class="statusClass">{{ statusMessage }}</div>
+
+    <div v-if="token" class="token-preview">
+      <div><strong>Role:</strong> {{ role }}</div>
+      <div style="margin-top:6px;"><strong>Token:</strong> {{ token.substring(0, 50) }}...</div>
+    </div>
+
+    <div class="link-text">
+      Don't have an account? <a href="signup.html">Sign up</a>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, reactive, computed, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const DASHBOARD_REDIRECT = window.CONFIG?.DASHBOARD_URL || 'dashboard.html';
+
+        const form = reactive({ username: '', password: '' });
+        const state = reactive({
+          loading: false,
+          status: '',
+          statusType: '',
+          token: '',
+          role: ''
+        });
+
+        const statusMessage = computed(() => state.status);
+        const statusClass = computed(() => state.statusType);
+
+        // Check if already logged in
+        onMounted(() => {
+          const existingToken = localStorage.getItem('authToken');
+          const existingRole = localStorage.getItem('userRole');
+          
+          if (existingToken && existingRole) {
+            // User already logged in, redirect based on role
+            if (existingRole === 'ADMIN') {
+              window.location.href = 'admin-dashboard.html';
+            } else {
+              window.location.href = 'home.html';
+            }
+          }
+        });
+
+        const handleLogin = async () => {
+          state.loading = true;
+          state.status = '';
+          state.statusType = '';
+          state.token = '';
+          state.role = '';
+
+          if (!form.username.trim() || !form.password) {
+            state.status = 'Username and password are required';
+            state.statusType = 'error';
+            state.loading = false;
+            return;
+          }
+
+          try {
+            const apiEndpoint = window.apiUrl ? window.apiUrl('/api/v1/auth/login') : '/api/v1/auth/login';
+            const res = await fetch(apiEndpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                username: form.username.trim(),
+                password: form.password
+              })
+            });
+
+            if (!res.ok) {
+              const text = await res.text();
+              let message = 'Invalid username or password';
+              try {
+                const data = JSON.parse(text);
+                message = data.message || data.error || message;
+                
+                // Handle specific error messages
+                if (message.toLowerCase().includes('not approved') || 
+                    message.toLowerCase().includes('pending') ||
+                    message.toLowerCase().includes('approval')) {
+                  message = '⏳ Your account is pending admin approval. Please check your email for updates.';
+                } else if (message.toLowerCase().includes('credentials') || 
+                           message.toLowerCase().includes('username') || 
+                           message.toLowerCase().includes('password')) {
+                  message = '❌ Invalid username or password. Please try again.';
+                }
+              } catch (_) {}
+              throw new Error(message);
+            }
+
+            const data = await res.json();
+            state.token = data.token;
+            state.role = data.role;
+            state.status = 'Login successful! Redirecting...';
+            state.statusType = 'success';
+
+            // Store token in localStorage
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('userRole', data.role);
+            localStorage.setItem('tokenType', data.tokenType || 'Bearer');
+            localStorage.setItem('userName', form.username.trim());
+
+            // Redirect based on role: Only ADMIN goes to dashboard, others to home
+            setTimeout(() => {
+              if (data.role === 'ADMIN') {
+                window.location.href = 'admin-dashboard.html';
+              } else {
+                window.location.href = 'home.html';
+              }
+            }, 800);
+
+          } catch (err) {
+            state.status = err.message || 'Login failed';
+            state.statusType = 'error';
+          } finally {
+            state.loading = false;
+          }
+        };
+
+        return {
+          form,
+          handleLogin,
+          loading: computed(() => state.loading),
+          statusMessage,
+          statusClass,
+          token: computed(() => state.token),
+          role: computed(() => state.role)
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+

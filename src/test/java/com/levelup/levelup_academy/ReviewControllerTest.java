@@ -5,11 +5,14 @@ import com.levelup.levelup_academy.Model.*;
 import com.levelup.levelup_academy.Service.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import com.levelup.levelup_academy.Config.JwtAuthenticationFilter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ReviewController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class ReviewControllerTest {
 
     @Autowired
@@ -26,6 +30,9 @@ public class ReviewControllerTest {
 
     @MockBean
     private ReviewService reviewService;
+
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private User user;
     private Trainer trainer;
@@ -66,7 +73,11 @@ public class ReviewControllerTest {
     void getAllReviews_ModeratorExists_ReturnsOk() throws Exception {
         when(reviewService.getAllReviews(1)).thenReturn(List.of(review));
 
+        SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken(user, null));
+
         mockMvc.perform(get("/api/v1/review/get-all"))
                 .andExpect(status().isOk());
+
+        SecurityContextHolder.clearContext();
     }
 }

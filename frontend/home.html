@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LevelUp Academy | Gaming Training Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #22d3ee;
+      --accent-2: #a855f7;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(34,211,238,0.08), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(168,85,247,0.08), transparent 35%),
+                  linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 5%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      z-index: 1000;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(34,211,238,0.25);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 100px 5% 60px;
+      position: relative;
+    }
+    .hero::before {
+      content: '🎮';
+      position: absolute;
+      font-size: 300px;
+      opacity: 0.03;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    h1 {
+      font-size: clamp(40px, 8vw, 72px);
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle {
+      font-size: clamp(18px, 3vw, 24px);
+      color: var(--muted);
+      margin-bottom: 40px;
+      max-width: 600px;
+    }
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn-large {
+      padding: 16px 40px;
+      font-size: 16px;
+    }
+
+    /* Features Section */
+    .features {
+      padding: 80px 5%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 50px;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+    .feature-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 30px;
+      transition: transform 0.2s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(34,211,238,0.3);
+    }
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    .feature-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .feature-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Roles Section */
+    .roles {
+      padding: 80px 5%;
+      background: linear-gradient(180deg, transparent, rgba(34,211,238,0.03), transparent);
+    }
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .role-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 24px;
+      text-align: center;
+    }
+    .role-emoji {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+    .role-name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .role-desc {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 5%;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .nav-buttons {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .cta-buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+      .btn-large {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="app">
+    <div class="logo">🎮 LevelUp Academy</div>
+    <div class="nav-buttons" v-if="!isLoggedIn">
+      <a href="login.html" class="btn btn-secondary">Login</a>
+      <a href="role-selector.html" class="btn btn-primary">Sign Up</a>
+    </div>
+    <div class="nav-buttons" v-else>
+      <span style="color: var(--muted); margin-right: 12px;">
+        Welcome, <strong style="color: var(--accent);">{{ userName }}</strong>
+      </span>
+      <span class="role-badge" style="margin-right: 12px;">{{ userRole }}</span>
+      <a href="admin-dashboard.html" v-if="userRole === 'ADMIN'" class="btn btn-secondary">Dashboard</a>
+      <button class="btn btn-secondary" @click="logout">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>
+      Level Up Your <br/>
+      <span class="gradient-text">Gaming Skills</span>
+    </h1>
+    <p class="subtitle">
+      Professional gaming training platform connecting players with expert trainers and pro players
+    </p>
+    <div class="cta-buttons">
+      <a href="role-selector.html" class="btn btn-primary btn-large">Get Started</a>
+      <a href="login.html" class="btn btn-secondary btn-large">Sign In</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <h2 class="section-title">Why Choose LevelUp Academy?</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3 class="feature-title">Expert Training</h3>
+        <p class="feature-desc">Learn from professional trainers and pro players with proven track records</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">Track Progress</h3>
+        <p class="feature-desc">Monitor your improvement with detailed statistics and performance analytics</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎮</div>
+        <h3 class="feature-title">Multiple Games</h3>
+        <p class="feature-desc">Training available for various popular competitive games</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⏰</div>
+        <h3 class="feature-title">Flexible Scheduling</h3>
+        <p class="feature-desc">Book sessions that fit your schedule with easy booking management</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👨‍👩‍👧</div>
+        <h3 class="feature-title">Parent Control</h3>
+        <p class="feature-desc">Parents can manage their children's training and monitor progress</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💎</div>
+        <h3 class="feature-title">Premium Quality</h3>
+        <p class="feature-desc">All trainers and pros are verified and approved by our team</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roles Section -->
+  <section class="roles">
+    <h2 class="section-title">Join As</h2>
+    <div class="role-grid">
+      <div class="role-card">
+        <div class="role-emoji">🎮</div>
+        <h3 class="role-name">Player</h3>
+        <p class="role-desc">Learn and improve your gaming skills</p>
+      </div>
+      <div class="role-card">
+        <div class="role-emoji">⭐</div>
+        <h3 class="role-name">Pro Player</h3>
+        <p class="role-desc">Share your expertise and earn</p>
+      </div>
+      <div class="role-card">
+        <div class="role-emoji">🎓</div>
+        <h3 class="role-name">Trainer</h3>
+        <p class="role-desc">Teach and train aspiring gamers</p>
+      </div>
+      <div class="role-card">
+        <div class="role-emoji">👨‍👩‍👧</div>
+        <h3 class="role-name">Parent</h3>
+        <p class="role-desc">Manage your child's gaming journey</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 LevelUp Academy. All rights reserved. 🎮</p>
+  </footer>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const isLoggedIn = ref(false);
+        const userName = ref('');
+        const userRole = ref('');
+
+        onMounted(() => {
+          const token = localStorage.getItem('authToken');
+          const role = localStorage.getItem('userRole');
+          
+          if (token && role) {
+            isLoggedIn.value = true;
+            userRole.value = role;
+            
+            // Try to get user info from API
+            fetchUserInfo(token, role);
+          }
+        });
+
+        const fetchUserInfo = async (token, role) => {
+          // Get username from localStorage
+          const storedUsername = localStorage.getItem('userName');
+          if (storedUsername) {
+            userName.value = storedUsername;
+          } else {
+            userName.value = role.charAt(0) + role.slice(1).toLowerCase();
+          }
+        };
+
+        const logout = () => {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('tokenType');
+          localStorage.removeItem('userName');
+          window.location.reload();
+        };
+
+        return {
+          isLoggedIn,
+          userName,
+          userRole,
+          logout
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+

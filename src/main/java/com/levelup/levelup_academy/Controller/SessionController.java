@@ -29,19 +29,7 @@ public class SessionController {
         return ResponseEntity.status(200).body(new ApiResponse("Session Added"));
     }
 
-    //Assign
-//    @PostMapping("assignTrainer/{trainerId}/{sessionId}")
-//    public ResponseEntity assignTrainerToSession(@PathVariable Integer trainerId,@PathVariable Integer sessionId){
-//        sessionService.assignTrainerToSession(trainerId, sessionId);
-//        return ResponseEntity.status(200).body(new ApiResponse("Assigned"));
-//    }
 
-    //Assign
-//    @PostMapping("assignGame/{sessionId}")
-//    public ResponseEntity assignGameToSession(@PathVariable Integer sessionId){
-//        sessionService.assignGameToTrainer(sessionId);
-//        return ResponseEntity.status(200).body(new ApiResponse("Assigned"));
-//    }
 
     //update
     @PutMapping("/update/{sessionId}")

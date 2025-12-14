@@ -49,7 +49,7 @@ public class ContractService {
                 contractDTO.getStartDate(),
                 contractDTO.getEndDate(),
                 contractDTO.getAmount()
-                ,false,null,null,null
+                ,false,"pending",null,null
         );
               contract.setModeratorStatus(false);
 
@@ -92,11 +92,12 @@ public class ContractService {
         }
         if(pro == null){
             throw new ApiException("The professional player is not found");
+        }if(contract.getModeratorStatus()!=false) {
+            contract.setContractStatus("Accepted");
         }
-        contract.setContractStatus("Accepted");
         List<Contract> otherContracts = contractRepository.findAllByPro(pro);
         for (Contract otherContract : otherContracts) {
-            if (!otherContract.getId().equals(contractId)) {
+            if (!otherContract.getId().equals(contractId)&& otherContract.getId().equals("pending")) {
                 otherContract.setContractStatus("Rejected");
                 contractRepository.save(otherContract);
             }

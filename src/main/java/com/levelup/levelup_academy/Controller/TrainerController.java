@@ -35,8 +35,15 @@ public class TrainerController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity getAllTrainers(@AuthenticationPrincipal User moderator) {
-       return ResponseEntity.status(200).body(trainerService.getAllTrainers(moderator.getModerator().getId()));
+    public ResponseEntity getAllTrainers(@AuthenticationPrincipal User user) {
+        // Check if user is admin (no moderator) or moderator
+        if (user.getRole().equals("ADMIN")) {
+            // Admin can see all trainers without moderator filter
+            return ResponseEntity.status(200).body(trainerService.getAllTrainersForAdmin());
+        } else {
+            // Moderator needs their moderator ID
+            return ResponseEntity.status(200).body(trainerService.getAllTrainers(user.getModerator().getId()));
+        }
     }
     @PutMapping("/edit")
     public ResponseEntity updateTrainer(@AuthenticationPrincipal User trainerId,

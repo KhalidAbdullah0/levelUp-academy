@@ -37,10 +37,7 @@ public class StatisticPlayerController {
         return ResponseEntity.ok(statisticPlayerService.getStatisticsByPlayerId(trainerId.getId(),playerId));
     }
 
-//    @GetMapping("/player/trainer")
-//    public ResponseEntity<List<StatisticPlayer>> getPlayerStatsByTrainer(@AuthenticationPrincipal User trainerId) {
-//        return ResponseEntity.ok(statisticPlayerService.getAllStatisticsByTrainerId(trainerId.getId()));
-//    }
+
 
 
     @DeleteMapping("/delete/{statId}")
@@ -57,11 +54,7 @@ public class StatisticPlayerController {
     public ResponseEntity<StatisticPlayer> getPlayerStatistics(@PathVariable Integer trainerId,@PathVariable Integer playerId) {
         return ResponseEntity.ok(statisticPlayerService.getStatisticsByPlayerId(trainerId,playerId));
     }
-//    @GetMapping("/top5")
-//    public ResponseEntity<List<StatisticPlayer>> getTop5ByWinGame(@RequestParam Integer winGame) {
-//        List<StatisticPlayer> top5 = statisticPlayerService.getTop5PlayersByGame(winGame);
-//        return ResponseEntity.ok(top5);
-//    }
+
     @PutMapping("/add-win/{statId}/{trainerId}")
     public ResponseEntity addWinToPlayer(@PathVariable Integer statId,@PathVariable Integer trainerId) {
         statisticPlayerService.addWin(statId,trainerId);

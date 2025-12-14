@@ -3,24 +3,21 @@ package com.levelup.levelup_academy;
 import com.levelup.levelup_academy.Controller.ContractController;
 import com.levelup.levelup_academy.DTO.ContractDTO;
 import com.levelup.levelup_academy.Model.Contract;
-import com.levelup.levelup_academy.Model.Moderator;
 import com.levelup.levelup_academy.Model.Pro;
 import com.levelup.levelup_academy.Model.User;
 import com.levelup.levelup_academy.Service.ContractService;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.TestConfiguration;
-
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import com.levelup.levelup_academy.Config.JwtAuthenticationFilter;
+import org.junit.jupiter.api.AfterEach;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,24 +35,21 @@ public class ContractControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private ContractService contractService;
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public ContractService contractService() {
-            return Mockito.mock(ContractService.class);
-        }
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
     public void testGetAllContractsByModeratorId() throws Exception {
         Pro pro = new Pro();
         pro.setId(10);
-
-        Moderator moderator = new Moderator();
-        moderator.setId(1);
 
         Contract mockContract = new Contract();
         mockContract.setId(1);
@@ -67,18 +61,23 @@ public class ContractControllerTest {
         mockContract.setEndDate(LocalDate.of(2025, 12, 31));
         mockContract.setAmount(2000.0);
         mockContract.setPro(pro);
-        mockContract.setModerator(moderator);
 
         List<Contract> contractList = List.of(mockContract);
 
-        Mockito.when(contractService.getAllContract(1)).thenReturn(contractList);
+        Mockito.when(contractService.getAllContract(10)).thenReturn(contractList);
 
         User mockUser = new User();
-        mockUser.setId(1);
-        TestingAuthenticationToken auth = new TestingAuthenticationToken(mockUser, null);
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        mockUser.setId(99);
+        mockUser.setPro(pro);
+        org.springframework.security.core.context.SecurityContext context =
+                org.springframework.security.core.context.SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(new org.springframework.security.authentication.TestingAuthenticationToken(mockUser, null));
+        org.springframework.security.core.context.SecurityContextHolder.setContext(context);
 
-        mockMvc.perform(get("/api/v1/contract/get"))
+        mockMvc.perform(get("/api/v1/contract/get")
+                        .principal(() -> "user")
+                        .requestAttr("org.springframework.security.core.annotation.AuthenticationPrincipal", mockUser)
+                        .sessionAttr("SPRING_SECURITY_CONTEXT", context))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -87,16 +86,11 @@ public class ContractControllerTest {
                 .andExpect(jsonPath("$[0].commercialRegister").value(123456))
                 .andExpect(jsonPath("$[0].game").value("Valorant"))
                 .andExpect(jsonPath("$[0].amount").value(2000.0));
-
-        SecurityContextHolder.clearContext();
     }
 
     @Test
     public void testAddContract() throws Exception {
 
-
-        User mockModerator = new User();
-        mockModerator.setId(1);
 
         Mockito.doNothing().when(contractService).addContract(Mockito.eq(1), Mockito.any(ContractDTO.class));
 
@@ -116,19 +110,11 @@ public class ContractControllerTest {
     """;
 
 
-        TestingAuthenticationToken authenticationToken = new TestingAuthenticationToken(mockModerator, null);
-        authenticationToken.setAuthenticated(true);
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-        mockMvc.perform(post("/api/v1/contract/add")
+        mockMvc.perform(post("/api/v1/contract/add/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(contractJson))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Contract added and email sent successfully."));
-
-
-
-        SecurityContextHolder.clearContext();
+                .andExpect(jsonPath("$.message").value("Contract added and email sent successfully."));
     }
 
 

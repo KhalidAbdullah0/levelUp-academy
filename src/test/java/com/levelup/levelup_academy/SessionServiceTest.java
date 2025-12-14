@@ -7,11 +7,12 @@ import com.levelup.levelup_academy.Service.SessionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class SessionServiceTest {
 
     @Mock
@@ -37,16 +38,10 @@ public class SessionServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         moderator = new Moderator();
         trainer = new Trainer();
         game = new Game();
         session = new Session();
-
-        // Mock common behavior
-        when(moderatorRepository.findModeratorById(anyInt())).thenReturn(moderator);
-        when(trainerRepository.findTrainerById(anyInt())).thenReturn(trainer);
-        when(gameRepository.findGameById(anyInt())).thenReturn(game);
     }
 
 

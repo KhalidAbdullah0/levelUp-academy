@@ -48,6 +48,12 @@ public class TrainerService {
         }
         return dtoList;
     }
+
+    //GET for Admin (no moderator required) - returns full Trainer objects with approval status
+    public List<Trainer> getAllTrainersForAdmin() {
+        // Use query that eagerly loads user relationship
+        return trainerRepository.findAllWithUser();
+    }
     //Register Trainer
     public void registerTrainer(TrainerDTO trainerDTO, MultipartFile file){
         trainerDTO.setRole("TRAINER");
@@ -85,7 +91,37 @@ public class TrainerService {
             emailRequest.setSubject("New Trainer Awaiting Approval");
             emailRequest.setMessage(message);
 
-            emailNotificationService.sendEmail(emailRequest);
+            // Try to send email, but don't fail registration if email fails
+            try {
+                emailNotificationService.sendEmail(emailRequest);
+            } catch (Exception e) {
+                // Log error but continue with registration
+                System.err.println("Failed to send admin notification email: " + e.getMessage());
+            }
+        }
+        
+        // Send welcome email to trainer
+        String welcomeMessage = "<html><body style='font-family: Arial, sans-serif; color: #fff; background-color: #A53A10; padding: 40px 20px;'>" +
+                "<div style='max-width: 600px; margin: auto; background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; text-align: center;'>" +
+                "<img src='https://i.imgur.com/Q6FtCEu.jpeg' alt='LevelUp Academy Logo' style='width:90px; border-radius: 10px; margin-bottom: 20px;'/>" +
+                "<h2>🎓 Welcome to LevelUp Academy!</h2>" +
+                "<p style='font-size: 16px;'>Hello " + user.getFirstName() + " " + user.getLastName() + ",</p>" +
+                "<p style='font-size: 16px;'>Thank you for registering as a Trainer!</p>" +
+                "<p style='font-size: 16px;'>Please wait while our team reviews your profile and approves your registration.</p>" +
+                "<p style='font-size: 14px;'>– The LevelUp Academy Team</p>" +
+                "</div></body></html>";
+        
+        EmailRequest welcomeEmailRequest = new EmailRequest();
+        welcomeEmailRequest.setRecipient(trainerDTO.getEmail());
+        welcomeEmailRequest.setSubject("Welcome to LevelUp Academy!");
+        welcomeEmailRequest.setMessage(welcomeMessage);
+        
+        // Try to send email, but don't fail registration if email fails
+        try {
+            emailNotificationService.sendEmail(welcomeEmailRequest);
+        } catch (Exception e) {
+            // Log error but continue with registration
+            System.err.println("Failed to send welcome email to " + trainerDTO.getEmail() + ": " + e.getMessage());
         }
     }
 
@@ -309,12 +345,18 @@ public class TrainerService {
 
         List<Moderator> moderators = moderatorRepository.findAll();
         for (Moderator moderator : moderators) {
-
             EmailRequest emailRequest = new EmailRequest();
             emailRequest.setRecipient(moderator.getUser().getEmail());
             emailRequest.setSubject(subject);
             emailRequest.setMessage(body);
-            emailNotificationService.sendEmail(emailRequest);
+            
+            // Try to send email, but don't fail if email fails
+            try {
+                emailNotificationService.sendEmail(emailRequest);
+            } catch (Exception e) {
+                // Log error but continue
+                System.err.println("Failed to send email to moderator " + moderator.getUser().getEmail() + ": " + e.getMessage());
+            }
         }
     }
 

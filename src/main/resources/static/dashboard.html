@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LevelUp Academy | Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #22d3ee;
+      --accent-2: #a855f7;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(34,211,238,0.08), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(168,85,247,0.08), transparent 35%),
+                  linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .badge {
+      padding: 6px 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    button:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+    }
+    .card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+    }
+    .welcome-text {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .token-box {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(15,23,42,0.6);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: var(--muted);
+      word-break: break-all;
+    }
+    .token-box strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .warning {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      border-radius: 10px;
+      color: #f87171;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="container">
+    <div class="header">
+      <div>
+        <h1>Dashboard</h1>
+      </div>
+      <div class="user-info">
+        <span class="badge">{{ role || 'USER' }}</span>
+        <button @click="logout">Logout</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Welcome to LevelUp Academy! 🎮</h2>
+      <p class="welcome-text">
+        You're successfully logged in. This is a placeholder dashboard page.
+        Your authentication token is stored in localStorage and will be used for API requests.
+      </p>
+
+      <div v-if="token" class="token-box">
+        <strong>Your JWT Token:</strong>
+        {{ token }}
+      </div>
+
+      <div v-if="!token" class="warning">
+        ⚠️ No authentication token found. Please <a href="login.html" style="color: #4ade80;">login</a> again.
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const token = ref('');
+        const role = ref('');
+
+        onMounted(() => {
+          // Check if user is authenticated
+          const storedToken = localStorage.getItem('authToken');
+          const storedRole = localStorage.getItem('userRole');
+
+          if (!storedToken) {
+            // Redirect to login if not authenticated
+            const loginUrl = window.CONFIG?.LOGIN_URL || 'login.html';
+            window.location.href = loginUrl;
+            return;
+          }
+
+          token.value = storedToken;
+          role.value = storedRole || 'USER';
+          
+          // Only ADMIN can access dashboards, redirect everyone else to home
+          if (storedRole !== 'ADMIN') {
+            window.location.href = 'home.html';
+            return;
+          }
+          
+          // If admin, redirect to admin dashboard
+          window.location.href = 'admin-dashboard.html';
+        });
+
+        const logout = () => {
+          // Clear authentication data
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('tokenType');
+          
+          // Redirect to login
+          const loginUrl = window.CONFIG?.LOGIN_URL || 'login.html';
+          window.location.href = loginUrl;
+        };
+
+        return {
+          token,
+          role,
+          logout
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+

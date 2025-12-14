@@ -43,6 +43,16 @@ public class PlayerService {
         return dtoList;
     }
 
+    //GET for Admin (no moderator required) - returns User objects for players
+    public List<User> getAllPlayersForAdmin(){
+        List<Player> players = playerRepository.findAll();
+        List<User> userList = new ArrayList<>();
+        for (Player player : players) {
+            userList.add(player.getUser());
+        }
+        return userList;
+    }
+
     public Player getPlayer(Integer moderatorId,Integer playerId){
         Moderator moderator= moderatorRepository.findModeratorById(moderatorId);
         if(moderator == null){

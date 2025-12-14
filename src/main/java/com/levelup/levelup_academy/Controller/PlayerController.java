@@ -24,8 +24,15 @@ public class PlayerController {
 
      //GET
     @GetMapping("/get")
-    public ResponseEntity getAllPlayers(@AuthenticationPrincipal User moderator){
-        return ResponseEntity.status(200).body(playerService.getAllPlayers(moderator.getModerator().getId()));
+    public ResponseEntity getAllPlayers(@AuthenticationPrincipal User user){
+        // Check if user is admin (no moderator) or moderator
+        if (user.getRole().equals("ADMIN")) {
+            // Admin can see all players without moderator filter
+            return ResponseEntity.status(200).body(playerService.getAllPlayersForAdmin());
+        } else {
+            // Moderator needs their moderator ID
+            return ResponseEntity.status(200).body(playerService.getAllPlayers(user.getModerator().getId()));
+        }
     }
 
     //get player by moderator

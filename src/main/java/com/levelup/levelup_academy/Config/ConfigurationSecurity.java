@@ -127,15 +127,21 @@ public class ConfigurationSecurity {
                                 "/api/v1/booking/get-all", "/api/v1/review/add","/api/v1/review/delete"
                         ).hasAnyAuthority("PLAYER","PARENTS","PRO")
 
-                        // ======== MODERATOR ========
+                        // ======== MODERATOR & ADMIN (shared access) ========
+                        .requestMatchers(
+                                "/api/v1/parent/get", "/api/v1/player/get", "/api/v1/pro/get",
+                                "/api/v1/trainer/get", "/api/v1/pro/cv/**", "/api/v1/trainer/cv/**"
+                        ).hasAnyAuthority("MODERATOR", "ADMIN")
+
+                        // ======== MODERATOR only ========
                         .requestMatchers(
                                 "/api/v1/game/**","/api/v1/contract/**", "/api/v1/moderator/edit",
-                                "/api/v1/moderator/delete","/api/v1/parent/get", "/api/v1/moderator/get-all-pro",
+                                "/api/v1/moderator/delete", "/api/v1/moderator/get-all-pro",
                                 "/api/v1/moderator/review-contract","/api/v1/moderator/send-exam",
-                                "/api/v1/player/get","/api/v1/player/get-player", "/api/v1/pro/get",
-                                "/api/v1/pro/cv","/api/v1/review/get-all", "/api/v1/session/get",
+                                "/api/v1/player/get-player", 
+                                "/api/v1/review/get-all", "/api/v1/session/get",
                                 "/api/v1/session/add","/api/v1/session/update","/api/v1/session/del",
-                                "/api/v1/session/change-session","/api/v1/trainer/get", "/api/v1/moderator/promote"
+                                "/api/v1/session/change-session", "/api/v1/moderator/promote"
                         ).hasAuthority("MODERATOR")
 
                         // ======== PLAYER ========
@@ -149,10 +155,11 @@ public class ConfigurationSecurity {
                                 "/api/v1/pro/expireAccount","/api/v1/pro/professional"
                         ).hasAuthority("PRO")
 
-                        // ======== ADMIN ========
+                        // ======== ADMIN only ========
                         .requestMatchers(
-                                "/api/v1/pro/approve","/api/v1/user/get-all","/api/v1/trainer/cv",
-                                "/api/v1/trainer/approve-trainer","/api/v1/trainer/reject-trainer",
+                                "/api/v1/pro/approve/**","/api/v1/pro/reject/**",
+                                "/api/v1/user/get-all",
+                                "/api/v1/trainer/approve-trainer/**","/api/v1/trainer/reject-trainer/**",
                                 "/api/v1/moderator/register"
                         ).hasAuthority("ADMIN")
 
