@@ -93,7 +93,9 @@ public class ConfigurationSecurity {
                                 "/*.html",
                                 "/css/**",
                                 "/js/**",
-                                "/images/**"
+                                "/images/**",
+                                "/favicon.ico",
+                                "/*.ico"
                         ).permitAll()
                         
                         // ======== Public endpoints (بدون JWT) ========
@@ -121,6 +123,12 @@ public class ConfigurationSecurity {
                                 "/api/v1/subscription/premium"
                         ).hasAnyAuthority("PARENTS","PLAYER")
 
+                        // ======== PAYMENTS (PARENTS, PLAYER) ========
+                        .requestMatchers(
+                                "/api/v1/payments/card",
+                                "/api/v1/payments/get-status/**"
+                        ).hasAnyAuthority("PARENTS","PLAYER")
+
                         // ======== BOOKINGS (PLAYER, PARENTS, PRO) ========
                         .requestMatchers(
                                 "/api/v1/booking/add", "/api/v1/booking/cancel", "/api/v1/booking/check",
@@ -130,24 +138,42 @@ public class ConfigurationSecurity {
                         // ======== MODERATOR & ADMIN (shared access) ========
                         .requestMatchers(
                                 "/api/v1/parent/get", "/api/v1/player/get", "/api/v1/pro/get",
-                                "/api/v1/trainer/get", "/api/v1/pro/cv/**", "/api/v1/trainer/cv/**"
+                                "/api/v1/pro/cv/**", "/api/v1/trainer/cv/**"
                         ).hasAnyAuthority("MODERATOR", "ADMIN")
+
+                        // ======== VIEW TRAINERS (MODERATOR, ADMIN, PLAYER) ========
+                        .requestMatchers(
+                                "/api/v1/trainer/get"
+                        ).hasAnyAuthority("MODERATOR", "ADMIN", "PLAYER")
 
                         // ======== MODERATOR only ========
                         .requestMatchers(
-                                "/api/v1/game/**","/api/v1/contract/**", "/api/v1/moderator/edit",
+                                "/api/v1/game/add","/api/v1/game/edit/**","/api/v1/game/delete/**",
+                                "/api/v1/contract/**", "/api/v1/moderator/edit",
                                 "/api/v1/moderator/delete", "/api/v1/moderator/get-all-pro",
                                 "/api/v1/moderator/review-contract","/api/v1/moderator/send-exam",
                                 "/api/v1/player/get-player", 
-                                "/api/v1/review/get-all", "/api/v1/session/get",
+                                "/api/v1/review/get-all", 
                                 "/api/v1/session/add","/api/v1/session/update","/api/v1/session/del",
                                 "/api/v1/session/change-session", "/api/v1/moderator/promote"
                         ).hasAuthority("MODERATOR")
 
+                        // ======== VIEW ACCESS (MODERATOR, ADMIN, PLAYER) ========
+                        .requestMatchers(
+                                "/api/v1/game/get",
+                                "/api/v1/session/get"
+                        ).hasAnyAuthority("MODERATOR", "ADMIN", "PLAYER")
+
                         // ======== PLAYER ========
                         .requestMatchers(
-                                "/api/v1/player/edit","/api/v1/player/delete","/api/v1/player/player"
+                                "/api/v1/player/edit","/api/v1/player/delete","/api/v1/player/player",
+                                "/api/v1/player-statistic/leaderboard"
                         ).hasAuthority("PLAYER")
+
+                        // ======== PLAYER & TRAINER (shared) ========
+                        .requestMatchers(
+                                "/api/v1/player-statistic/top-player-by-rating"
+                        ).hasAnyAuthority("PLAYER", "TRAINER")
 
                         // ======== PRO ========
                         .requestMatchers(

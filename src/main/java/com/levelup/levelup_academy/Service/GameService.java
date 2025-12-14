@@ -24,6 +24,11 @@ public class GameService {
         return gameRepository.findAll();
     }
 
+    //GET for Player (no moderator required)
+    public List<Game> getAllGamesForPlayer(){
+        return gameRepository.findAll();
+    }
+
     //ADD game only by the moderator
     public void addGame(Integer moderatorId,Game game){
         Moderator moderator = moderatorRepository.findModeratorById(moderatorId);

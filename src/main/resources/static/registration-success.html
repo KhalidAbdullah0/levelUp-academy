@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registration Successful | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #22d3ee;
+      --accent-2: #a855f7;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --success: #4ade80;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .success-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 48px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .success-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(74,222,128,0.1), transparent);
+      animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .success-icon {
+      font-size: 80px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .success-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--success), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .success-message {
+      font-size: 18px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .username-display {
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(74,222,128,0.1);
+      border: 1px solid rgba(74,222,128,0.3);
+      border-radius: 8px;
+      font-weight: 600;
+      color: var(--success);
+      margin: 8px 0;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .btn {
+      padding: 14px 32px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      text-decoration: none;
+      display: inline-block;
+      position: relative;
+      z-index: 1;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(34,211,238,0.3);
+    }
+    
+    .header-info {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .header-info strong {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="success-card">
+      <div class="header-info">
+        Player: <strong id="username-display">Loading...</strong>
+      </div>
+      
+      <div class="success-icon">✅</div>
+      <div class="success-title">Welcome Player!</div>
+      <div class="success-message">
+        <div>You have been successfully registered!</div>
+        <div class="username-display" id="username-badge">{{ username || 'Player' }}</div>
+      </div>
+      
+      <div style="margin-top: 32px;">
+        <a href="player-subscription.html" class="btn">Continue to Subscription →</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const username = ref('');
+
+        onMounted(() => {
+          // Get username from URL parameter or localStorage
+          const urlParams = new URLSearchParams(window.location.search);
+          const urlUsername = urlParams.get('username');
+          const storedUsername = localStorage.getItem('userName');
+          
+          username.value = urlUsername || storedUsername || 'Player';
+          
+          // Update header display
+          document.getElementById('username-display').textContent = username.value;
+          document.getElementById('username-badge').textContent = username.value;
+          
+          // Store username if not already stored
+          if (!storedUsername && urlUsername) {
+            localStorage.setItem('userName', urlUsername);
+          }
+        });
+
+        return {
+          username
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+

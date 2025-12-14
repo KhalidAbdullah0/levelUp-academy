@@ -127,9 +127,30 @@ public class PlayerService {
         playerRepository.delete(player);
     }
 
-    public StatisticPlayer getMyStatisticsByPlayerId(Integer playerId) {
-        StatisticPlayer stat = statisticPlayerRepository.findByPlayer_Id(playerId);
-        if (stat == null) throw new ApiException("Statistic not found for this player");
+    public StatisticPlayer getMyStatisticsByPlayerId(Integer userId) {
+        // First, find the Player record associated with this User
+        Player player = playerRepository.findPlayerByUser_Id(userId);
+        if (player == null) {
+            throw new ApiException("Player record not found for this user");
+        }
+        
+        // Now get statistics for this player
+        StatisticPlayer stat = statisticPlayerRepository.findByPlayer_Id(player.getId());
+        if (stat == null) {
+            // Return default statistics if player doesn't have statistics yet
+            // Create default statistics
+            StatisticPlayer defaultStat = new StatisticPlayer();
+            defaultStat.setPlayer(player);
+            defaultStat.setRate(1.0);
+            defaultStat.setWinGame(0);
+            defaultStat.setLossGame(0);
+            defaultStat.setTrophy("NO_TROPHY");
+            defaultStat.setField("General");
+            defaultStat.setDate(java.time.LocalDate.now());
+            
+            // Save default statistics
+            return statisticPlayerRepository.save(defaultStat);
+        }
         return stat;
     }
 

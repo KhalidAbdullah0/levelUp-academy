@@ -146,6 +146,26 @@ public class StatisticPlayerService {
         return topPlayer.getPlayer().getUser().getUsername() + ": " + trophy + " (" + topPlayer.getRate() + ")";
     }
 
+    // Get top player for players (no trainer required)
+    public String getTopPlayerByRatingForPlayer() {
+        List<StatisticPlayer> all = repository.findAll();
+        StatisticPlayer topPlayer = all.stream()
+                .filter(player -> player.getRate() != null)
+                .max(Comparator.comparingDouble(StatisticPlayer::getRate))
+                .orElseThrow(() -> new ApiException("No player has a rating"));
+        String trophy = getTrophyFromRating(topPlayer.getRate());
+        return topPlayer.getPlayer().getUser().getUsername() + ": " + trophy + " (" + topPlayer.getRate() + ")";
+    }
+
+    // Get leaderboard (top players sorted by rating)
+    public List<StatisticPlayer> getLeaderboard() {
+        return repository.findAll().stream()
+                .filter(player -> player.getRate() != null)
+                .sorted(Comparator.comparingDouble(StatisticPlayer::getRate).reversed())
+                .limit(10) // Top 10
+                .collect(Collectors.toList());
+    }
+
     public static String getTrophyFromRating(double rating) {
         if (rating >= 9.0) {
             return "GOLD";

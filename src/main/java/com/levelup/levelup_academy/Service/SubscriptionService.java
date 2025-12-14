@@ -46,7 +46,12 @@ public class SubscriptionService {
             subscription.setStatus("ACTIVE");
         }
 
-        subscriptionRepository.save(subscription);
+        Subscription savedSubscription = subscriptionRepository.save(subscription);
+        
+        // Return subscription ID in response as JSON
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.ok().body("{\"message\":\"Subscription created successfully\",\"subscriptionId\":" + savedSubscription.getId() + "}");
+        }
         return response;
     }
 
@@ -73,7 +78,12 @@ public class SubscriptionService {
             subscription.setStatus("ACTIVE");
         }
 
-        subscriptionRepository.save(subscription);
+        Subscription savedSubscription = subscriptionRepository.save(subscription);
+        
+        // Return subscription ID in response as JSON
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.ok().body("{\"message\":\"Subscription created successfully\",\"subscriptionId\":" + savedSubscription.getId() + "}");
+        }
         return response;
     }
 
@@ -100,7 +110,12 @@ public class SubscriptionService {
             subscription.setStatus("ACTIVE");
         }
 
-        subscriptionRepository.save(subscription);
+        Subscription savedSubscription = subscriptionRepository.save(subscription);
+        
+        // Return subscription ID in response as JSON
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.ok().body("{\"message\":\"Subscription created successfully\",\"subscriptionId\":" + savedSubscription.getId() + "}");
+        }
         return response;
     }
 

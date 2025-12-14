@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trainers | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #22d3ee;
+      --accent-2: #a855f7;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    .header {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .page-subtitle {
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    
+    .trainers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .trainer-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s ease;
+    }
+    .trainer-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px rgba(34,211,238,0.2);
+    }
+    .trainer-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .trainer-name {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .trainer-email {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+    }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(34,211,238,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <div class="logo">🎮 LevelUp Academy</div>
+      <div>
+        <a href="player-dashboard.html" class="btn">← Dashboard</a>
+        <button class="btn" @click="logout" style="margin-left: 8px;">Logout</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="page-title">👨‍🏫 Our Trainers</div>
+      <div class="page-subtitle">Meet our professional trainers and learn from the best!</div>
+
+      <div v-if="loading" class="loading">
+        <div class="spinner"></div>
+        <div style="margin-top: 16px;">Loading trainers...</div>
+      </div>
+
+      <div v-else-if="trainers.length === 0" class="empty-state">
+        <div class="empty-icon">👨‍🏫</div>
+        <div style="font-size: 18px; margin-bottom: 8px;">No Trainers Available</div>
+        <div>Check back later!</div>
+      </div>
+
+      <div v-else class="trainers-grid">
+        <div v-for="trainer in trainers" :key="trainer.id" class="trainer-card">
+          <div class="trainer-icon">👨‍🏫</div>
+          <div class="trainer-name">{{ trainer.user?.firstName || '' }} {{ trainer.user?.lastName || '' }}</div>
+          <div class="trainer-email">{{ trainer.user?.email || 'N/A' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const trainers = ref([]);
+        const loading = ref(true);
+
+        const token = localStorage.getItem('authToken');
+        const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+        const userRole = localStorage.getItem('userRole');
+
+        onMounted(() => {
+          if (!token || userRole !== 'PLAYER') {
+            window.location.href = 'login.html';
+            return;
+          }
+          loadTrainers();
+        });
+
+        const loadTrainers = async () => {
+          loading.value = true;
+          try {
+            const url = window.apiUrl ? window.apiUrl('/api/v1/trainer/get') : '/api/v1/trainer/get';
+            const response = await fetch(url, {
+              headers: {
+                'Authorization': `${tokenType} ${token}`
+              }
+            });
+
+            if (!response.ok) {
+              if (response.status === 401 || response.status === 403) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return;
+              }
+              throw new Error('Failed to load trainers');
+            }
+
+            trainers.value = await response.json();
+          } catch (error) {
+            console.error('Error loading trainers:', error);
+          } finally {
+            loading.value = false;
+          }
+        };
+
+        const logout = () => {
+          localStorage.clear();
+          window.location.href = 'login.html';
+        };
+
+        return {
+          trainers,
+          loading,
+          logout
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+

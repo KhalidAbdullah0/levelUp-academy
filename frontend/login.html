@@ -266,10 +266,12 @@
             localStorage.setItem('tokenType', data.tokenType || 'Bearer');
             localStorage.setItem('userName', form.username.trim());
 
-            // Redirect based on role: Only ADMIN goes to dashboard, others to home
+            // Redirect based on role
             setTimeout(() => {
               if (data.role === 'ADMIN') {
                 window.location.href = 'admin-dashboard.html';
+              } else if (data.role === 'PLAYER') {
+                window.location.href = 'player-dashboard.html';
               } else {
                 window.location.href = 'home.html';
               }

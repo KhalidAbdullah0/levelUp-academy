@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class SessionController {
     private final SessionService sessionService;
 
-    //GET
+    //GET - Accessible by all authenticated users (MODERATOR, ADMIN, PLAYER)
     @GetMapping("/get")
     public ResponseEntity getAllSession(){
         return ResponseEntity.status(200).body(sessionService.getAllClasses());

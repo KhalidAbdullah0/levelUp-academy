@@ -46,8 +46,20 @@ public class StatisticPlayerController {
         return ResponseEntity.ok(new ApiResponse("Player statistic deleted"));
     }
     @GetMapping("/top-player-by-rating")
-    public ResponseEntity<String> getTopPlayerByRating(@AuthenticationPrincipal User trainer) {
-        return ResponseEntity.ok(statisticPlayerService.getTopPlayerByRating(trainer.getId()));
+    public ResponseEntity<String> getTopPlayerByRating(@AuthenticationPrincipal User user) {
+        // Check if user is trainer or player
+        if (user.getRole().equals("TRAINER")) {
+            return ResponseEntity.ok(statisticPlayerService.getTopPlayerByRating(user.getTrainer().getId()));
+        } else {
+            // Player can view leaderboard without trainer ID
+            return ResponseEntity.ok(statisticPlayerService.getTopPlayerByRatingForPlayer());
+        }
+    }
+    
+    @GetMapping("/leaderboard")
+    public ResponseEntity getLeaderboard(@AuthenticationPrincipal User user) {
+        // Get top players leaderboard - accessible by all authenticated users
+        return ResponseEntity.ok(statisticPlayerService.getLeaderboard());
     }
 
     @GetMapping("/player/{playerId}/{trainerId}")

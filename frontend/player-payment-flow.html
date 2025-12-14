@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #22d3ee;
+      --accent-2: #a855f7;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --success: #4ade80;
+      --error: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    .header {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .user-info {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .user-info strong {
+      color: var(--text);
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .page-subtitle {
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    
+    .order-summary {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .summary-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+    .summary-label {
+      color: var(--muted);
+    }
+    .summary-value {
+      font-weight: 600;
+    }
+    .summary-total {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .payment-form {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 32px;
+    }
+    .form-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--accent);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(34,211,238,0.15);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .error-message {
+      color: var(--error);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    .success-message {
+      color: var(--success);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      margin-top: 24px;
+    }
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(34,211,238,0.3);
+    }
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+    }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(34,211,238,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <div class="logo">🎮 LevelUp Academy</div>
+      <div class="user-info">Player: <strong>{{ userName }}</strong></div>
+    </div>
+
+    <div class="container">
+      <div class="page-title">Enter Payment Details</div>
+      <div class="page-subtitle">Complete your subscription and class booking</div>
+
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <div class="summary-title">Order Summary</div>
+        <div class="summary-item">
+          <span class="summary-label">Package:</span>
+          <span class="summary-value">{{ packageName }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Class:</span>
+          <span class="summary-value">{{ className }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Time:</span>
+          <span class="summary-value">{{ classTime }}</span>
+        </div>
+        <div class="summary-total">
+          <span>Total Amount:</span>
+          <span>{{ packagePrice }} SAR</span>
+        </div>
+      </div>
+
+      <!-- Payment Form -->
+      <div class="payment-form">
+        <div class="form-title">Payment Information</div>
+        
+        <form @submit.prevent="processPayment">
+          <div class="form-group">
+            <label class="form-label">Card Number</label>
+            <input 
+              type="text" 
+              class="form-input" 
+              v-model="paymentForm.number" 
+              required 
+              placeholder="4111111111111111"
+              maxlength="16"
+              pattern="[0-9]{13,16}"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Name on Card</label>
+            <input 
+              type="text" 
+              class="form-input" 
+              v-model="paymentForm.name" 
+              required 
+              placeholder="John Doe"
+            >
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Expiration Month</label>
+              <input 
+                type="number" 
+                class="form-input" 
+                v-model="paymentForm.month" 
+                required 
+                placeholder="12" 
+                min="1" 
+                max="12"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Expiration Year</label>
+              <input 
+                type="number" 
+                class="form-input" 
+                v-model="paymentForm.year" 
+                required 
+                placeholder="2025" 
+                min="2024"
+              >
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">CVV</label>
+            <input 
+              type="number" 
+              class="form-input" 
+              v-model="paymentForm.cvc" 
+              required 
+              placeholder="123" 
+              maxlength="4"
+              min="100"
+              max="9999"
+            >
+          </div>
+          
+          <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+          <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
+          
+          <button type="submit" class="btn-submit" :disabled="processing">
+            <span v-if="processing">
+              <span class="spinner" style="width: 20px; height: 20px; display: inline-block; margin-right: 8px;"></span>
+              Processing Payment...
+            </span>
+            <span v-else>Pay {{ packagePrice }} SAR</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, reactive, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const userName = ref('');
+        const processing = ref(false);
+        const errorMessage = ref('');
+        const successMessage = ref('');
+        const packageName = ref('');
+        const packagePrice = ref(0);
+        const packageType = ref('');
+        const className = ref('');
+        const classTime = ref('');
+        const selectedClassId = ref(null);
+        
+        const paymentForm = reactive({
+          name: '',
+          number: '',
+          month: '',
+          year: '',
+          cvc: ''
+        });
+
+        const token = localStorage.getItem('authToken');
+        const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+        const userRole = localStorage.getItem('userRole');
+
+        onMounted(() => {
+          const storedUsername = localStorage.getItem('userName');
+          userName.value = storedUsername || 'Player';
+          
+          if (!token || userRole !== 'PLAYER') {
+            window.location.href = 'login.html';
+            return;
+          }
+          
+          // Load selected package and class from sessionStorage
+          const selectedPackage = sessionStorage.getItem('selectedPackage');
+          const classId = sessionStorage.getItem('selectedClassId');
+          const classNameValue = sessionStorage.getItem('selectedClassName');
+          const classTimeValue = sessionStorage.getItem('selectedClassTime');
+          
+          if (!selectedPackage || !classId) {
+            // Redirect back if missing selections
+            window.location.href = 'player-subscription.html';
+            return;
+          }
+          
+          packageType.value = selectedPackage;
+          selectedClassId.value = parseInt(classId);
+          className.value = classNameValue || 'Selected Class';
+          classTime.value = classTimeValue || 'N/A';
+          
+          // Set package details
+          const packages = {
+            'BASIC': { name: 'Basic', price: 200 },
+            'STANDARD': { name: 'Standard', price: 300 },
+            'PREMIUM': { name: 'Premium', price: 400 }
+          };
+          
+          const pkg = packages[selectedPackage];
+          if (pkg) {
+            packageName.value = pkg.name;
+            packagePrice.value = pkg.price;
+          }
+        });
+
+        const validateForm = () => {
+          errorMessage.value = '';
+          
+          // Validate card number
+          if (!paymentForm.number || paymentForm.number.length < 13 || paymentForm.number.length > 16) {
+            errorMessage.value = 'Card number must be between 13 and 16 digits';
+            return false;
+          }
+          
+          // Validate expiry date
+          const currentYear = new Date().getFullYear();
+          const currentMonth = new Date().getMonth() + 1;
+          const expYear = parseInt(paymentForm.year);
+          const expMonth = parseInt(paymentForm.month);
+          
+          if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+            errorMessage.value = 'Expiration date must be in the future';
+            return false;
+          }
+          
+          // Validate CVV
+          if (!paymentForm.cvc || paymentForm.cvc.length < 3 || paymentForm.cvc.length > 4) {
+            errorMessage.value = 'CVV must be 3 or 4 digits';
+            return false;
+          }
+          
+          return true;
+        };
+
+        const processPayment = async () => {
+          if (!validateForm()) {
+            return;
+          }
+
+          processing.value = true;
+          errorMessage.value = '';
+          successMessage.value = '';
+
+          try {
+            // Step 1: Create subscription
+            const subscriptionUrl = window.apiUrl 
+              ? window.apiUrl(`/api/v1/subscription/${packageType.value.toLowerCase()}`)
+              : `/api/v1/subscription/${packageType.value.toLowerCase()}`;
+            
+            const paymentRequest = {
+              name: paymentForm.name,
+              number: paymentForm.number,
+              month: parseInt(paymentForm.month),
+              year: parseInt(paymentForm.year),
+              cvc: parseInt(paymentForm.cvc),
+              amount: packagePrice.value,
+              currency: 'SAR',
+              description: `${packageName.value} Subscription - LevelUp Academy`,
+              callbackUrl: window.location.origin + '/api/v1/payments/callback'
+            };
+
+            const subscriptionResponse = await fetch(subscriptionUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${tokenType} ${token}`
+              },
+              body: JSON.stringify(paymentRequest)
+            });
+
+            if (!subscriptionResponse.ok) {
+              const errorData = await subscriptionResponse.json().catch(() => ({ message: 'Subscription creation failed' }));
+              throw new Error(errorData.message || 'Subscription creation failed');
+            }
+
+            // Parse subscription response
+            let subscriptionId = null;
+            try {
+              const subscriptionDataText = await subscriptionResponse.text();
+              const subscriptionData = JSON.parse(subscriptionDataText);
+              subscriptionId = subscriptionData.subscriptionId || subscriptionData.id;
+            } catch (e) {
+              console.error('Error parsing subscription response:', e);
+              throw new Error('Failed to get subscription ID from response');
+            }
+            
+            if (!subscriptionId) {
+              throw new Error('Subscription ID not found in response');
+            }
+
+            // Step 2: Create booking
+            const bookingUrl = window.apiUrl 
+              ? window.apiUrl(`/api/v1/booking/add/${selectedClassId.value}/${subscriptionId}`)
+              : `/api/v1/booking/add/${selectedClassId.value}/${subscriptionId}`;
+            
+            const bookingResponse = await fetch(bookingUrl, {
+              method: 'POST',
+              headers: {
+                'Authorization': `${tokenType} ${token}`
+              }
+            });
+
+            if (!bookingResponse.ok) {
+              const errorData = await bookingResponse.json().catch(() => ({ message: 'Booking creation failed' }));
+              throw new Error(errorData.message || 'Booking creation failed');
+            }
+
+            successMessage.value = 'Payment successful! Redirecting...';
+            
+            // Store booking info for confirmation page
+            sessionStorage.setItem('bookingCreated', 'true');
+            sessionStorage.setItem('subscriptionId', subscriptionId);
+            
+            setTimeout(() => {
+              window.location.href = 'seat-confirmation.html';
+            }, 1500);
+
+          } catch (error) {
+            console.error('Payment error:', error);
+            errorMessage.value = error.message || 'Payment failed. Please try again.';
+          } finally {
+            processing.value = false;
+          }
+        };
+
+        return {
+          userName,
+          processing,
+          errorMessage,
+          successMessage,
+          packageName,
+          packagePrice,
+          className,
+          classTime,
+          paymentForm,
+          processPayment
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+

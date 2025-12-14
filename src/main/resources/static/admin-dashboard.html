@@ -871,6 +871,12 @@
               players: players.value.length,
               parents: parents.value.length
             });
+            
+            // Debug: Log first pro to check user data
+            if (pros.value.length > 0) {
+              console.log('First pro data:', pros.value[0]);
+              console.log('First pro user:', pros.value[0]?.user);
+            }
           } catch (error) {
             console.error('Error loading data:', error);
             if (error.message !== 'Unauthorized') {
@@ -946,9 +952,19 @@
               headers: { 'Authorization': `${tokenType} ${token}` }
             });
             
-            if (!response.ok) throw new Error('Failed to download CV');
+            if (!response.ok) {
+              const errorText = await response.text();
+              console.error('CV download error:', response.status, errorText);
+              throw new Error(`Failed to download CV: ${response.status} ${errorText || 'Unknown error'}`);
+            }
             
             const blob = await response.blob();
+            
+            // Check if blob is actually a PDF
+            if (blob.size === 0) {
+              throw new Error('CV file is empty');
+            }
+            
             const downloadUrl = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = downloadUrl;
@@ -959,7 +975,8 @@
             document.body.removeChild(a);
             showToast('CV downloaded successfully', 'success');
           } catch (error) {
-            showToast('Failed to download CV', 'error');
+            console.error('CV download error:', error);
+            showToast(error.message || 'Failed to download CV', 'error');
           }
         };
 

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirm Your Seat | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #22d3ee;
+      --accent-2: #a855f7;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --success: #4ade80;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .confirmation-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 48px;
+      max-width: 700px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .confirmation-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(74,222,128,0.1), transparent);
+      animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .success-icon {
+      font-size: 80px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .confirmation-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--success), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .booking-details {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      margin: 32px 0;
+      text-align: left;
+      position: relative;
+      z-index: 1;
+    }
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .detail-item:last-child {
+      border-bottom: none;
+    }
+    .detail-label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .detail-value {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    .btn {
+      padding: 14px 32px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      text-decoration: none;
+      display: inline-block;
+      position: relative;
+      z-index: 1;
+      margin: 8px;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(34,211,238,0.3);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+    }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(34,211,238,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div v-if="loading" class="loading">
+      <div class="spinner"></div>
+      <div style="margin-top: 16px;">Confirming your seat...</div>
+    </div>
+
+    <div v-else class="confirmation-card">
+      <div class="success-icon">✅</div>
+      <div class="confirmation-title">Seat Reserved Successfully!</div>
+      
+      <div class="booking-details">
+        <div class="detail-item">
+          <span class="detail-label">Package:</span>
+          <span class="detail-value">{{ packageName }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Class:</span>
+          <span class="detail-value">{{ className }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time:</span>
+          <span class="detail-value">{{ classTime }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Booking Status:</span>
+          <span class="detail-value" style="color: var(--success);">✓ Confirmed</span>
+        </div>
+      </div>
+      
+      <div style="margin-top: 32px;">
+        <a href="player-dashboard.html" class="btn">Go to Dashboard</a>
+        <a href="player-classes.html" class="btn btn-secondary">View All Classes</a>
+      </div>
+      
+      <div style="margin-top: 24px; color: var(--muted); font-size: 14px; position: relative; z-index: 1;">
+        Your booking information is saved and can be viewed in your dashboard.
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const loading = ref(true);
+        const packageName = ref('');
+        const className = ref('');
+        const classTime = ref('');
+
+        onMounted(async () => {
+          // Check if booking was created
+          const bookingCreated = sessionStorage.getItem('bookingCreated');
+          if (!bookingCreated) {
+            // Redirect back if no booking
+            window.location.href = 'player-subscription.html';
+            return;
+          }
+
+          // Load booking details from sessionStorage
+          const selectedPackage = sessionStorage.getItem('selectedPackage');
+          const classNameValue = sessionStorage.getItem('selectedClassName');
+          const classTimeValue = sessionStorage.getItem('selectedClassTime');
+          
+          const packages = {
+            'BASIC': 'Basic',
+            'STANDARD': 'Standard',
+            'PREMIUM': 'Premium'
+          };
+          
+          packageName.value = packages[selectedPackage] || 'Selected Package';
+          className.value = classNameValue || 'Selected Class';
+          classTime.value = classTimeValue || 'N/A';
+          
+          // Confirm booking status (if needed)
+          const subscriptionId = sessionStorage.getItem('subscriptionId');
+          if (subscriptionId) {
+            // Booking is already confirmed from payment flow
+            // Just mark as confirmed
+          }
+          
+          loading.value = false;
+          
+          // Clear session storage after showing confirmation
+          setTimeout(() => {
+            sessionStorage.removeItem('selectedPackage');
+            sessionStorage.removeItem('selectedClassId');
+            sessionStorage.removeItem('selectedClassName');
+            sessionStorage.removeItem('selectedClassTime');
+            sessionStorage.removeItem('bookingCreated');
+            sessionStorage.removeItem('subscriptionId');
+          }, 5000);
+        });
+
+        return {
+          loading,
+          packageName,
+          className,
+          classTime
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+

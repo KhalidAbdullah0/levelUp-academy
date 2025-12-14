@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Select Subscription Package | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #22d3ee;
+      --accent-2: #a855f7;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --success: #4ade80;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    .header {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .user-info {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .user-info strong {
+      color: var(--text);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+    
+    .page-title {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-align: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .page-subtitle {
+      color: var(--muted);
+      margin-bottom: 48px;
+      text-align: center;
+      font-size: 16px;
+    }
+    
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .package-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      border: 2px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 32px;
+      transition: all 0.3s ease;
+      position: relative;
+      cursor: pointer;
+    }
+    .package-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px rgba(34,211,238,0.2);
+    }
+    .package-card.selected {
+      border-color: var(--success);
+      background: linear-gradient(145deg, rgba(74,222,128,0.1), rgba(74,222,128,0.05));
+    }
+    .package-badge {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .package-name {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .package-price {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .package-price span {
+      font-size: 20px;
+      color: var(--muted);
+    }
+    .package-sessions {
+      color: var(--muted);
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    .package-sessions strong {
+      color: var(--text);
+      font-size: 18px;
+    }
+    .btn-subscribe {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+    }
+    .btn-subscribe:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(34,211,238,0.3);
+    }
+    .btn-subscribe.selected {
+      background: linear-gradient(135deg, var(--success), #22c55e);
+    }
+    
+    .continue-btn {
+      display: block;
+      margin: 32px auto 0;
+      padding: 14px 48px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--success), #22c55e);
+      color: #0b1224;
+      text-decoration: none;
+      text-align: center;
+      max-width: 300px;
+    }
+    .continue-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(74,222,128,0.3);
+    }
+    .continue-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+    }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(34,211,238,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <div class="logo">🎮 LevelUp Academy</div>
+      <div class="user-info">Player: <strong>{{ userName }}</strong></div>
+    </div>
+
+    <div class="container">
+      <div class="page-title">Select Subscription Package</div>
+      <div class="page-subtitle">Choose a package that fits your training needs</div>
+
+      <div v-if="loading" class="loading">
+        <div class="spinner"></div>
+        <div style="margin-top: 16px;">Loading packages...</div>
+      </div>
+
+      <div v-else class="packages-grid">
+        <div 
+          v-for="pkg in packages" 
+          :key="pkg.type"
+          class="package-card"
+          :class="{ selected: selectedPackage === pkg.type }"
+          @click="selectPackage(pkg.type)"
+        >
+          <div v-if="pkg.badge" class="package-badge">{{ pkg.badge }}</div>
+          <div class="package-name">{{ pkg.name }}</div>
+          <div class="package-price">{{ pkg.price }} <span>SAR/month</span></div>
+          <div class="package-sessions">
+            <strong>{{ pkg.sessions }}</strong> classes per month
+          </div>
+          <button 
+            class="btn-subscribe"
+            :class="{ selected: selectedPackage === pkg.type }"
+            @click.stop="selectPackage(pkg.type)"
+          >
+            {{ selectedPackage === pkg.type ? '✓ Selected' : 'Select Package' }}
+          </button>
+        </div>
+      </div>
+
+      <button 
+        class="continue-btn"
+        :disabled="!selectedPackage"
+        @click="continueToClasses"
+      >
+        Continue to Select Class →
+      </button>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, reactive, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const userName = ref('');
+        const loading = ref(false);
+        const selectedPackage = ref(null);
+        const packages = reactive([
+          {
+            type: 'BASIC',
+            name: 'Basic',
+            price: 200,
+            sessions: 4,
+            badge: null
+          },
+          {
+            type: 'STANDARD',
+            name: 'Standard',
+            price: 300,
+            sessions: 8,
+            badge: 'Popular'
+          },
+          {
+            type: 'PREMIUM',
+            name: 'Premium',
+            price: 600,
+            sessions: 12,
+            badge: null
+          }
+        ]);
+
+        onMounted(() => {
+          const storedUsername = localStorage.getItem('userName');
+          userName.value = storedUsername || 'Player';
+        });
+
+        const selectPackage = (packageType) => {
+          selectedPackage.value = packageType;
+          // Store selected package in sessionStorage for later use
+          sessionStorage.setItem('selectedPackage', packageType);
+        };
+
+        const continueToClasses = () => {
+          if (selectedPackage.value) {
+            window.location.href = 'player-select-class.html';
+          }
+        };
+
+        return {
+          userName,
+          loading,
+          selectedPackage,
+          packages,
+          selectPackage,
+          continueToClasses
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+
