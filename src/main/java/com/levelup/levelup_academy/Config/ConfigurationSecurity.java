@@ -13,12 +13,21 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.levelup.levelup_academy.Api.ApiResponse;
 
 @EnableWebSecurity
 @Configuration
@@ -105,7 +114,7 @@ public class ConfigurationSecurity {
                                 "/api/v1/trainer/register",
                                 "/api/v1/pro/register",
                                 "/api/v1/contract/**",
-                                "/api/v1/payments/**",
+                                "/api/v1/payments/callback",
                                 "/api/v1/auth/login"      // ضع هنا login اللي يرجّع JWT
                         ).permitAll()
 
@@ -125,6 +134,7 @@ public class ConfigurationSecurity {
 
                         // ======== PAYMENTS (PARENTS, PLAYER) ========
                         .requestMatchers(
+                                "/api/v1/payments/charge",
                                 "/api/v1/payments/card",
                                 "/api/v1/payments/get-status/**"
                         ).hasAnyAuthority("PARENTS","PLAYER")
@@ -134,6 +144,11 @@ public class ConfigurationSecurity {
                                 "/api/v1/booking/add", "/api/v1/booking/cancel", "/api/v1/booking/check",
                                 "/api/v1/booking/get-all", "/api/v1/review/add","/api/v1/review/delete"
                         ).hasAnyAuthority("PLAYER","PARENTS","PRO")
+                        
+                        // ======== ADMIN BOOKINGS ========
+                        .requestMatchers(
+                                "/api/v1/booking/admin/get-all"
+                        ).hasAuthority("ADMIN")
 
                         // ======== MODERATOR & ADMIN (shared access) ========
                         .requestMatchers(
@@ -156,7 +171,7 @@ public class ConfigurationSecurity {
                                 "/api/v1/review/get-all", 
                                 "/api/v1/session/add","/api/v1/session/update","/api/v1/session/del",
                                 "/api/v1/session/change-session", "/api/v1/moderator/promote"
-                        ).hasAuthority("MODERATOR")
+                        ).hasAnyAuthority("MODERATOR", "ADMIN")
 
                         // ======== VIEW ACCESS (MODERATOR, ADMIN, PLAYER) ========
                         .requestMatchers(
@@ -185,8 +200,10 @@ public class ConfigurationSecurity {
                         .requestMatchers(
                                 "/api/v1/pro/approve/**","/api/v1/pro/reject/**",
                                 "/api/v1/user/get-all",
+                                "/api/v1/user/get-all-subscriptions-with-users",
                                 "/api/v1/trainer/approve-trainer/**","/api/v1/trainer/reject-trainer/**",
-                                "/api/v1/moderator/register"
+                                "/api/v1/moderator/register",
+                                "/api/v1/admin/**"
                         ).hasAuthority("ADMIN")
 
                         // ======== TRAINER ========
@@ -206,7 +223,31 @@ public class ConfigurationSecurity {
                 // ما نستخدم httpBasic مع JWT
                 .httpBasic(AbstractHttpConfigurer::disable)
                 // فلتر JWT لازم يشتغل قبل UsernamePasswordAuthenticationFilter
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // Custom error handlers to return JSON instead of HTML
+                .exceptionHandling(exceptions -> exceptions
+                    .authenticationEntryPoint(new AuthenticationEntryPoint() {
+                        @Override
+                        public void commence(HttpServletRequest request, HttpServletResponse response,
+                                           AuthenticationException authException) throws IOException, ServletException {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            ObjectMapper mapper = new ObjectMapper();
+                            mapper.writeValue(response.getWriter(), new ApiResponse("Unauthorized: " + authException.getMessage()));
+                        }
+                    })
+                    .accessDeniedHandler(new AccessDeniedHandler() {
+                        @Override
+                        public void handle(HttpServletRequest request, HttpServletResponse response,
+                                         org.springframework.security.access.AccessDeniedException accessDeniedException)
+                                throws IOException, ServletException {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            ObjectMapper mapper = new ObjectMapper();
+                            mapper.writeValue(response.getWriter(), new ApiResponse("Access denied: " + accessDeniedException.getMessage()));
+                        }
+                    })
+                );
 
         // logout هنا بس يمسح الـ SecurityContext (التوكن أنت تتحكم فيه من الفرونت)
         http.logout(logout -> logout

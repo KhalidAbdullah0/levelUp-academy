@@ -14,4 +14,15 @@ public class AuthResponse {
     private String tokenType = "Bearer";
     private long expiresIn;
     private String role;
+    private UserInfo user;
+    
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserInfo {
+        private Integer id;
+        private String username;
+        private String role;
+    }
 }

@@ -4,6 +4,7 @@ import com.levelup.levelup_academy.Api.ApiException;
 import com.levelup.levelup_academy.DTO.EmailRequest;
 import com.levelup.levelup_academy.DTO.PlayerDTO;
 import com.levelup.levelup_academy.DTOOut.PlayerDTOOut;
+import com.levelup.levelup_academy.DTOOut.PlayerRegistrationResponse;
 import com.levelup.levelup_academy.Model.*;
 import com.levelup.levelup_academy.Repository.AuthRepository;
 import com.levelup.levelup_academy.Repository.ModeratorRepository;
@@ -66,12 +67,12 @@ public class PlayerService {
     }
     //Register player
 
-    public void registerPlayer(PlayerDTO playerDTO){
+    public PlayerRegistrationResponse registerPlayer(PlayerDTO playerDTO){
         playerDTO.setRole("PLAYER");
         String hashPassword = new BCryptPasswordEncoder().encode(playerDTO.getPassword());
         User user = new User(null, playerDTO.getUsername(), hashPassword, playerDTO.getEmail(), playerDTO.getFirstName(), playerDTO.getLastName(), playerDTO.getRole(), LocalDate.now(),null,null,null,null,null,null,null,null);
         Player player = new Player(null,user,null);
-        authRepository.save(user);
+        User savedUser = authRepository.save(user);
         playerRepository.save(player);
 
         // Try to send welcome email (non-blocking - registration succeeds even if email fails)
@@ -96,6 +97,14 @@ public class PlayerService {
 //        String proPhoneNumber = "+447723275615";
 //        String whatsAppMessage = " New player registered: " + playerDTO.getFirstName() + " " + playerDTO.getLastName() + ".";
 //        ultraMsgService.sendWhatsAppMessage(proPhoneNumber, whatsAppMessage);
+        
+        // Return user info for auto-login
+        return new PlayerRegistrationResponse(
+            savedUser.getId(),
+            savedUser.getUsername(),
+            savedUser.getEmail(),
+            savedUser.getRole()
+        );
     }
     public void updatePlayer(Integer playerId, PlayerDTO playerDTO) {
         Player player = playerRepository.findById(playerId)

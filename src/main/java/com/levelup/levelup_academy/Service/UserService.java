@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,35 @@ public class UserService {
         User admin = authRepository.findUserById(adminId);
         if(admin == null) throw new ApiException("Admin not found");
         return subscriptionRepository.findAll();
+    }
+    
+    // Get all subscriptions with user info for admin dashboard
+    public List<com.levelup.levelup_academy.DTOOut.SubscriptionWithUserDTO> getAllSubscriptionsWithUser(Integer adminId) {
+        User admin = authRepository.findUserById(adminId);
+        if(admin == null) throw new ApiException("Admin not found");
+        
+        // Use query that eagerly loads user relationship
+        List<Subscription> subscriptions = subscriptionRepository.findAllWithUser();
+        return subscriptions.stream()
+            .map(sub -> {
+                User user = sub.getUser();
+                return new com.levelup.levelup_academy.DTOOut.SubscriptionWithUserDTO(
+                    sub.getId(),
+                    user != null ? user.getId() : null,
+                    user != null ? user.getUsername() : "N/A",
+                    user != null ? user.getFirstName() : "N/A",
+                    user != null ? user.getLastName() : "N/A",
+                    user != null ? user.getEmail() : "N/A",
+                    user != null ? user.getRole() : "N/A",
+                    sub.getPackageType(),
+                    sub.getSessionCount(),
+                    sub.getPrice(),
+                    sub.getStatus(),
+                    sub.getStartDate(),
+                    sub.getEndDate()
+                );
+            })
+            .collect(Collectors.toList());
     }
 
     public void generateModeratorLogin(Integer adminId, Integer moderatorId) {

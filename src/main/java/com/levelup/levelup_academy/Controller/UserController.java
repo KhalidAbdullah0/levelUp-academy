@@ -35,6 +35,14 @@ UserController {
     public ResponseEntity getAllSubscriptions(@AuthenticationPrincipal User adminId) {
         return ResponseEntity.status(200).body(userService.getAllSubscriptions(adminId.getId()));
     }
+    
+    @GetMapping("/get-all-subscriptions-with-users")
+    public ResponseEntity getAllSubscriptionsWithUsers(@AuthenticationPrincipal User admin) {
+        if (!admin.getRole().equals("ADMIN")) {
+            return ResponseEntity.status(403).body(new ApiResponse("Access denied"));
+        }
+        return ResponseEntity.status(200).body(userService.getAllSubscriptionsWithUser(admin.getId()));
+    }
 
     @GetMapping("/get-role")
     public ResponseEntity<Map<String, String>> getRole(@AuthenticationPrincipal User user) {

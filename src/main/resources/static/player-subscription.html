@@ -271,14 +271,14 @@
           {
             type: 'STANDARD',
             name: 'Standard',
-            price: 300,
+            price: 350,
             sessions: 8,
             badge: 'Popular'
           },
           {
             type: 'PREMIUM',
             name: 'Premium',
-            price: 600,
+            price: 800,
             sessions: 12,
             badge: null
           }
@@ -289,15 +289,66 @@
           userName.value = storedUsername || 'Player';
         });
 
-        const selectPackage = (packageType) => {
-          selectedPackage.value = packageType;
-          // Store selected package in sessionStorage for later use
-          sessionStorage.setItem('selectedPackage', packageType);
+        const selectPackage = async (packageType) => {
+          if (selectedPackage.value === packageType) {
+            // Already selected, do nothing
+            return;
+          }
+          
+          loading.value = true;
+          try {
+            const token = localStorage.getItem('authToken');
+            const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+            
+            if (!token) {
+              window.location.href = 'login.html';
+              return;
+            }
+            
+            // Create subscription (US-PL-4)
+            const endpoint = window.apiUrl 
+              ? window.apiUrl(`/api/v1/subscription/${packageType.toLowerCase()}`)
+              : `/api/v1/subscription/${packageType.toLowerCase()}`;
+            
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: {
+                'Authorization': `${tokenType} ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (!response.ok) {
+              if (response.status === 401 || response.status === 403) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return;
+              }
+              throw new Error('Failed to create subscription');
+            }
+            
+            const subscriptionData = await response.json();
+            
+            // Store subscription info
+            selectedPackage.value = packageType;
+            sessionStorage.setItem('selectedPackage', packageType);
+            sessionStorage.setItem('subscriptionId', subscriptionData.subscriptionId);
+            sessionStorage.setItem('subscriptionPrice', subscriptionData.price);
+            sessionStorage.setItem('subscriptionPlan', subscriptionData.plan);
+            
+          } catch (error) {
+            console.error('Error creating subscription:', error);
+            alert('Failed to select package. Please try again.');
+          } finally {
+            loading.value = false;
+          }
         };
 
         const continueToClasses = () => {
-          if (selectedPackage.value) {
+          if (selectedPackage.value && sessionStorage.getItem('subscriptionId')) {
             window.location.href = 'player-select-class.html';
+          } else {
+            alert('Please select a package first');
           }
         };
 

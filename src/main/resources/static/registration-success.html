@@ -133,14 +133,13 @@
   <div id="app">
     <div class="success-card">
       <div class="header-info">
-        Player: <strong id="username-display">Loading...</strong>
+        <span id="username-display">Player_username</span>
       </div>
       
       <div class="success-icon">✅</div>
       <div class="success-title">Welcome Player!</div>
       <div class="success-message">
-        <div>You have been successfully registered!</div>
-        <div class="username-display" id="username-badge">{{ username || 'Player' }}</div>
+        <div>Welcome Player <strong>{{ username || 'Player' }}</strong>, You have been successfully registered!</div>
       </div>
       
       <div style="margin-top: 32px;">
@@ -166,9 +165,11 @@
           
           username.value = urlUsername || storedUsername || 'Player';
           
-          // Update header display
-          document.getElementById('username-display').textContent = username.value;
-          document.getElementById('username-badge').textContent = username.value;
+          // Update header display (US-PL-3: Player_username format)
+          const displayElement = document.getElementById('username-display');
+          if (displayElement) {
+            displayElement.textContent = `Player_${username.value}`;
+          }
           
           // Store username if not already stored
           if (!storedUsername && urlUsername) {

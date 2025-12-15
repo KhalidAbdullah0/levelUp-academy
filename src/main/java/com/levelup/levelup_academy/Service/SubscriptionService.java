@@ -2,6 +2,7 @@ package com.levelup.levelup_academy.Service;
 
 import com.levelup.levelup_academy.Api.ApiException;
 import com.levelup.levelup_academy.DTO.SubscriptionDTO;
+import com.levelup.levelup_academy.DTOOut.SubscriptionResponse;
 import com.levelup.levelup_academy.Model.PaymentRequest;
 import com.levelup.levelup_academy.Model.Subscription;
 import com.levelup.levelup_academy.Model.User;
@@ -21,6 +22,49 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final AuthRepository authRepository;
     private final PaymentService paymentService;
+    
+    // Create subscription without payment (for US-PL-4)
+    public SubscriptionResponse createSubscription(Integer userId, String packageType) {
+        User user = authRepository.findUserById(userId);
+        if (user == null) throw new ApiException("User not found");
+        
+        Subscription subscription = new Subscription();
+        subscription.setUser(user);
+        subscription.setStartDate(LocalDate.now());
+        subscription.setEndDate(LocalDate.now().plusDays(30));
+        subscription.setStatus("PENDING_PAYMENT");
+        subscription.setPackageType(packageType);
+        
+        // Set package details
+        switch (packageType.toUpperCase()) {
+            case "BASIC":
+                subscription.setSessionCount(4);
+                subscription.setPrice(200);
+                break;
+            case "STANDARD":
+                subscription.setSessionCount(8);
+                subscription.setPrice(350);
+                break;
+            case "PREMIUM":
+                subscription.setSessionCount(12);
+                subscription.setPrice(800);
+                break;
+            default:
+                throw new ApiException("Invalid package type");
+        }
+        
+        Subscription savedSubscription = subscriptionRepository.save(subscription);
+        
+        return new SubscriptionResponse(
+            savedSubscription.getId(),
+            user.getId(),
+            savedSubscription.getPackageType(),
+            savedSubscription.getSessionCount(),
+            savedSubscription.getPrice(),
+            "SAR",
+            savedSubscription.getStatus()
+        );
+    }
 
 
     public ResponseEntity basicSubscription(Integer userId, PaymentRequest paymentRequest) {
@@ -66,7 +110,7 @@ public class SubscriptionService {
         subscription.setStatus("PENDING");
         subscription.setPackageType("STANDARD");
         subscription.setSessionCount(8);
-        subscription.setPrice(300);
+        subscription.setPrice(350);
 
         paymentRequest.setAmount(subscription.getPrice());
         paymentRequest.setDescription("Subscription: STANDARD");
@@ -98,7 +142,7 @@ public class SubscriptionService {
         subscription.setStatus("PENDING");
         subscription.setPackageType("PREMIUM");
         subscription.setSessionCount(12);
-        subscription.setPrice(600);
+        subscription.setPrice(800);
 
         paymentRequest.setAmount(subscription.getPrice());
         paymentRequest.setDescription("Subscription: PREMIUM");

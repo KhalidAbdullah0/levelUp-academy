@@ -251,6 +251,149 @@
       border: 1px solid rgba(74,222,128,0.3);
     }
     
+    /* Badge styles for subscriptions */
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-basic {
+      background: rgba(34,211,238,0.2);
+      color: var(--accent);
+      border: 1px solid rgba(34,211,238,0.3);
+    }
+    .badge-standard {
+      background: rgba(168,85,247,0.2);
+      color: #a855f7;
+      border: 1px solid rgba(168,85,247,0.3);
+    }
+    .badge-premium {
+      background: rgba(251,191,36,0.2);
+      color: var(--warning);
+      border: 1px solid rgba(251,191,36,0.3);
+    }
+    .badge-active {
+      background: rgba(74,222,128,0.2);
+      color: var(--success);
+      border: 1px solid rgba(74,222,128,0.3);
+    }
+    .badge-pending {
+      background: rgba(251,191,36,0.2);
+      color: var(--warning);
+      border: 1px solid rgba(251,191,36,0.3);
+    }
+    
+    .table-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    
+    /* Filters */
+    .filter-btn {
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+    }
+    .filter-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-color: var(--accent);
+      color: white;
+    }
+    
+    /* Row highlighting */
+    .row-no-subscription {
+      opacity: 0.7;
+    }
+    .row-unpaid {
+      border-left: 3px solid var(--warning);
+    }
+    .row-active-paid {
+      border-left: 3px solid var(--success);
+    }
+    
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal {
+      background: linear-gradient(145deg, rgba(20,20,30,0.95), rgba(15,15,25,0.95));
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .modal-header {
+      padding: 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .modal-close:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+    }
+    .modal-body {
+      padding: 24px;
+    }
+    .modal-section {
+      margin-bottom: 32px;
+    }
+    .modal-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+    
     /* Action Buttons */
     .action-buttons {
       display: flex;
@@ -384,6 +527,7 @@
     <div class="header">
       <div class="logo">🎮 LevelUp Academy - Admin Panel</div>
       <div class="header-right">
+        <a href="add-training-class.html" class="btn" style="background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #0b1224; border: none;">+ Add Class</a>
         <span class="user-name">Welcome, <strong>{{ userName }}</strong></span>
         <span class="role-badge">ADMIN</span>
         <button class="btn" @click="logout">Logout</button>
@@ -462,6 +606,12 @@
         </button>
         <button class="tab" :class="{ active: activeTab === 'parents' }" @click="activeTab = 'parents'">
           👨‍👩‍👧 All Parents
+        </button>
+        <button class="tab" :class="{ active: activeTab === 'subscriptions' }" @click="activeTab = 'subscriptions'">
+          💳 Subscriptions
+        </button>
+        <button class="tab" :class="{ active: activeTab === 'bookings' }" @click="activeTab = 'bookings'">
+          📅 Payments & Bookings
         </button>
       </div>
 
@@ -670,12 +820,44 @@
       <!-- Players Tab -->
       <div v-if="activeTab === 'players'" class="table-container">
         <div class="table-header">
-          <div class="table-title">🎮 All Players</div>
+          <div>
+            <div class="table-title">🎮 All Players</div>
+            <div class="table-subtitle">View players with subscription and payment status</div>
+          </div>
         </div>
+        
+        <!-- Filters -->
+        <div class="filters" style="padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 12px; flex-wrap: wrap;">
+          <button 
+            class="filter-btn" 
+            :class="{ active: playerFilter === 'ALL' }"
+            @click="playerFilter = 'ALL'; loadPlayersWithSubscription()">
+            All Players
+          </button>
+          <button 
+            class="filter-btn" 
+            :class="{ active: playerFilter === 'SUBSCRIBED' }"
+            @click="playerFilter = 'SUBSCRIBED'; loadPlayersWithSubscription()">
+            Subscribed Only
+          </button>
+          <button 
+            class="filter-btn" 
+            :class="{ active: playerFilter === 'UNPAID' }"
+            @click="playerFilter = 'UNPAID'; loadPlayersWithSubscription()">
+            Unpaid / Pending
+          </button>
+          <button 
+            class="filter-btn" 
+            :class="{ active: playerFilter === 'ACTIVE_PAID' }"
+            @click="playerFilter = 'ACTIVE_PAID'; loadPlayersWithSubscription()">
+            Active & Paid
+          </button>
+        </div>
+        
         <div v-if="loading" class="loading"><div class="spinner"></div></div>
-        <div v-else-if="players.length === 0" class="empty-state">
+        <div v-else-if="playersWithSubscription.length === 0" class="empty-state">
           <div class="empty-icon">🎮</div>
-          <div>No players registered yet</div>
+          <div>No players found</div>
         </div>
         <table v-else>
           <thead>
@@ -684,14 +866,65 @@
               <th>Name</th>
               <th>Email</th>
               <th>Registered</th>
+              <th>Current Plan</th>
+              <th>Subscription Status</th>
+              <th>Payment Status</th>
+              <th>Classes</th>
+              <th>Used</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="player in players" :key="player.username">
+            <tr 
+              v-for="player in playersWithSubscription" 
+              :key="player.playerId"
+              :class="{
+                'row-no-subscription': player.currentPlan === 'NONE',
+                'row-unpaid': player.paymentStatus === 'UNPAID' || player.subscriptionStatus === 'PENDING_PAYMENT',
+                'row-active-paid': player.subscriptionStatus === 'ACTIVE' && player.paymentStatus === 'PAID'
+              }"
+              @click="viewPlayerDetails(player.playerId)"
+              style="cursor: pointer;">
               <td><strong>{{ player.username }}</strong></td>
-              <td>{{ player.firstName }} {{ player.lastName }}</td>
+              <td>{{ player.fullName }}</td>
               <td>{{ player.email }}</td>
-              <td>{{ formatDate(player.createdAt) }}</td>
+              <td>{{ formatDate(player.registeredAt) }}</td>
+              <td>
+                <span v-if="player.currentPlan !== 'NONE'" class="badge" :class="{
+                  'badge-basic': player.currentPlan === 'BASIC',
+                  'badge-standard': player.currentPlan === 'STANDARD',
+                  'badge-premium': player.currentPlan === 'PREMIUM'
+                }">
+                  {{ player.currentPlan }}
+                </span>
+                <span v-else class="badge badge-pending">None</span>
+              </td>
+              <td>
+                <span class="badge" :class="{
+                  'badge-active': player.subscriptionStatus === 'ACTIVE',
+                  'badge-pending': player.subscriptionStatus === 'PENDING_PAYMENT' || player.subscriptionStatus === 'PENDING',
+                  'status-approved': player.subscriptionStatus === 'CANCELLED' || player.subscriptionStatus === 'EXPIRED'
+                }">
+                  {{ player.subscriptionStatus }}
+                </span>
+              </td>
+              <td>
+                <span class="badge" :class="{
+                  'badge-active': player.paymentStatus === 'PAID',
+                  'badge-pending': player.paymentStatus === 'UNPAID',
+                  'status-approved': player.paymentStatus === 'NONE'
+                }">
+                  {{ player.paymentStatus }}
+                </span>
+              </td>
+              <td>{{ player.totalClasses }}</td>
+              <td>{{ player.usedClasses }} / {{ player.totalClasses }}</td>
+              <td @click.stop>
+                <div class="action-buttons">
+                  <button class="btn-sm btn-view" @click.stop="viewPlayerDetails(player.playerId)">👁️ View</button>
+                  <button class="btn-sm btn-approve" @click.stop="editUser(player.userId)">✏️ Edit</button>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -728,6 +961,73 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Bookings Tab (Payments & Class Bookings) -->
+      <div v-if="activeTab === 'bookings'" class="table-container">
+        <div class="table-header">
+          <div>
+            <div class="table-title">📅 Payments & Class Bookings</div>
+            <div class="table-subtitle">Complete flow: Subscription → Payment → Class Booking</div>
+          </div>
+        </div>
+        <div v-if="loading" class="loading"><div class="spinner"></div></div>
+        <div v-else-if="bookings.length === 0" class="empty-state">
+          <div class="empty-icon">📅</div>
+          <div>No bookings found</div>
+        </div>
+        <table v-else>
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Player</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Subscription</th>
+              <th>Package</th>
+              <th>Price</th>
+              <th>Class</th>
+              <th>Game</th>
+              <th>Session Date</th>
+              <th>Time</th>
+              <th>Booking Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="booking in bookings" :key="booking.bookingId">
+              <td>{{ booking.bookingId }}</td>
+              <td><strong>{{ booking.firstName }} {{ booking.lastName }}</strong></td>
+              <td>{{ booking.username }}</td>
+              <td>{{ booking.email }}</td>
+              <td>#{{ booking.subscriptionId }}</td>
+              <td>
+                <span class="badge" :class="{
+                  'badge-basic': booking.subscriptionPackage === 'BASIC',
+                  'badge-standard': booking.subscriptionPackage === 'STANDARD',
+                  'badge-premium': booking.subscriptionPackage === 'PREMIUM'
+                }">
+                  {{ booking.subscriptionPackage }}
+                </span>
+              </td>
+              <td>{{ booking.subscriptionPrice }} SAR</td>
+              <td>{{ booking.sessionName }}</td>
+              <td>{{ booking.gameName }}</td>
+              <td>{{ booking.sessionStartDate ? new Date(booking.sessionStartDate).toLocaleDateString() : 'N/A' }}</td>
+              <td>{{ booking.sessionTime || 'N/A' }}</td>
+              <td>{{ booking.bookDate ? new Date(booking.bookDate).toLocaleDateString() : 'N/A' }}</td>
+              <td>
+                <span class="badge" :class="{
+                  'badge-active': booking.bookingStatus === 'ACTIVE',
+                  'badge-pending': booking.bookingStatus === 'PENDING',
+                  'status-approved': booking.bookingStatus === 'CANCELLED'
+                }">
+                  {{ booking.bookingStatus }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Toast Notification -->
@@ -753,6 +1053,8 @@
         const trainers = ref([]);
         const players = ref([]);
         const parents = ref([]);
+        const subscriptions = ref([]);
+        const bookings = ref([]);
         
         const toast = reactive({
           show: false,
@@ -775,7 +1077,11 @@
           pendingTrainers: trainers.value.filter(t => !t.isApproved).length,
           approvedTrainers: trainers.value.filter(t => t.isApproved).length,
           totalPlayers: players.value.length,
-          totalParents: parents.value.length
+          totalParents: parents.value.length,
+          totalSubscriptions: subscriptions.value.length,
+          totalBookings: bookings.value.length,
+          activeBookings: bookings.value.filter(b => b.bookingStatus === 'ACTIVE').length,
+          pendingBookings: bookings.value.filter(b => b.bookingStatus === 'PENDING').length
         }));
 
         const pendingPros = computed(() => pros.value.filter(p => !p.isApproved));
@@ -821,13 +1127,26 @@
           loading.value = true;
           try {
             // Load all data in parallel
-            const [prosData, trainersData] = await Promise.all([
+            const [prosData, trainersData, playersData, parentsData, subscriptionsData, bookingsData, statsData] = await Promise.all([
               apiCall('/api/v1/pro/get').catch(() => []),
-              apiCall('/api/v1/trainer/get').catch(() => [])
+              apiCall('/api/v1/trainer/get').catch(() => []),
+              apiCall('/api/v1/player/get').catch(() => []),
+              apiCall('/api/v1/parent/get').catch(() => []),
+              apiCall('/api/v1/user/get-all-subscriptions-with-users').catch(() => []),
+              apiCall('/api/v1/booking/admin/get-all').catch(() => []),
+              apiCall('/api/v1/admin/stats/overview').catch(() => null)
             ]);
             
             pros.value = prosData;
             trainers.value = trainersData;
+            players.value = playersData;
+            parents.value = parentsData;
+            subscriptions.value = subscriptionsData;
+            bookings.value = bookingsData;
+            overviewStats.value = statsData;
+            
+            // Load players with subscription info
+            await loadPlayersWithSubscription();
           } catch (error) {
             console.error('Error loading data:', error);
             if (error.message !== 'Unauthorized') {
@@ -836,6 +1155,43 @@
           } finally {
             loading.value = false;
           }
+        };
+        
+        const loadPlayersWithSubscription = async () => {
+          try {
+            const data = await apiCall(`/api/v1/admin/players?status=${playerFilter.value}`).catch(() => []);
+            playersWithSubscription.value = data;
+          } catch (error) {
+            console.error('Error loading players with subscription:', error);
+          }
+        };
+        
+        const viewPlayerDetails = async (playerId) => {
+          try {
+            const details = await apiCall(`/api/v1/admin/players/${playerId}/details`);
+            selectedPlayerDetails.value = details;
+            showPlayerDetailsModal.value = true;
+          } catch (error) {
+            console.error('Error loading player details:', error);
+            showToast('Failed to load player details', 'error');
+          }
+        };
+        
+        const editUser = async (userId) => {
+          try {
+            const user = playersWithSubscription.value.find(p => p.userId === userId) ||
+                        players.value.find(p => p.id === userId);
+            editingUser.value = user;
+            showEditUserModal.value = true;
+          } catch (error) {
+            console.error('Error loading user for edit:', error);
+          }
+        };
+        
+        const formatDate = (date) => {
+          if (!date) return 'N/A';
+          const d = new Date(date);
+          return d.toLocaleDateString();
         };
 
         const approvePro = async (proId) => {

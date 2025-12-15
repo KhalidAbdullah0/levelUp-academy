@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
+import com.levelup.levelup_academy.DTOOut.BookingWithDetailsDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -118,6 +118,40 @@ public class BookingService {
 
         booking.setStatus("CANCELLED");
         bookingRepository.save(booking);
+    }
+    
+    // Get all bookings with details for admin dashboard
+    public List<BookingWithDetailsDTO> getAllBookingsWithDetails() {
+        List<Booking> bookings = bookingRepository.findAllWithDetails();
+        return bookings.stream()
+            .map(booking -> {
+                User user = booking.getUser();
+                Subscription subscription = booking.getSubscription();
+                Session session = booking.getSession();
+                
+                return new BookingWithDetailsDTO(
+                    booking.getId(),
+                    user != null ? user.getId() : null,
+                    user != null ? user.getUsername() : "N/A",
+                    user != null ? user.getFirstName() : "N/A",
+                    user != null ? user.getLastName() : "N/A",
+                    user != null ? user.getEmail() : "N/A",
+                    user != null ? user.getRole() : "N/A",
+                    subscription != null ? subscription.getId() : null,
+                    subscription != null ? subscription.getPackageType() : "N/A",
+                    subscription != null ? subscription.getPrice() : null,
+                    subscription != null ? subscription.getStatus() : "N/A",
+                    session != null ? session.getId() : null,
+                    session != null ? session.getName() : "N/A",
+                    session != null && session.getGame() != null ? session.getGame().getName() : "N/A",
+                    session != null ? session.getStartDate() : null,
+                    session != null ? session.getEndDate() : null,
+                    session != null ? session.getTime() : "N/A",
+                    booking.getBookDate(),
+                    booking.getStatus()
+                );
+            })
+            .collect(Collectors.toList());
     }
 
 }

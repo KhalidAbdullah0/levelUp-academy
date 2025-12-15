@@ -430,74 +430,77 @@
           successMessage.value = '';
 
           try {
-            // Step 1: Create subscription
-            const subscriptionUrl = window.apiUrl 
-              ? window.apiUrl(`/api/v1/subscription/${packageType.value.toLowerCase()}`)
-              : `/api/v1/subscription/${packageType.value.toLowerCase()}`;
+            // Get subscription ID from sessionStorage (created in subscription step)
+            const subscriptionId = parseInt(sessionStorage.getItem('subscriptionId'));
+            if (!subscriptionId) {
+              throw new Error('Subscription not found. Please go back and select a package.');
+            }
             
-            const paymentRequest = {
-              name: paymentForm.name,
-              number: paymentForm.number,
-              month: parseInt(paymentForm.month),
-              year: parseInt(paymentForm.year),
-              cvc: parseInt(paymentForm.cvc),
+            // Process payment via charge endpoint (US-PL-6)
+            const chargeUrl = window.apiUrl 
+              ? window.apiUrl('/api/v1/payments/charge')
+              : '/api/v1/payments/charge';
+            
+            const chargeRequest = {
+              subscriptionId: subscriptionId,
+              sessionId: selectedClassId.value,
               amount: packagePrice.value,
               currency: 'SAR',
-              description: `${packageName.value} Subscription - LevelUp Academy`,
-              callbackUrl: window.location.origin + '/api/v1/payments/callback'
+              card: {
+                cardNumber: paymentForm.number.replace(/\s+/g, ''),
+                cardHolderName: paymentForm.name,
+                expiryMonth: parseInt(paymentForm.month),
+                expiryYear: parseInt(paymentForm.year),
+                cvv: paymentForm.cvc.toString()
+              }
             };
 
-            const subscriptionResponse = await fetch(subscriptionUrl, {
+            const chargeResponse = await fetch(chargeUrl, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `${tokenType} ${token}`
               },
-              body: JSON.stringify(paymentRequest)
+              body: JSON.stringify(chargeRequest)
             });
 
-            if (!subscriptionResponse.ok) {
-              const errorData = await subscriptionResponse.json().catch(() => ({ message: 'Subscription creation failed' }));
-              throw new Error(errorData.message || 'Subscription creation failed');
-            }
-
-            // Parse subscription response
-            let subscriptionId = null;
-            try {
-              const subscriptionDataText = await subscriptionResponse.text();
-              const subscriptionData = JSON.parse(subscriptionDataText);
-              subscriptionId = subscriptionData.subscriptionId || subscriptionData.id;
-            } catch (e) {
-              console.error('Error parsing subscription response:', e);
-              throw new Error('Failed to get subscription ID from response');
-            }
-            
-            if (!subscriptionId) {
-              throw new Error('Subscription ID not found in response');
-            }
-
-            // Step 2: Create booking
-            const bookingUrl = window.apiUrl 
-              ? window.apiUrl(`/api/v1/booking/add/${selectedClassId.value}/${subscriptionId}`)
-              : `/api/v1/booking/add/${selectedClassId.value}/${subscriptionId}`;
-            
-            const bookingResponse = await fetch(bookingUrl, {
-              method: 'POST',
-              headers: {
-                'Authorization': `${tokenType} ${token}`
+            // Handle non-JSON responses (like 403 Forbidden)
+            if (!chargeResponse.ok) {
+              // Check if response is JSON
+              const contentType = chargeResponse.headers.get('content-type');
+              if (contentType && contentType.includes('application/json')) {
+                const errorData = await chargeResponse.json();
+                if (chargeResponse.status === 401 || chargeResponse.status === 403) {
+                  localStorage.clear();
+                  window.location.href = 'login.html';
+                  return;
+                }
+                throw new Error(errorData.message || `Payment failed (${chargeResponse.status})`);
+              } else {
+                // Non-JSON error response (like Spring Security 403)
+                if (chargeResponse.status === 401 || chargeResponse.status === 403) {
+                  localStorage.clear();
+                  window.location.href = 'login.html';
+                  return;
+                }
+                const errorText = await chargeResponse.text();
+                throw new Error(`Payment failed: ${errorText || `HTTP ${chargeResponse.status}`}`);
               }
-            });
+            }
 
-            if (!bookingResponse.ok) {
-              const errorData = await bookingResponse.json().catch(() => ({ message: 'Booking creation failed' }));
-              throw new Error(errorData.message || 'Booking creation failed');
+            // Parse JSON response only if OK
+            const chargeData = await chargeResponse.json();
+
+            if (chargeData.status === 'FAILED') {
+              throw new Error(chargeData.message || 'Payment failed. Please try again.');
             }
 
             successMessage.value = 'Payment successful! Redirecting...';
             
             // Store booking info for confirmation page
             sessionStorage.setItem('bookingCreated', 'true');
-            sessionStorage.setItem('subscriptionId', subscriptionId);
+            sessionStorage.setItem('bookingId', chargeData.bookingId);
+            sessionStorage.setItem('paymentId', chargeData.paymentId);
             
             setTimeout(() => {
               window.location.href = 'seat-confirmation.html';

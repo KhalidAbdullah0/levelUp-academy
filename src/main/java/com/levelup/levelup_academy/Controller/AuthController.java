@@ -52,6 +52,13 @@ public class AuthController {
         response.setToken(token);
         response.setExpiresIn(jwtService.getExpirationInMs());
         response.setRole(user.getRole());
+        
+        // Add user info
+        AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo();
+        userInfo.setId(user.getId());
+        userInfo.setUsername(user.getUsername());
+        userInfo.setRole(user.getRole());
+        response.setUser(userInfo);
 
         return ResponseEntity.ok(response);
     }

@@ -399,17 +399,53 @@
               throw new Error(message);
             }
 
-            const data = await res.json();
-            state.status = data.message || '✓ Account created! Redirecting...';
-            state.statusType = 'success';
+            const registrationData = await res.json();
             
-            // Store username for success page
-            localStorage.setItem('userName', form.username.trim());
-            
-            setTimeout(() => {
-              // Redirect to success page with username
-              window.location.href = `registration-success.html?username=${encodeURIComponent(form.username.trim())}`;
-            }, 1500);
+            // Auto-login after successful registration (US-PL-3)
+            try {
+              const loginEndpoint = window.apiUrl ? window.apiUrl('/api/v1/auth/login') : '/api/v1/auth/login';
+              const loginRes = await fetch(loginEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  username: form.username.trim(),
+                  password: form.password
+                })
+              });
+
+              if (loginRes.ok) {
+                const loginData = await loginRes.json();
+                
+                // Store authentication data
+                localStorage.setItem('authToken', loginData.token);
+                localStorage.setItem('userRole', loginData.role);
+                localStorage.setItem('tokenType', loginData.tokenType || 'Bearer');
+                localStorage.setItem('userName', loginData.user?.username || form.username.trim());
+                localStorage.setItem('userId', loginData.user?.id || registrationData.id);
+                
+                state.status = '✓ Account created and logged in! Redirecting...';
+                state.statusType = 'success';
+                
+                setTimeout(() => {
+                  // Redirect to welcome page (US-PL-3)
+                  window.location.href = `registration-success.html?username=${encodeURIComponent(form.username.trim())}`;
+                }, 1500);
+              } else {
+                // Registration succeeded but login failed
+                state.status = '✓ Account created! Please login manually.';
+                state.statusType = 'success';
+                setTimeout(() => {
+                  window.location.href = 'login.html';
+                }, 2000);
+              }
+            } catch (loginError) {
+              // Registration succeeded but login failed
+              state.status = '✓ Account created! Please login manually.';
+              state.statusType = 'success';
+              setTimeout(() => {
+                window.location.href = 'login.html';
+              }, 2000);
+            }
 
           } catch (err) {
             state.status = err.message || 'Registration failed';

@@ -267,6 +267,7 @@
         });
 
         const availableClasses = computed(() => {
+          // Only show classes with at least 1 available seat (US-PL-5)
           return classes.value.filter(c => c.availableSets > 0);
         });
 

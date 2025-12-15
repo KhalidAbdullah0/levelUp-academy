@@ -28,9 +28,12 @@ public class SessionService {
 
     //ADD
     public void addClass(Integer moderator_id, Session session,Integer trainerId,Integer gameId){
-        Moderator moderator = moderatorRepository.findModeratorById(moderator_id);
-        if(moderator == null){
-            throw new ApiException("Moderator not found");
+        // If moderator_id is null, it means admin is adding (skip moderator check)
+        if(moderator_id != null) {
+            Moderator moderator = moderatorRepository.findModeratorById(moderator_id);
+            if(moderator == null){
+                throw new ApiException("Moderator not found");
+            }
         }
         Trainer trainer = trainerRepository.findTrainerById(trainerId);
         if(trainer == null){
@@ -44,6 +47,11 @@ public class SessionService {
         session.setGame(game);
         sessionRepository.save(session);
 
+    }
+    
+    //ADD for Admin (no moderator required)
+    public void addClassForAdmin(Session session, Integer trainerId, Integer gameId) {
+        addClass(null, session, trainerId, gameId);
     }
 
 
