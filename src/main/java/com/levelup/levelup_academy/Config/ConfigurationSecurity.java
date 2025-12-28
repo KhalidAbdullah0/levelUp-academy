@@ -100,9 +100,11 @@ public class ConfigurationSecurity {
                                 "/pending-approval.html",
                                 "/config.js",
                                 "/*.html",
+                                "/*.css",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
+                                "/assets/**",
                                 "/favicon.ico",
                                 "/*.ico"
                         ).permitAll()

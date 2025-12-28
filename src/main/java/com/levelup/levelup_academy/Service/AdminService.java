@@ -24,7 +24,7 @@ public class AdminService {
     
     // Get all players with subscription and payment status
     public List<PlayerWithSubscriptionDTO> getAllPlayersWithSubscription(String status) {
-        List<Player> players = playerRepository.findAll();
+        List<Player> players = playerRepository.findAllWithUser();
         List<PlayerWithSubscriptionDTO> result = new ArrayList<>();
         
         for (Player player : players) {

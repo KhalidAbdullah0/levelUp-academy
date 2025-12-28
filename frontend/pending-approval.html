@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,13 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
   <style>
     :root {
-      --bg: #0f172a;
-      --accent: #22d3ee;
-      --accent-2: #a855f7;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
+      --bg: var(--lu-bg);
+      --accent: var(--lu-primary-light);
+      --accent-2: var(--lu-accent);
+      --text: var(--lu-text-primary);
+      --muted: var(--lu-text-muted);
       --warning: #fbbf24;
     }
     * { 
@@ -23,11 +24,12 @@
     }
     body {
       font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at 20% 20%, rgba(34,211,238,0.08), transparent 35%),
-                  radial-gradient(circle at 80% 10%, rgba(168,85,247,0.08), transparent 35%),
-                  linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      background: radial-gradient(circle at 20% 20%, rgba(255, 106, 26, 0.08), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(255, 200, 87, 0.05), transparent 35%),
+                  linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
       color: var(--text);
-      min-height: 100vh;
+      padding-top: 80px;
+    min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -39,8 +41,8 @@
       text-align: center;
     }
     .card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
-      border: 1px solid rgba(255,255,255,0.06);
+      background: var(--lu-surface);
+      border: 1px solid var(--lu-border-subtle);
       border-radius: 24px;
       padding: 48px 32px;
       box-shadow: 0 20px 70px rgba(0,0,0,0.35);
@@ -172,8 +174,18 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Header -->
+  <nav class="lu-header">
+    <a href="home.html" class="lu-logo-link">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+  </nav>
+
+
   <div class="container">
     <div class="card">
       <div class="icon">⏳</div>
@@ -206,6 +218,23 @@
       </div>
     </div>
   </div>
-</body>
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
+        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle" id="darkModeToggle" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; display: flex !important;">
+    <span class="dark-mode-label">Dark Mode</span>
+    <div class="dark-mode-switch active" id="darkModeSwitch"></div>
+  </div>
+
 </html>
 

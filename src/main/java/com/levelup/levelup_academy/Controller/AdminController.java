@@ -141,7 +141,53 @@ public class AdminController {
         return ResponseEntity.ok(new ApiResponse("User deleted successfully"));
     }
     
-    // US-ADM-GEN-3: Cancel subscription
+    // US-ADM-GEN-3: Ban user
+    @PatchMapping("/users/{userId}/ban")
+    public ResponseEntity<ApiResponse> banUser(
+            @AuthenticationPrincipal User admin,
+            @PathVariable Integer userId) {
+        
+        if (!"ADMIN".equals(admin.getRole())) {
+            return ResponseEntity.status(403).body(new ApiResponse("Access denied"));
+        }
+        
+        if (userId.equals(admin.getId())) {
+            return ResponseEntity.status(400).body(new ApiResponse("Cannot ban your own account"));
+        }
+        
+        User user = authRepository.findUserById(userId);
+        if (user == null) {
+            return ResponseEntity.status(404).body(new ApiResponse("User not found"));
+        }
+        
+        user.setEnabled(false);
+        authRepository.save(user);
+        
+        return ResponseEntity.ok(new ApiResponse("User banned successfully"));
+    }
+    
+    // US-ADM-GEN-4: Unban user
+    @PatchMapping("/users/{userId}/unban")
+    public ResponseEntity<ApiResponse> unbanUser(
+            @AuthenticationPrincipal User admin,
+            @PathVariable Integer userId) {
+        
+        if (!"ADMIN".equals(admin.getRole())) {
+            return ResponseEntity.status(403).body(new ApiResponse("Access denied"));
+        }
+        
+        User user = authRepository.findUserById(userId);
+        if (user == null) {
+            return ResponseEntity.status(404).body(new ApiResponse("User not found"));
+        }
+        
+        user.setEnabled(true);
+        authRepository.save(user);
+        
+        return ResponseEntity.ok(new ApiResponse("User unbanned successfully"));
+    }
+    
+    // US-ADM-GEN-5: Cancel subscription
     @PatchMapping("/subscriptions/{subscriptionId}")
     public ResponseEntity<ApiResponse> updateSubscription(
             @AuthenticationPrincipal User admin,
@@ -169,7 +215,7 @@ public class AdminController {
         return ResponseEntity.ok(new ApiResponse("Subscription updated successfully"));
     }
     
-    // US-ADM-GEN-4: Cancel booking
+    // US-ADM-GEN-6: Cancel booking
     @DeleteMapping("/bookings/{bookingId}")
     public ResponseEntity<ApiResponse> cancelBooking(
             @AuthenticationPrincipal User admin,
@@ -196,7 +242,7 @@ public class AdminController {
         return ResponseEntity.ok(new ApiResponse("Booking cancelled successfully"));
     }
     
-    // US-ADM-GEN-5: Get overview statistics
+    // US-ADM-GEN-7: Get overview statistics
     @GetMapping("/stats/overview")
     public ResponseEntity<AdminOverviewStatsDTO> getOverviewStats(
             @AuthenticationPrincipal User admin) {

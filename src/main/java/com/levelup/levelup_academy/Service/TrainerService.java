@@ -70,7 +70,7 @@ public class TrainerService {
             }
         }
         String hashPassword = new BCryptPasswordEncoder().encode(trainerDTO.getPassword());
-        User user = new User(null,trainerDTO.getUsername(),hashPassword,trainerDTO.getEmail(),trainerDTO.getFirstName(),trainerDTO.getLastName(),trainerDTO.getRole(),LocalDate.now(),null,null,null,null,null,null,null,null);
+        User user = new User(null,trainerDTO.getUsername(),hashPassword,trainerDTO.getEmail(),trainerDTO.getFirstName(),trainerDTO.getLastName(),trainerDTO.getRole(),LocalDate.now(), true, null,null,null,null,null,null,null,null);
         Trainer trainer = new Trainer(null,filePath,trainerDTO.getIsAvailable(), false, user, null, null);
         authRepository.save(user);
         trainerRepository.save(trainer);

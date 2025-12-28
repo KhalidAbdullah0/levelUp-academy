@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,14 +7,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --accent: #22d3ee;
-      --accent-2: #a855f7;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
+      --bg: var(--lu-bg);
+      --card: var(--lu-surface);
+      --accent: var(--lu-primary-light);
+      --accent-2: var(--lu-accent);
+      --text: var(--lu-text-primary);
+      --muted: var(--lu-text-muted);
       --success: #4ade80;
       --error: #f87171;
       --warning: #fbbf24;
@@ -22,14 +24,14 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      background: linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
       color: var(--text);
       min-height: 100vh;
     }
     
     /* Header */
     .header {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      background: var(--lu-surface), rgba(255,255,255,0.04));
       border-bottom: 1px solid rgba(255,255,255,0.06);
       padding: 16px 24px;
       display: flex;
@@ -102,7 +104,7 @@
       margin-bottom: 32px;
     }
     .stat-card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      background: var(--lu-surface), rgba(255,255,255,0.04));
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       padding: 24px;
@@ -186,7 +188,7 @@
     
     /* Table */
     .table-container {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      background: var(--lu-surface), rgba(255,255,255,0.04));
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       overflow: hidden;
@@ -380,6 +382,18 @@
 </head>
 <body>
   <div id="app">
+    <!-- Navigation -->
+    <nav class="lu-header" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; padding: 1rem 5% !important; display: flex !important; justify-content: space-between !important; align-items: center !important;">
+      <a href="home.html" class="lu-logo-link" style="display: inline-flex !important; align-items: center !important; text-decoration: none !important;">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <div class="nav-buttons">
+        <a href="home.html" class="btn btn-secondary">Home</a>
+      </div>
+    </nav>
+    
+    <div style="padding-top: 80px;">
     <!-- Header -->
     <div class="header">
       <div class="logo">🎮 LevelUp Academy - Admin Panel</div>
@@ -734,9 +748,10 @@
       <span>{{ toast.message }}</span>
     </div>
   </div>
+  </div>
 
+  <!-- Scripts must be outside #app div -->
   <script src="config.js"></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script>
     const { createApp, ref, reactive, computed, onMounted } = Vue;
 
@@ -1027,6 +1042,82 @@
       }
     }).mount('#app');
   </script>
+
+  <!-- Dark Mode Toggle (outside #app) -->
+  <div class="dark-mode-toggle" id="darkModeToggle" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; display: flex !important;">
+    <span class="dark-mode-label">Dark Mode</span>
+    <div class="dark-mode-switch active" id="darkModeSwitch"></div>
+  </div>
+
+  <!-- Footer (outside #app) -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img" style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+        <span style="display:none; font-size: 18px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  <script>
+    // Dark/Light Mode Toggle Script
+    (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+  </script>
+
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle" id="darkModeToggle" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; display: flex !important;">
+    <span class="dark-mode-label">Dark Mode</span>
+    <div class="dark-mode-switch active" id="darkModeSwitch"></div>
+  </div>
+
+  
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img" style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+        <span style="display:none; font-size: 18px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
 </body>
 </html>
-

@@ -88,7 +88,7 @@ public class ProService {
             }
         }
         String hashPassword = new BCryptPasswordEncoder().encode(proDTO.getPassword());
-        User user = new User(null, proDTO.getUsername(), hashPassword, proDTO.getEmail(), proDTO.getFirstName(), proDTO.getLastName(), proDTO.getRole(), LocalDate.now(),null,null,null,null,null,null,null,null);
+        User user = new User(null, proDTO.getUsername(), hashPassword, proDTO.getEmail(), proDTO.getFirstName(), proDTO.getLastName(), proDTO.getRole(), LocalDate.now(), true, null,null,null,null,null,null,null,null);
         Pro pro = new Pro(null, filePath, user, null, null,false);
         authRepository.save(user);
         proRepository.save(pro);

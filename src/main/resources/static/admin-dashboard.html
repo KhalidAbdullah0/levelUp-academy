@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,14 +7,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --accent: #22d3ee;
-      --accent-2: #a855f7;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
+      --bg: var(--lu-bg);
+      --card: var(--lu-surface);
+      --accent: var(--lu-primary-light);
+      --accent-2: var(--lu-accent);
+      --text: var(--lu-text-primary);
+      --muted: var(--lu-text-muted);
       --success: #4ade80;
       --error: #f87171;
       --warning: #fbbf24;
@@ -22,14 +24,14 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      background: linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
       color: var(--text);
       min-height: 100vh;
     }
     
     /* Header */
     .header {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      background: var(--lu-surface), rgba(255,255,255,0.04));
       border-bottom: 1px solid rgba(255,255,255,0.06);
       padding: 16px 24px;
       display: flex;
@@ -102,7 +104,7 @@
       margin-bottom: 32px;
     }
     .stat-card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      background: var(--lu-surface), rgba(255,255,255,0.04));
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       padding: 24px;
@@ -186,7 +188,7 @@
     
     /* Table */
     .table-container {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      background: var(--lu-surface), rgba(255,255,255,0.04));
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       overflow: hidden;
@@ -380,6 +382,18 @@
 </head>
 <body>
   <div id="app">
+    <!-- Navigation -->
+    <nav class="lu-header" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; padding: 1rem 5% !important; display: flex !important; justify-content: space-between !important; align-items: center !important;">
+      <a href="home.html" class="lu-logo-link" style="display: inline-flex !important; align-items: center !important; text-decoration: none !important;">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <div class="nav-buttons">
+        <a href="home.html" class="btn btn-secondary">Home</a>
+      </div>
+    </nav>
+    
+    <div style="padding-top: 80px;">
     <!-- Header -->
     <div class="header">
       <div class="logo">🎮 LevelUp Academy - Admin Panel</div>
@@ -604,11 +618,18 @@
                 </button>
               </td>
               <td>
-                <div class="action-buttons" v-if="!pro.isApproved">
-                  <button class="btn-sm btn-approve" @click="approvePro(pro.id)">✓</button>
-                  <button class="btn-sm btn-reject" @click="rejectPro(pro.id)">✗</button>
+                <div class="action-buttons">
+                  <div v-if="!pro.isApproved" style="display: inline-flex; gap: 4px;">
+                    <button class="btn-sm btn-approve" @click="approvePro(pro.id)">✓</button>
+                    <button class="btn-sm btn-reject" @click="rejectPro(pro.id)">✗</button>
+                  </div>
+                  <div style="display: inline-flex; gap: 4px; margin-left: 4px;">
+                    <button class="btn-sm btn-view" @click="editUser(pro.user?.id)" title="Edit User">✏️ Edit</button>
+                    <button v-if="pro.user?.enabled !== false" class="btn-sm btn-reject" @click="deactivateUser(pro.user?.id, 'pro')" title="Deactivate User">🚫 Deactivate</button>
+                    <button v-else class="btn-sm btn-approve" @click="activateUser(pro.user?.id, 'pro')" title="Activate User">✅ Activate</button>
+                    <button class="btn-sm btn-reject" @click="deleteUser(pro.user?.id, 'pro')" title="Delete User">🗑️ Delete</button>
+                  </div>
                 </div>
-                <span v-else style="color: var(--success); font-size: 12px;">✓ Approved</span>
               </td>
             </tr>
           </tbody>
@@ -647,6 +668,9 @@
                   <span class="status-badge" :class="trainer.isApproved ? 'status-approved' : 'status-pending'">
                     {{ trainer.isApproved ? '✓ Approved' : '⏳ Pending' }}
                   </span>
+                  <span v-if="trainer.user?.enabled === false" class="status-badge status-pending" style="margin-left: 8px;">
+                    🚫 Deactivated
+                  </span>
                 </td>
               <td>
                 <button class="btn-sm btn-view" @click="downloadCV('trainer', trainer.id)">
@@ -654,11 +678,18 @@
                 </button>
               </td>
               <td>
-                <div class="action-buttons" v-if="!trainer.isApproved">
-                  <button class="btn-sm btn-approve" @click="approveTrainer(trainer.id)">✓</button>
-                  <button class="btn-sm btn-reject" @click="rejectTrainer(trainer.id)">✗</button>
+                <div class="action-buttons">
+                  <div v-if="!trainer.isApproved" style="display: inline-flex; gap: 4px;">
+                    <button class="btn-sm btn-approve" @click="approveTrainer(trainer.id)">✓</button>
+                    <button class="btn-sm btn-reject" @click="rejectTrainer(trainer.id)">✗</button>
+                  </div>
+                  <div style="display: inline-flex; gap: 4px; margin-left: 4px;">
+                    <button class="btn-sm btn-view" @click="editUser(trainer.user?.id)" title="Edit User">✏️ Edit</button>
+                    <button v-if="trainer.user?.enabled !== false" class="btn-sm btn-reject" @click="deactivateUser(trainer.user?.id, 'trainer')" title="Deactivate User">🚫 Deactivate</button>
+                    <button v-else class="btn-sm btn-approve" @click="activateUser(trainer.user?.id, 'trainer')" title="Activate User">✅ Activate</button>
+                    <button class="btn-sm btn-reject" @click="deleteUser(trainer.user?.id, 'trainer')" title="Delete User">🗑️ Delete</button>
+                  </div>
                 </div>
-                <span v-else style="color: var(--success); font-size: 12px;">✓ Approved</span>
               </td>
             </tr>
           </tbody>
@@ -678,18 +709,35 @@
         <table v-else>
           <thead>
             <tr>
+              <th>ID</th>
               <th>Username</th>
               <th>Name</th>
               <th>Email</th>
+              <th>Status</th>
               <th>Registered</th>
+              <th>Actions</th>
             </tr>
           </thead>
             <tbody>
               <tr v-for="player in players" :key="player.id">
+                <td>{{ player.id }}</td>
                 <td><strong>{{ player.username }}</strong></td>
                 <td>{{ player.firstName }} {{ player.lastName }}</td>
                 <td>{{ player.email }}</td>
+                <td>
+                  <span class="status-badge" :class="player.enabled !== false ? 'status-approved' : 'status-pending'">
+                    {{ player.enabled !== false ? '✓ Active' : '🚫 Deactivated' }}
+                  </span>
+                </td>
                 <td>{{ formatDate(player.registration) }}</td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn-sm btn-view" @click="editUser(player.id)" title="Edit User">✏️ Edit</button>
+                    <button v-if="player.enabled !== false" class="btn-sm btn-reject" @click="deactivateUser(player.id, 'player')" title="Deactivate User">🚫 Deactivate</button>
+                    <button v-else class="btn-sm btn-approve" @click="activateUser(player.id, 'player')" title="Activate User">✅ Activate</button>
+                    <button class="btn-sm btn-reject" @click="deleteUser(player.id, 'player')" title="Delete User">🗑️ Delete</button>
+                  </div>
+                </td>
               </tr>
             </tbody>
         </table>
@@ -708,20 +756,37 @@
         <table v-else>
           <thead>
             <tr>
+              <th>ID</th>
               <th>Username</th>
               <th>Name</th>
               <th>Email</th>
               <th>Phone</th>
               <th>Children</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
             <tbody>
               <tr v-for="parent in parents" :key="parent.id">
+                <td>{{ parent.id }}</td>
                 <td><strong>{{ parent.username }}</strong></td>
                 <td>{{ parent.firstName }} {{ parent.lastName }}</td>
                 <td>{{ parent.email }}</td>
                 <td>{{ parent.parent?.phoneNumber || 'N/A' }}</td>
                 <td>{{ parent.parent?.children?.length || 0 }}</td>
+                <td>
+                  <span class="status-badge" :class="parent.enabled !== false ? 'status-approved' : 'status-pending'">
+                    {{ parent.enabled !== false ? '✓ Active' : '🚫 Deactivated' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn-sm btn-view" @click="editUser(parent.id)" title="Edit User">✏️ Edit</button>
+                    <button v-if="parent.enabled !== false" class="btn-sm btn-reject" @click="deactivateUser(parent.id, 'parent')" title="Deactivate User">🚫 Deactivate</button>
+                    <button v-else class="btn-sm btn-approve" @click="activateUser(parent.id, 'parent')" title="Activate User">✅ Activate</button>
+                    <button class="btn-sm btn-reject" @click="deleteUser(parent.id, 'parent')" title="Delete User">🗑️ Delete</button>
+                  </div>
+                </td>
               </tr>
             </tbody>
         </table>
@@ -734,9 +799,10 @@
       <span>{{ toast.message }}</span>
     </div>
   </div>
+  </div>
 
+  <!-- Scripts must be outside #app div -->
   <script src="config.js"></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script>
     const { createApp, ref, reactive, computed, onMounted } = Vue;
 
@@ -1002,6 +1068,106 @@
           localStorage.clear();
           window.location.href = 'login.html';
         };
+        
+        // Edit user
+        const editUser = async (userId) => {
+          if (!userId) return;
+          const firstName = prompt('Enter new first name (or press Cancel to skip):');
+          if (firstName === null) return;
+          
+          const lastName = prompt('Enter new last name (or press Cancel to skip):');
+          if (lastName === null) return;
+          
+          const email = prompt('Enter new email (or press Cancel to skip):');
+          if (email === null) return;
+          
+          const username = prompt('Enter new username (or press Cancel to skip):');
+          if (username === null) return;
+          
+          const updates = {};
+          if (firstName.trim()) updates.firstName = firstName.trim();
+          if (lastName.trim()) updates.lastName = lastName.trim();
+          if (email.trim()) updates.email = email.trim();
+          if (username.trim()) updates.username = username.trim();
+          
+          if (Object.keys(updates).length === 0) {
+            showToast('No changes made', 'error');
+            return;
+          }
+          
+          processing.value = true;
+          try {
+            await apiCall(`/api/v1/admin/users/${userId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(updates)
+            });
+            showToast('User updated successfully', 'success');
+            loadData();
+          } catch (error) {
+            showToast(error.message || 'Failed to update user', 'error');
+          } finally {
+            processing.value = false;
+          }
+        };
+        
+        // Deactivate user
+        const deactivateUser = async (userId, userType) => {
+          if (!userId) return;
+          if (!confirm(`Are you sure you want to deactivate this ${userType}? They will not be able to login.`)) return;
+          
+          processing.value = true;
+          try {
+            await apiCall(`/api/v1/admin/users/${userId}/ban`, {
+              method: 'PATCH'
+            });
+            showToast('User deactivated successfully', 'success');
+            loadData();
+          } catch (error) {
+            showToast(error.message || 'Failed to deactivate user', 'error');
+          } finally {
+            processing.value = false;
+          }
+        };
+        
+        // Activate user
+        const activateUser = async (userId, userType) => {
+          if (!userId) return;
+          if (!confirm(`Are you sure you want to activate this ${userType}? They will be able to login again.`)) return;
+          
+          processing.value = true;
+          try {
+            await apiCall(`/api/v1/admin/users/${userId}/unban`, {
+              method: 'PATCH'
+            });
+            showToast('User activated successfully', 'success');
+            loadData();
+          } catch (error) {
+            showToast(error.message || 'Failed to activate user', 'error');
+          } finally {
+            processing.value = false;
+          }
+        };
+        
+        // Delete user
+        const deleteUser = async (userId, userType) => {
+          if (!userId) return;
+          if (!confirm(`⚠️ WARNING: Are you sure you want to DELETE this ${userType}? This action cannot be undone!`)) return;
+          if (!confirm(`Final confirmation: Delete ${userType} with ID ${userId}?`)) return;
+          
+          processing.value = true;
+          try {
+            await apiCall(`/api/v1/admin/users/${userId}`, {
+              method: 'DELETE'
+            });
+            showToast('User deleted successfully', 'success');
+            loadData();
+          } catch (error) {
+            showToast(error.message || 'Failed to delete user', 'error');
+          } finally {
+            processing.value = false;
+          }
+        };
 
         return {
           activeTab,
@@ -1022,11 +1188,26 @@
           rejectTrainer,
           downloadCV,
           formatDate,
+          editUser,
+          activateUser,
+          deactivateUser,
+          deleteUser,
           logout
         };
       }
     }).mount('#app');
   </script>
+
+  <!-- Footer (outside #app) -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img" style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+        <span style="display:none; font-size: 18px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
 </body>
 </html>
-

@@ -116,8 +116,26 @@ public class AdviceController {
 
     @ExceptionHandler(value = NoResourceFoundException.class)
     public ResponseEntity<ApiResponse> NoResourceFoundException(NoResourceFoundException e){
-        String msg = e.getMessage();
-        return ResponseEntity.status(400).body(new ApiResponse(msg));
+        // Don't handle static resource 404s (let Spring handle CSS/JS/images)
+        // Only handle API endpoint 404s
+        String resourcePath = e.getResourcePath();
+        if (resourcePath != null && 
+            (resourcePath.endsWith(".css") || resourcePath.endsWith(".js") || 
+             resourcePath.endsWith(".png") || resourcePath.endsWith(".jpg") || 
+             resourcePath.endsWith(".gif") || resourcePath.endsWith(".svg") ||
+             resourcePath.endsWith(".ico") || resourcePath.endsWith(".woff") ||
+             resourcePath.endsWith(".woff2") || resourcePath.endsWith(".ttf") ||
+             resourcePath.endsWith(".html") || resourcePath.startsWith("/assets/"))) {
+            // Let Spring handle static resources - return null to use default handling
+            return null;
+        }
+        // Only handle API endpoint 404s
+        if (resourcePath != null && resourcePath.startsWith("/api/")) {
+            String msg = "Resource not found: " + resourcePath;
+            return ResponseEntity.status(404).body(new ApiResponse(msg));
+        }
+        // For other resources, use default Spring handling
+        return null;
     }
 
     @ExceptionHandler(value = NullPointerException.class)

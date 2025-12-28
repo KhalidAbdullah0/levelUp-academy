@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,33 +7,27 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
   <style>
-    :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --accent: #22d3ee;
-      --accent-2: #a855f7;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-    }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at 20% 20%, rgba(34,211,238,0.08), transparent 35%),
-                  radial-gradient(circle at 80% 10%, rgba(168,85,247,0.08), transparent 35%),
-                  linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
-      color: var(--text);
+      background: radial-gradient(circle at 20% 20%, rgba(255, 106, 26, 0.08), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(255, 200, 87, 0.05), transparent 35%),
+                  linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
+      color: var(--lu-text-primary);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+      padding-top: 80px;
     }
     .container {
       width: 100%;
       max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      flex: 1;
     }
     .header {
       text-align: center;
@@ -45,7 +39,7 @@
       letter-spacing: -0.02em;
     }
     .subtitle {
-      color: var(--muted);
+      color: var(--lu-text-muted);
       font-size: 16px;
     }
     .role-grid {
@@ -55,8 +49,8 @@
       margin-bottom: 30px;
     }
     .role-card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
-      border: 2px solid rgba(255,255,255,0.06);
+      background: var(--lu-surface);
+      border: 2px solid var(--lu-border-subtle);
       border-radius: 18px;
       padding: 28px;
       cursor: pointer;
@@ -69,14 +63,14 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(34,211,238,0.1), transparent 60%);
+      background: radial-gradient(circle at 50% 50%, rgba(255, 106, 26, 0.1), transparent 60%);
       opacity: 0;
       transition: opacity 0.2s ease;
     }
     .role-card:hover {
       transform: translateY(-4px);
-      border-color: var(--accent);
-      box-shadow: 0 12px 40px rgba(34,211,238,0.2);
+      border-color: var(--lu-primary-light);
+      box-shadow: var(--lu-shadow-glow);
     }
     .role-card:hover::before {
       opacity: 1;
@@ -91,7 +85,7 @@
       margin-bottom: 8px;
     }
     .role-desc {
-      color: var(--muted);
+      color: var(--lu-text-muted);
       font-size: 14px;
       margin-bottom: 12px;
       line-height: 1.5;
@@ -106,25 +100,27 @@
       letter-spacing: 0.5px;
     }
     .badge-instant {
-      background: rgba(34,211,238,0.2);
-      color: var(--accent);
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--lu-success);
+      border: 1px solid rgba(34, 197, 94, 0.3);
     }
     .badge-approval {
-      background: rgba(168,85,247,0.2);
-      color: var(--accent-2);
+      background: rgba(234, 179, 8, 0.2);
+      color: var(--lu-warning);
+      border: 1px solid rgba(234, 179, 8, 0.3);
     }
     .back-link {
       text-align: center;
       margin-top: 20px;
     }
     .back-link a {
-      color: var(--muted);
+      color: var(--lu-text-muted);
       text-decoration: none;
       font-size: 14px;
       transition: color 0.2s ease;
     }
     .back-link a:hover {
-      color: var(--accent);
+      color: var(--lu-primary-light);
     }
 
     @media (max-width: 640px) {
@@ -135,6 +131,14 @@
   </style>
 </head>
 <body>
+  <!-- Header -->
+  <nav class="lu-header">
+    <a href="home.html" class="lu-logo-link">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+  </nav>
+
   <div class="container">
     <div class="header">
       <h1>Choose Your Role</h1>
@@ -180,6 +184,19 @@
       <a href="login.html">Already have an account? Login</a>
     </div>
   </div>
+
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
+        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+</div>
 </body>
 </html>
 

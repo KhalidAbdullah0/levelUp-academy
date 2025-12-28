@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,30 +7,38 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <style>
+    /* Override with admin-specific colors while using new system */
     :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --accent: #22d3ee;
-      --accent-2: #a855f7;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --success: #4ade80;
-      --error: #f87171;
-      --warning: #fbbf24;
+      --bg: var(--lu-bg);
+      --card: var(--lu-surface);
+      --accent: var(--lu-primary-light);
+      --accent-2: var(--lu-accent);
+      --text: var(--lu-text-primary);
+      --muted: var(--lu-text-muted);
+      --success: var(--lu-success);
+      --error: var(--lu-danger);
+      --warning: var(--lu-warning);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #0b1224 0%, #0f172a 50%, #0b1224 100%);
+      background: linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
       color: var(--text);
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      flex: 1;
     }
     
     /* Header */
     .header {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: var(--lu-bg);
+      border-bottom: 1px solid var(--lu-border-subtle);
       padding: 16px 24px;
       display: flex;
       justify-content: space-between;
@@ -102,7 +110,7 @@
       margin-bottom: 32px;
     }
     .stat-card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      background: var(--lu-surface), rgba(255,255,255,0.04));
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       padding: 24px;
@@ -133,7 +141,7 @@
       font-size: 36px;
       font-weight: 700;
       margin-bottom: 4px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      background: var(--lu-gradient-brand);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -186,7 +194,7 @@
     
     /* Table */
     .table-container {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+      background: var(--lu-surface), rgba(255,255,255,0.04));
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       overflow: hidden;
@@ -520,22 +528,44 @@
       }
     }
   </style>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
-<body>
-  <div id="app">
+  <body>
+    <div id="app">
     <!-- Header -->
-    <div class="header">
-      <div class="logo">🎮 LevelUp Academy - Admin Panel</div>
+    <div class="header lu-header" style="position: sticky; top: 0; z-index: 100;">
+      <a href="home.html" class="lu-logo-link" style="text-decoration: none;">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+        <span class="logo" style="display:none;">🎮 LevelUp Academy - Admin Panel</span>
+      </a>
       <div class="header-right">
-        <a href="add-training-class.html" class="btn" style="background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #0b1224; border: none;">+ Add Class</a>
-        <span class="user-name">Welcome, <strong>{{ userName }}</strong></span>
-        <span class="role-badge">ADMIN</span>
+        <a href="add-training-class.html" class="btn" style="background: var(--lu-gradient-brand); color: #111827; border: none;">+ Add Class</a>
+        <span class="user-name">Welcome, <strong style="color: var(--lu-accent);">{{ userName }}</strong></span>
+        <span class="role-badge" style="background: rgba(255, 200, 87, 0.2); border-color: rgba(255, 200, 87, 0.3); color: var(--lu-accent);">ADMIN</span>
         <button class="btn" @click="logout">Logout</button>
       </div>
     </div>
 
     <!-- Main Container -->
     <div class="container">
+      <!-- Overview Stats -->
+      <div v-if="overviewStats" class="stats-grid" style="margin-bottom: 32px;">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">💰</div>
+          </div>
+          <div class="stat-value">{{ overviewStats.totalRevenue?.toLocaleString() || 0 }}</div>
+          <div class="stat-label">Total Revenue ({{ overviewStats.currency }})</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">💳</div>
+          </div>
+          <div class="stat-value">{{ overviewStats.activeSubscriptions || 0 }}</div>
+          <div class="stat-label">Active Subscriptions</div>
+        </div>
+      </div>
+
       <!-- Statistics -->
       <div class="stats-grid">
         <div class="stat-card">
@@ -756,11 +786,12 @@
                 </button>
               </td>
               <td>
-                <div class="action-buttons" v-if="!pro.isApproved">
-                  <button class="btn-sm btn-approve" @click="approvePro(pro.id)">✓</button>
-                  <button class="btn-sm btn-reject" @click="rejectPro(pro.id)">✗</button>
+                <div class="action-buttons">
+                  <button v-if="!pro.isApproved" class="btn-sm btn-approve" @click="approvePro(pro.id)">✓</button>
+                  <button v-if="!pro.isApproved" class="btn-sm btn-reject" @click="rejectPro(pro.id)">✗</button>
+                  <button class="btn-sm btn-view" @click="editUser(pro.user?.id)" style="margin-left: 4px;">✏️</button>
+                  <button class="btn-sm btn-reject" @click="deleteUser(pro.user?.id)" style="margin-left: 4px;">🗑️</button>
                 </div>
-                <span v-else style="color: var(--success); font-size: 12px;">✓ Approved</span>
               </td>
             </tr>
           </tbody>
@@ -806,11 +837,12 @@
                 </button>
               </td>
               <td>
-                <div class="action-buttons" v-if="!trainer.isApproved">
-                  <button class="btn-sm btn-approve" @click="approveTrainer(trainer.id)">✓</button>
-                  <button class="btn-sm btn-reject" @click="rejectTrainer(trainer.id)">✗</button>
+                <div class="action-buttons">
+                  <button v-if="!trainer.isApproved" class="btn-sm btn-approve" @click="approveTrainer(trainer.id)">✓</button>
+                  <button v-if="!trainer.isApproved" class="btn-sm btn-reject" @click="rejectTrainer(trainer.id)">✗</button>
+                  <button class="btn-sm btn-view" @click="editUser(trainer.user?.id)" style="margin-left: 4px;">✏️</button>
+                  <button class="btn-sm btn-reject" @click="deleteUser(trainer.user?.id)" style="margin-left: 4px;">🗑️</button>
                 </div>
-                <span v-else style="color: var(--success); font-size: 12px;">✓ Approved</span>
               </td>
             </tr>
           </tbody>
@@ -948,6 +980,7 @@
               <th>Email</th>
               <th>Phone</th>
               <th>Children</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -991,6 +1024,7 @@
               <th>Time</th>
               <th>Booking Date</th>
               <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -1024,9 +1058,243 @@
                   {{ booking.bookingStatus }}
                 </span>
               </td>
+              <td>
+                <button 
+                  v-if="booking.bookingStatus !== 'CANCELLED'"
+                  class="btn-sm btn-reject" 
+                  @click="cancelBookingAdmin(booking.bookingId)"
+                  :disabled="processing">
+                  Cancel
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Player Details Modal -->
+    <div v-if="showPlayerDetailsModal" class="modal-overlay" @click.self="showPlayerDetailsModal = false">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">👤 Player Details</div>
+          <button class="modal-close" @click="showPlayerDetailsModal = false">×</button>
+        </div>
+        <div class="modal-body" v-if="selectedPlayerDetails">
+          <!-- Basic Info -->
+          <div class="modal-section">
+            <div class="modal-section-title">📋 Basic Information</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div><strong>Username:</strong> {{ selectedPlayerDetails.player.username }}</div>
+              <div><strong>Full Name:</strong> {{ selectedPlayerDetails.player.fullName }}</div>
+              <div><strong>Email:</strong> {{ selectedPlayerDetails.player.email }}</div>
+              <div><strong>Registered:</strong> {{ formatDate(selectedPlayerDetails.player.registeredAt) }}</div>
+              <div><strong>Status:</strong> 
+                <span class="badge badge-active">{{ selectedPlayerDetails.player.status }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Subscriptions -->
+          <div class="modal-section">
+            <div class="modal-section-title">💳 Subscriptions</div>
+            <div v-if="selectedPlayerDetails.subscriptions.length > 0">
+              <table style="width: 100%; margin-top: 12px;">
+                <thead>
+                  <tr>
+                    <th>Plan</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Classes</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="sub in selectedPlayerDetails.subscriptions" :key="sub.subscriptionId">
+                    <td>
+                      <span class="badge" :class="{
+                        'badge-basic': sub.plan === 'BASIC',
+                        'badge-standard': sub.plan === 'STANDARD',
+                        'badge-premium': sub.plan === 'PREMIUM'
+                      }">{{ sub.plan }}</span>
+                    </td>
+                    <td>{{ sub.price }} {{ sub.currency }}</td>
+                    <td>
+                      <span class="badge" :class="{
+                        'badge-active': sub.status === 'ACTIVE',
+                        'badge-pending': sub.status === 'PENDING_PAYMENT'
+                      }">{{ sub.status }}</span>
+                    </td>
+                    <td>{{ formatDate(sub.startDate) }}</td>
+                    <td>{{ formatDate(sub.endDate) }}</td>
+                    <td>{{ sub.classesCount }}</td>
+                    <td>
+                      <button 
+                        v-if="sub.status === 'ACTIVE' || sub.status === 'PENDING_PAYMENT'"
+                        class="btn-sm btn-reject" 
+                        @click="cancelSubscription(sub.subscriptionId)"
+                        :disabled="processing">
+                        Cancel
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div v-else class="empty-state" style="padding: 20px;">No subscriptions</div>
+          </div>
+          
+          <!-- Payments -->
+          <div class="modal-section">
+            <div class="modal-section-title">💰 Payments</div>
+            <div v-if="selectedPlayerDetails.payments.length > 0">
+              <table style="width: 100%; margin-top: 12px;">
+                <thead>
+                  <tr>
+                    <th>Payment ID</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="payment in selectedPlayerDetails.payments" :key="payment.paymentId">
+                    <td>#{{ payment.paymentId }}</td>
+                    <td>{{ payment.amount }} {{ payment.currency }}</td>
+                    <td>
+                      <span class="badge" :class="{
+                        'badge-active': payment.status === 'SUCCESS',
+                        'badge-pending': payment.status === 'PENDING'
+                      }">{{ payment.status }}</span>
+                    </td>
+                    <td>{{ formatDate(payment.paidAt) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div v-else class="empty-state" style="padding: 20px;">No payments</div>
+          </div>
+          
+          <!-- Bookings -->
+          <div class="modal-section">
+            <div class="modal-section-title">📅 Classes / Bookings</div>
+            <div v-if="selectedPlayerDetails.bookings.length > 0">
+              <table style="width: 100%; margin-top: 12px;">
+                <thead>
+                  <tr>
+                    <th>Session ID</th>
+                    <th>Date & Time</th>
+                    <th>Trainer</th>
+                    <th>Plan</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="booking in selectedPlayerDetails.bookings" :key="booking.bookingId">
+                    <td>#{{ booking.sessionId }}</td>
+                    <td>{{ formatDate(booking.sessionStartTime) }}</td>
+                    <td>{{ booking.trainerName }}</td>
+                    <td>{{ booking.plan }}</td>
+                    <td>
+                      <span class="badge" :class="{
+                        'badge-active': booking.status === 'UPCOMING',
+                        'status-approved': booking.status === 'COMPLETED',
+                        'badge-pending': booking.status === 'CANCELLED'
+                      }">{{ booking.status }}</span>
+                    </td>
+                    <td>
+                      <button 
+                        v-if="booking.status === 'UPCOMING'"
+                        class="btn-sm btn-reject" 
+                        @click="cancelBookingAdmin(booking.bookingId)"
+                        :disabled="processing">
+                        Cancel
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div v-else class="empty-state" style="padding: 20px;">No bookings</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div v-if="showEditUserModal" class="modal-overlay" @click.self="showEditUserModal = false">
+      <div class="modal" style="max-width: 500px;">
+        <div class="modal-header">
+          <div class="modal-title">✏️ Edit User</div>
+          <button class="modal-close" @click="showEditUserModal = false">×</button>
+        </div>
+        <div class="modal-body">
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">First Name</label>
+              <input 
+                type="text" 
+                v-model="editForm.firstName" 
+                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text);"
+                placeholder="First Name">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Last Name</label>
+              <input 
+                type="text" 
+                v-model="editForm.lastName" 
+                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text);"
+                placeholder="Last Name">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Username</label>
+              <input 
+                type="text" 
+                v-model="editForm.username" 
+                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text);"
+                placeholder="Username">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Email</label>
+              <input 
+                type="email" 
+                v-model="editForm.email" 
+                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text);"
+                placeholder="Email">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Role</label>
+              <select 
+                v-model="editForm.role" 
+                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text);">
+                <option value="PLAYER">PLAYER</option>
+                <option value="PRO">PRO</option>
+                <option value="TRAINER">TRAINER</option>
+                <option value="PARENTS">PARENTS</option>
+                <option value="MODERATOR">MODERATOR</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 8px;">
+              <button 
+                class="btn-sm btn-approve" 
+                @click="saveUser"
+                :disabled="processing"
+                style="flex: 1;">
+                Save Changes
+              </button>
+              <button 
+                class="btn-sm btn-reject" 
+                @click="showEditUserModal = false"
+                style="flex: 1;">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1038,7 +1306,6 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script>
     const { createApp, ref, reactive, computed, onMounted } = Vue;
 
@@ -1055,6 +1322,22 @@
         const parents = ref([]);
         const subscriptions = ref([]);
         const bookings = ref([]);
+        const playersWithSubscription = ref([]);
+        const playerFilter = ref('ALL');
+        const overviewStats = ref(null);
+        const selectedPlayerDetails = ref(null);
+        const showPlayerDetailsModal = ref(false);
+        const showEditUserModal = ref(false);
+        const editingUser = ref(null);
+        const editForm = reactive({
+          userId: null,
+          firstName: '',
+          lastName: '',
+          username: '',
+          email: '',
+          role: '',
+          status: 'ACTIVE'
+        });
         
         const toast = reactive({
           show: false,
@@ -1072,12 +1355,12 @@
 
         // Computed stats
         const stats = computed(() => ({
-          pendingPros: pros.value.filter(p => !p.isApproved).length,
-          approvedPros: pros.value.filter(p => p.isApproved).length,
-          pendingTrainers: trainers.value.filter(t => !t.isApproved).length,
-          approvedTrainers: trainers.value.filter(t => t.isApproved).length,
-          totalPlayers: players.value.length,
-          totalParents: parents.value.length,
+          pendingPros: (pros.value || []).filter(p => !p.isApproved).length,
+          approvedPros: (pros.value || []).filter(p => p.isApproved).length,
+          pendingTrainers: (trainers.value || []).filter(t => !t.isApproved).length,
+          approvedTrainers: (trainers.value || []).filter(t => t.isApproved).length,
+          totalPlayers: (players.value || []).length,
+          totalParents: (parents.value || []).length,
           totalSubscriptions: subscriptions.value.length,
           totalBookings: bookings.value.length,
           activeBookings: bookings.value.filter(b => b.bookingStatus === 'ACTIVE').length,
@@ -1159,10 +1442,17 @@
         
         const loadPlayersWithSubscription = async () => {
           try {
-            const data = await apiCall(`/api/v1/admin/players?status=${playerFilter.value}`).catch(() => []);
-            playersWithSubscription.value = data;
+            console.log('Loading players with subscription, filter:', playerFilter.value);
+            const data = await apiCall(`/api/v1/admin/players?status=${playerFilter.value}`);
+            console.log('Players with subscription data:', data);
+            playersWithSubscription.value = data || [];
+            if (playersWithSubscription.value.length === 0) {
+              console.warn('No players returned from API');
+            }
           } catch (error) {
             console.error('Error loading players with subscription:', error);
+            showToast('Failed to load players data', 'error');
+            playersWithSubscription.value = [];
           }
         };
         
@@ -1177,14 +1467,143 @@
           }
         };
         
-        const editUser = async (userId) => {
+        const editUser = async (user) => {
           try {
-            const user = playersWithSubscription.value.find(p => p.userId === userId) ||
-                        players.value.find(p => p.id === userId);
-            editingUser.value = user;
-            showEditUserModal.value = true;
+            // Accept user object directly or find by ID
+            let targetUser = user;
+            if (typeof user === 'number' || typeof user === 'string') {
+              const userId = parseInt(user);
+              targetUser = playersWithSubscription.value.find(p => p.userId === userId) ||
+                          players.value.find(p => p.id === userId) ||
+                          pros.value.find(p => p.user?.id === userId) ||
+                          trainers.value.find(t => t.user?.id === userId) ||
+                          parents.value.find(p => p.user?.id === userId || p.id === userId);
+            }
+            
+            if (targetUser) {
+              editingUser.value = targetUser;
+              const userId = targetUser.userId || targetUser.id || targetUser.user?.id;
+              editForm.userId = userId;
+              editForm.firstName = targetUser.firstName || targetUser.user?.firstName || '';
+              editForm.lastName = targetUser.lastName || targetUser.user?.lastName || '';
+              editForm.username = targetUser.username || targetUser.user?.username || '';
+              editForm.email = targetUser.email || targetUser.user?.email || '';
+              editForm.role = targetUser.role || targetUser.user?.role || '';
+              editForm.status = targetUser.status || targetUser.user?.status || 'ACTIVE';
+              showEditUserModal.value = true;
+            }
           } catch (error) {
             console.error('Error loading user for edit:', error);
+            showToast('Failed to load user information', 'error');
+          }
+        };
+        
+        const saveUser = async () => {
+          if (!editForm.userId) {
+            showToast('Invalid user ID', 'error');
+            return;
+          }
+          
+          processing.value = true;
+          try {
+            const payload = {
+              firstName: editForm.firstName,
+              lastName: editForm.lastName,
+              email: editForm.email,
+              role: editForm.role,
+              status: editForm.status
+            };
+            
+            await apiCall(`/api/v1/admin/users/${editForm.userId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            
+            showToast('User updated successfully', 'success');
+            showEditUserModal.value = false;
+            editingUser.value = null;
+            // Reset form
+            editForm.userId = null;
+            editForm.firstName = '';
+            editForm.lastName = '';
+            editForm.username = '';
+            editForm.email = '';
+            editForm.role = '';
+            editForm.status = 'ACTIVE';
+            await loadData();
+            await loadPlayersWithSubscription();
+          } catch (error) {
+            console.error('Error updating user:', error);
+            showToast('Failed to update user: ' + (error.message || 'Unknown error'), 'error');
+          } finally {
+            processing.value = false;
+          }
+        };
+        
+        const deleteUser = async (userId) => {
+          if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+            return;
+          }
+          
+          processing.value = true;
+          try {
+            await apiCall(`/api/v1/admin/users/${userId}`, { method: 'DELETE' });
+            showToast('User deleted successfully', 'success');
+            await loadData();
+            await loadPlayersWithSubscription();
+          } catch (error) {
+            console.error('Error deleting user:', error);
+            showToast('Failed to delete user: ' + (error.message || 'Unknown error'), 'error');
+          } finally {
+            processing.value = false;
+          }
+        };
+        
+        const cancelBookingAdmin = async (bookingId) => {
+          if (!confirm('Are you sure you want to cancel this booking?')) {
+            return;
+          }
+          
+          processing.value = true;
+          try {
+            await apiCall(`/api/v1/admin/bookings/${bookingId}`, { method: 'DELETE' });
+            showToast('Booking cancelled successfully', 'success');
+            await loadData();
+            if (selectedPlayerDetails.value) {
+              await viewPlayerDetails(selectedPlayerDetails.value.player.playerId);
+            }
+          } catch (error) {
+            console.error('Error cancelling booking:', error);
+            showToast('Failed to cancel booking: ' + (error.message || 'Unknown error'), 'error');
+          } finally {
+            processing.value = false;
+          }
+        };
+        
+        const cancelSubscription = async (subscriptionId) => {
+          if (!confirm('Are you sure you want to cancel this subscription?')) {
+            return;
+          }
+          
+          processing.value = true;
+          try {
+            await apiCall(`/api/v1/admin/subscriptions/${subscriptionId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: 'CANCELLED' })
+            });
+            showToast('Subscription cancelled successfully', 'success');
+            if (selectedPlayerDetails.value) {
+              await viewPlayerDetails(selectedPlayerDetails.value.player.playerId);
+            }
+            await loadData();
+            await loadPlayersWithSubscription();
+          } catch (error) {
+            console.error('Error cancelling subscription:', error);
+            showToast('Failed to cancel subscription: ' + (error.message || 'Unknown error'), 'error');
+          } finally {
+            processing.value = false;
           }
         };
         
@@ -1285,11 +1704,6 @@
           }, 3500);
         };
 
-        const formatDate = (date) => {
-          if (!date) return 'N/A';
-          return new Date(date).toLocaleDateString();
-        };
-
         const logout = () => {
           localStorage.clear();
           window.location.href = 'login.html';
@@ -1304,6 +1718,16 @@
           trainers,
           players,
           parents,
+          subscriptions,
+          bookings,
+          playersWithSubscription,
+          playerFilter,
+          overviewStats,
+          selectedPlayerDetails,
+          showPlayerDetailsModal,
+          showEditUserModal,
+          editingUser,
+          editForm,
           stats,
           pendingPros,
           pendingTrainers,
@@ -1313,12 +1737,77 @@
           approveTrainer,
           rejectTrainer,
           downloadCV,
+          loadPlayersWithSubscription,
+          viewPlayerDetails,
+          editUser,
+          saveUser,
+          deleteUser,
+          cancelBookingAdmin,
+          cancelSubscription,
           formatDate,
           logout
         };
       }
     }).mount('#app');
   </script>
+  
+  <script>
+    // Dark/Light Mode Toggle Script
+    (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+  </script>
+
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle" id="darkModeToggle" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; display: flex !important;">
+    <span class="dark-mode-label">Dark Mode</span>
+    <div class="dark-mode-switch active" id="darkModeSwitch"></div>
+  
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img" style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+        <span style="display:none; font-size: 18px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
 </body>
 </html>
 
