@@ -20,4 +20,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("select b from Booking b where b.user.id = ?1")
     List<Booking> findMyBookings(Integer userId);
     List<Booking> findBookingBySessionId(Integer id);
+    
+    @Query("SELECT b FROM Booking b JOIN FETCH b.user JOIN FETCH b.subscription JOIN FETCH b.session s LEFT JOIN FETCH s.game")
+    List<Booking> findAllWithDetails();
 }

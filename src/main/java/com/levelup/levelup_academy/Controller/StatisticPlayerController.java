@@ -37,10 +37,7 @@ public class StatisticPlayerController {
         return ResponseEntity.ok(statisticPlayerService.getStatisticsByPlayerId(trainerId.getId(),playerId));
     }
 
-//    @GetMapping("/player/trainer")
-//    public ResponseEntity<List<StatisticPlayer>> getPlayerStatsByTrainer(@AuthenticationPrincipal User trainerId) {
-//        return ResponseEntity.ok(statisticPlayerService.getAllStatisticsByTrainerId(trainerId.getId()));
-//    }
+
 
 
     @DeleteMapping("/delete/{statId}")
@@ -49,19 +46,27 @@ public class StatisticPlayerController {
         return ResponseEntity.ok(new ApiResponse("Player statistic deleted"));
     }
     @GetMapping("/top-player-by-rating")
-    public ResponseEntity<String> getTopPlayerByRating(@AuthenticationPrincipal User trainer) {
-        return ResponseEntity.ok(statisticPlayerService.getTopPlayerByRating(trainer.getId()));
+    public ResponseEntity<String> getTopPlayerByRating(@AuthenticationPrincipal User user) {
+        // Check if user is trainer or player
+        if (user.getRole().equals("TRAINER")) {
+            return ResponseEntity.ok(statisticPlayerService.getTopPlayerByRating(user.getTrainer().getId()));
+        } else {
+            // Player can view leaderboard without trainer ID
+            return ResponseEntity.ok(statisticPlayerService.getTopPlayerByRatingForPlayer());
+        }
+    }
+    
+    @GetMapping("/leaderboard")
+    public ResponseEntity getLeaderboard(@AuthenticationPrincipal User user) {
+        // Get top players leaderboard - accessible by all authenticated users
+        return ResponseEntity.ok(statisticPlayerService.getLeaderboard());
     }
 
     @GetMapping("/player/{playerId}/{trainerId}")
     public ResponseEntity<StatisticPlayer> getPlayerStatistics(@PathVariable Integer trainerId,@PathVariable Integer playerId) {
         return ResponseEntity.ok(statisticPlayerService.getStatisticsByPlayerId(trainerId,playerId));
     }
-//    @GetMapping("/top5")
-//    public ResponseEntity<List<StatisticPlayer>> getTop5ByWinGame(@RequestParam Integer winGame) {
-//        List<StatisticPlayer> top5 = statisticPlayerService.getTop5PlayersByGame(winGame);
-//        return ResponseEntity.ok(top5);
-//    }
+
     @PutMapping("/add-win/{statId}/{trainerId}")
     public ResponseEntity addWinToPlayer(@PathVariable Integer statId,@PathVariable Integer trainerId) {
         statisticPlayerService.addWin(statId,trainerId);

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Select Training Class | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: var(--lu-bg);
+      --card: var(--lu-surface);
+      --accent: var(--lu-primary-light);
+      --accent-2: var(--lu-accent);
+      --text: var(--lu-text-primary);
+      --muted: var(--lu-text-muted);
+      --success: #4ade80;
+      --error: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
+      color: var(--text);
+      padding-top: 80px;
+    min-height: 100vh;
+    }
+    
+    .header {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .user-info {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .user-info strong {
+      color: var(--text);
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .page-subtitle {
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    
+    .classes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .class-card {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border: 2px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .class-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px rgba(34,211,238,0.2);
+    }
+    .class-card.selected {
+      border-color: var(--success);
+      background: linear-gradient(145deg, rgba(74,222,128,0.1), rgba(74,222,128,0.05));
+    }
+    .class-card.unavailable {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-color: var(--error);
+    }
+    .class-card.unavailable:hover {
+      transform: none;
+    }
+    
+    .class-name {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .class-info {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .class-info strong {
+      color: var(--text);
+    }
+    .class-available {
+      color: var(--success);
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+    .class-unavailable {
+      color: var(--error);
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+    
+    .continue-btn {
+      display: block;
+      margin: 32px auto 0;
+      padding: 14px 48px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--success), #22c55e);
+      color: #0b1224;
+      text-decoration: none;
+      text-align: center;
+      max-width: 300px;
+    }
+    .continue-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(74,222,128,0.3);
+    }
+    .continue-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+    }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(34,211,238,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <nav class="lu-header">
+    <a href="home.html" class="lu-logo-link">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+  </nav>
+
+
+  <div id="app">
+    <div class="header">
+      <div class="logo">🎮 LevelUp Academy</div>
+      <div class="user-info">Player: <strong>{{ userName }}</strong></div>
+    </div>
+
+    <div class="container">
+      <div class="page-title">Select Training Class</div>
+      <div class="page-subtitle">Choose a class that fits your schedule</div>
+
+      <div v-if="loading" class="loading">
+        <div class="spinner"></div>
+        <div style="margin-top: 16px;">Loading classes...</div>
+      </div>
+
+      <div v-else-if="classes.length === 0" class="empty-state">
+        <div class="empty-icon">📖</div>
+        <div style="font-size: 18px; margin-bottom: 8px;">No Classes Available</div>
+        <div>Check back later for new classes!</div>
+      </div>
+
+      <div v-else class="classes-grid">
+        <div 
+          v-for="session in availableClasses" 
+          :key="session.id" 
+          class="class-card"
+          :class="{ 
+            selected: selectedClass === session.id,
+            unavailable: session.availableSets <= 0
+          }"
+          @click="selectClass(session)"
+        >
+          <div class="class-name">{{ session.name }}</div>
+          <div class="class-info"><strong>Game:</strong> {{ session.game?.name || 'N/A' }}</div>
+          <div class="class-info"><strong>Time:</strong> {{ session.time || 'N/A' }}</div>
+          <div class="class-info"><strong>Trainer:</strong> {{ getTrainerName(session) }}</div>
+          <div class="class-info"><strong>Available Seats:</strong> {{ session.availableSets || 0 }}</div>
+          <div v-if="session.availableSets > 0" class="class-available">✓ Available for Booking</div>
+          <div v-else class="class-unavailable">✗ No Seats Available</div>
+        </div>
+      </div>
+
+      <button 
+        class="continue-btn"
+        :disabled="!selectedClass"
+        @click="continueToPayment"
+      >
+        Continue to Payment →
+      </button>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, computed, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const userName = ref('');
+        const classes = ref([]);
+        const loading = ref(true);
+        const selectedClass = ref(null);
+
+        const token = localStorage.getItem('authToken');
+        const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+        const userRole = localStorage.getItem('userRole');
+
+        onMounted(() => {
+          const storedUsername = localStorage.getItem('userName');
+          userName.value = storedUsername || 'Player';
+          
+          if (!token || userRole !== 'PLAYER') {
+            // If not logged in, redirect to login
+            window.location.href = 'login.html';
+            return;
+          }
+          loadClasses();
+        });
+
+        const availableClasses = computed(() => {
+          // Only show classes with at least 1 available seat (US-PL-5)
+          return classes.value.filter(c => c.availableSets > 0);
+        });
+
+        const loadClasses = async () => {
+          loading.value = true;
+          try {
+            const url = window.apiUrl ? window.apiUrl('/api/v1/session/get') : '/api/v1/session/get';
+            const response = await fetch(url, {
+              headers: {
+                'Authorization': `${tokenType} ${token}`
+              }
+            });
+
+            if (!response.ok) {
+              if (response.status === 401 || response.status === 403) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return;
+              }
+              throw new Error('Failed to load classes');
+            }
+
+            classes.value = await response.json();
+          } catch (error) {
+            console.error('Error loading classes:', error);
+          } finally {
+            loading.value = false;
+          }
+        };
+
+        const getTrainerName = (session) => {
+          if (session.trainer?.user) {
+            return `${session.trainer.user.firstName || ''} ${session.trainer.user.lastName || ''}`.trim() || 'N/A';
+          }
+          return 'N/A';
+        };
+
+        const selectClass = (session) => {
+          if (session.availableSets > 0) {
+            selectedClass.value = session.id;
+            // Store selected class in sessionStorage
+            sessionStorage.setItem('selectedClassId', session.id);
+            sessionStorage.setItem('selectedClassName', session.name);
+            sessionStorage.setItem('selectedClassTime', session.time);
+          }
+        };
+
+        const continueToPayment = () => {
+          if (selectedClass.value) {
+            window.location.href = 'player-payment-flow.html';
+          }
+        };
+
+        return {
+          userName,
+          classes,
+          availableClasses,
+          loading,
+          selectedClass,
+          getTrainerName,
+          selectClass,
+          continueToPayment
+        };
+      }
+    }).mount('#app');
+      // Dark/Light Mode Toggle Script
+      (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+
+
+  </script>
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
+        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+</div>
+
+</html>
+

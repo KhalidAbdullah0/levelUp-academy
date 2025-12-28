@@ -3,6 +3,7 @@ package com.levelup.levelup_academy.Controller;
 import com.levelup.levelup_academy.Api.ApiResponse;
 import com.levelup.levelup_academy.DTO.PlayerDTO;
 import com.levelup.levelup_academy.DTOOut.PlayerDTOOut;
+import com.levelup.levelup_academy.DTOOut.PlayerRegistrationResponse;
 import com.levelup.levelup_academy.Model.Player;
 import com.levelup.levelup_academy.Model.StatisticPlayer;
 import com.levelup.levelup_academy.Model.User;
@@ -24,8 +25,15 @@ public class PlayerController {
 
      //GET
     @GetMapping("/get")
-    public ResponseEntity getAllPlayers(@AuthenticationPrincipal User moderator){
-        return ResponseEntity.status(200).body(playerService.getAllPlayers(moderator.getModerator().getId()));
+    public ResponseEntity getAllPlayers(@AuthenticationPrincipal User user){
+        // Check if user is admin (no moderator) or moderator
+        if (user.getRole().equals("ADMIN")) {
+            // Admin can see all players without moderator filter
+            return ResponseEntity.status(200).body(playerService.getAllPlayersForAdmin());
+        } else {
+            // Moderator needs their moderator ID
+            return ResponseEntity.status(200).body(playerService.getAllPlayers(user.getModerator().getId()));
+        }
     }
 
     //get player by moderator
@@ -37,8 +45,8 @@ public class PlayerController {
     //Register
     @PostMapping("/register")
     public ResponseEntity registerPlayer(@RequestBody @Valid PlayerDTO playerDTO){
-        playerService.registerPlayer(playerDTO);
-        return ResponseEntity.status(200).body(new ApiResponse("Player registers"));
+        PlayerRegistrationResponse response = playerService.registerPlayer(playerDTO);
+        return ResponseEntity.status(201).body(response);
     }
     @PutMapping("/edit")
     public ResponseEntity edit(@AuthenticationPrincipal User playerId, @RequestBody PlayerDTO playerDTO) {

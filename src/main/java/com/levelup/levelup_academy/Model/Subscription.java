@@ -1,7 +1,7 @@
 package com.levelup.levelup_academy.Model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -48,7 +48,7 @@ public class Subscription {
     private Integer price;
 
     @NotEmpty(message = "Status cannot be empty")
-    @Pattern(regexp = "^(PENDING|ACTIVE)$", message = "Subscription must be PENDING OR ACTIVE only")
+    @Pattern(regexp = "^(PENDING|ACTIVE|PENDING_PAYMENT)$", message = "Subscription must be PENDING, ACTIVE, or PENDING_PAYMENT only")
     @Column(columnDefinition = "varchar(20) not null")
     private String status = "PENDING";
 
@@ -57,6 +57,6 @@ public class Subscription {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @JsonIgnore
+    @JsonIgnoreProperties({"password", "authorities", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "pro", "player", "trainer", "moderator", "parent", "booking", "subscriptions", "reviews"})
     private User user;
 }

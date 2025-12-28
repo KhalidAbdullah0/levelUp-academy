@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pending Approval | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --bg: var(--lu-bg);
+      --accent: var(--lu-primary-light);
+      --accent-2: var(--lu-accent);
+      --text: var(--lu-text-primary);
+      --muted: var(--lu-text-muted);
+      --warning: #fbbf24;
+    }
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(255, 106, 26, 0.08), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(255, 200, 87, 0.05), transparent 35%),
+                  linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
+      color: var(--text);
+      padding-top: 80px;
+    min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+    .card {
+      background: var(--lu-surface);
+      border: 1px solid var(--lu-border-subtle);
+      border-radius: 24px;
+      padding: 48px 32px;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(251,191,36,0.1), transparent 60%);
+      pointer-events: none;
+    }
+    .icon {
+      font-size: 96px;
+      margin-bottom: 24px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+    }
+    h1 {
+      font-size: clamp(28px, 5vw, 36px);
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--warning), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle {
+      font-size: 18px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .info-box {
+      background: rgba(251,191,36,0.1);
+      border: 1px solid rgba(251,191,36,0.3);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+    .info-box h3 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: var(--warning);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-box ul {
+      list-style: none;
+      padding: 0;
+    }
+    .info-box li {
+      padding: 8px 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .info-box li::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .email-notice {
+      background: rgba(34,211,238,0.1);
+      border: 1px solid rgba(34,211,238,0.3);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: var(--accent);
+    }
+    .email-notice strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 16px 48px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(34,211,238,0.3);
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(34,211,238,0.4);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .footer-text {
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .footer-text a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .footer-text a:hover {
+      color: var(--accent-2);
+    }
+    @media (max-width: 640px) {
+      .card {
+        padding: 32px 24px;
+      }
+      .icon {
+        font-size: 72px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <nav class="lu-header">
+    <a href="home.html" class="lu-logo-link">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+  </nav>
+
+
+  <div class="container">
+    <div class="card">
+      <div class="icon">⏳</div>
+      <h1>Application Submitted!</h1>
+      <p class="subtitle">
+        Your application has been received successfully. Our admin team will review your profile shortly.
+      </p>
+
+      <div class="info-box">
+        <h3>📋 What Happens Next?</h3>
+        <ul>
+          <li>Our admin team will review your application and CV</li>
+          <li>This process typically takes 1-2 business days</li>
+          <li>You'll receive an email notification once approved</li>
+          <li>After approval, you can login and start using the platform</li>
+        </ul>
+      </div>
+
+      <div class="email-notice">
+        <strong>📧 Check Your Email</strong>
+        <span>We've sent a confirmation to your email address. Please check your inbox (and spam folder).</span>
+      </div>
+
+      <a href="home.html" class="btn">
+        Return to Home
+      </a>
+
+      <div class="footer-text">
+        Want to check your application status? <a href="login.html">Try logging in</a>
+      </div>
+    </div>
+  </div>
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
+        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle" id="darkModeToggle" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; display: flex !important;">
+    <span class="dark-mode-label">Dark Mode</span>
+    <div class="dark-mode-switch active" id="darkModeSwitch"></div>
+  </div>
+
+</html>
+

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subscriptions | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: var(--lu-bg);
+      --card: var(--lu-surface);
+      --accent: var(--lu-primary-light);
+      --accent-2: var(--lu-accent);
+      --text: var(--lu-text-primary);
+      --muted: var(--lu-text-muted);
+      --success: #4ade80;
+      --error: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
+      color: var(--text);
+      padding-top: 80px;
+    min-height: 100vh;
+    }
+    
+    .header {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .page-subtitle {
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .plan-card {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .plan-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px rgba(34,211,238,0.2);
+    }
+    .plan-card.featured {
+      border-color: var(--accent);
+      border-width: 2px;
+    }
+    .plan-badge {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .plan-name {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .plan-price {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .plan-price span {
+      font-size: 18px;
+      color: var(--muted);
+    }
+    .plan-features {
+      list-style: none;
+      margin: 24px 0;
+    }
+    .plan-features li {
+      padding: 8px 0;
+      color: var(--muted);
+    }
+    .plan-features li::before {
+      content: '✓ ';
+      color: var(--success);
+      font-weight: 700;
+      margin-right: 8px;
+    }
+    .btn-subscribe {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      margin-top: 16px;
+    }
+    .btn-subscribe:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+    
+    .payment-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .payment-modal.active {
+      display: flex;
+    }
+    .payment-content {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    .close-btn:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .error-message {
+      color: var(--error);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    .success-message {
+      color: var(--success);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+    }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(34,211,238,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <nav class="lu-header">
+    <a href="home.html" class="lu-logo-link">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+  </nav>
+
+
+  <div id="app">
+    <div class="header">
+      <div class="logo">🎮 LevelUp Academy</div>
+      <div>
+        <a href="player-dashboard.html" class="btn">← Dashboard</a>
+        <button class="btn" @click="logout" style="margin-left: 8px;">Logout</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="page-title">💳 Subscription Plans</div>
+      <div class="page-subtitle">Choose a plan that fits your needs and unlock more features!</div>
+
+      <div class="plans-grid">
+        <div class="plan-card">
+          <div class="plan-name">Basic</div>
+          <div class="plan-price">100 <span>SAR/month</span></div>
+          <ul class="plan-features">
+            <li>5 Sessions per month</li>
+            <li>Basic game access</li>
+            <li>Email support</li>
+          </ul>
+          <button class="btn-subscribe" @click="openPaymentModal('BASIC', 100)">Subscribe</button>
+        </div>
+        
+        <div class="plan-card featured">
+          <div class="plan-badge">Popular</div>
+          <div class="plan-name">Standard</div>
+          <div class="plan-price">200 <span>SAR/month</span></div>
+          <ul class="plan-features">
+            <li>10 Sessions per month</li>
+            <li>All games access</li>
+            <li>Priority support</li>
+            <li>Advanced statistics</li>
+          </ul>
+          <button class="btn-subscribe" @click="openPaymentModal('STANDARD', 200)">Subscribe</button>
+        </div>
+        
+        <div class="plan-card">
+          <div class="plan-name">Premium</div>
+          <div class="plan-price">300 <span>SAR/month</span></div>
+          <ul class="plan-features">
+            <li>Unlimited Sessions</li>
+            <li>All games + exclusive content</li>
+            <li>24/7 Priority support</li>
+            <li>Advanced statistics & analytics</li>
+            <li>Personal trainer consultation</li>
+          </ul>
+          <button class="btn-subscribe" @click="openPaymentModal('PREMIUM', 300)">Subscribe</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="payment-modal" :class="{ active: showPaymentModal }" @click.self="closePaymentModal">
+      <div class="payment-content">
+        <div class="modal-header">
+          <div class="modal-title">💳 Payment Details</div>
+          <button class="close-btn" @click="closePaymentModal">×</button>
+        </div>
+        
+        <form @submit.prevent="processPayment">
+          <div class="form-group">
+            <label class="form-label">Cardholder Name</label>
+            <input type="text" class="form-input" v-model="paymentForm.name" required placeholder="John Doe">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Card Number</label>
+            <input type="text" class="form-input" v-model="paymentForm.number" required placeholder="4111111111111111" maxlength="16">
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Expiry Month</label>
+              <input type="number" class="form-input" v-model="paymentForm.month" required placeholder="12" min="1" max="12">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Expiry Year</label>
+              <input type="number" class="form-input" v-model="paymentForm.year" required placeholder="2025" min="2024">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">CVV</label>
+            <input type="number" class="form-input" v-model="paymentForm.cvc" required placeholder="123" maxlength="4">
+          </div>
+          
+          <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+          <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
+          
+          <button type="submit" class="btn-subscribe" :disabled="processing">
+            <span v-if="processing">
+              <span class="spinner" style="width: 20px; height: 20px; display: inline-block; margin-right: 8px;"></span>
+              Processing...
+            </span>
+            <span v-else>Pay {{ currentPlanPrice }} SAR</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, reactive } = Vue;
+
+    createApp({
+      setup() {
+        const showPaymentModal = ref(false);
+        const processing = ref(false);
+        const errorMessage = ref('');
+        const successMessage = ref('');
+        const currentPlan = ref('');
+        const currentPlanPrice = ref(0);
+        
+        const paymentForm = reactive({
+          name: '',
+          number: '',
+          month: '',
+          year: '',
+          cvc: ''
+        });
+
+        const token = localStorage.getItem('authToken');
+        const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+        const userRole = localStorage.getItem('userRole');
+
+        if (!token || userRole !== 'PLAYER') {
+          window.location.href = 'login.html';
+        }
+
+        const openPaymentModal = (plan, price) => {
+          currentPlan.value = plan;
+          currentPlanPrice.value = price;
+          showPaymentModal.value = true;
+          errorMessage.value = '';
+          successMessage.value = '';
+          // Reset form
+          paymentForm.name = '';
+          paymentForm.number = '';
+          paymentForm.month = '';
+          paymentForm.year = '';
+          paymentForm.cvc = '';
+        };
+
+        const closePaymentModal = () => {
+          showPaymentModal.value = false;
+          errorMessage.value = '';
+          successMessage.value = '';
+        };
+
+        const processPayment = async () => {
+          processing.value = true;
+          errorMessage.value = '';
+          successMessage.value = '';
+
+          try {
+            // First, process payment through Moyasar
+            const paymentRequest = {
+              name: paymentForm.name,
+              number: paymentForm.number,
+              month: parseInt(paymentForm.month),
+              year: parseInt(paymentForm.year),
+              cvc: parseInt(paymentForm.cvc),
+              amount: currentPlanPrice.value,
+              currency: 'SAR',
+              description: `${currentPlan.value} Subscription - LevelUp Academy`,
+              callbackUrl: window.location.origin + '/api/v1/payments/callback'
+            };
+
+            const paymentUrl = window.apiUrl ? window.apiUrl('/api/v1/payments/card') : '/api/v1/payments/card';
+            const paymentResponse = await fetch(paymentUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${tokenType} ${token}`
+              },
+              body: JSON.stringify(paymentRequest)
+            });
+
+            if (!paymentResponse.ok) {
+              const errorData = await paymentResponse.json().catch(() => ({ message: 'Payment failed' }));
+              throw new Error(errorData.message || 'Payment processing failed');
+            }
+
+            const paymentData = await paymentResponse.json();
+            
+            // If payment successful, create subscription
+            const subscriptionUrl = window.apiUrl 
+              ? window.apiUrl(`/api/v1/subscription/${currentPlan.value.toLowerCase()}`)
+              : `/api/v1/subscription/${currentPlan.value.toLowerCase()}`;
+            
+            const subscriptionResponse = await fetch(subscriptionUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${tokenType} ${token}`
+              },
+              body: JSON.stringify(paymentRequest)
+            });
+
+            if (!subscriptionResponse.ok) {
+              throw new Error('Subscription creation failed');
+            }
+
+            successMessage.value = 'Payment successful! Your subscription is now active.';
+            
+            setTimeout(() => {
+              closePaymentModal();
+              // Optionally redirect to dashboard
+              // window.location.href = 'player-dashboard.html';
+            }, 2000);
+
+          } catch (error) {
+            console.error('Payment error:', error);
+            errorMessage.value = error.message || 'Payment failed. Please try again.';
+          } finally {
+            processing.value = false;
+          }
+        };
+
+        const logout = () => {
+          localStorage.clear();
+          window.location.href = 'login.html';
+        };
+
+        return {
+          showPaymentModal,
+          processing,
+          errorMessage,
+          successMessage,
+          currentPlan,
+          currentPlanPrice,
+          paymentForm,
+          openPaymentModal,
+          closePaymentModal,
+          processPayment,
+          logout
+        };
+      }
+    }).mount('#app');
+      // Dark/Light Mode Toggle Script
+      (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+
+
+  </script>
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
+        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle" id="darkModeToggle" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; display: flex !important;">
+    <span class="dark-mode-label">Dark Mode</span>
+    <div class="dark-mode-switch active" id="darkModeSwitch"></div>
+  </div>
+
+</html>
+

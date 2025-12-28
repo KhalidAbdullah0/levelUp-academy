@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: var(--lu-bg);
+      --card: var(--lu-surface);
+      --accent: var(--lu-primary-light);
+      --accent-2: var(--lu-accent);
+      --text: var(--lu-text-primary);
+      --muted: var(--lu-text-muted);
+      --success: #4ade80;
+      --error: #f87171;
+      --warning: #fbbf24;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(255, 106, 26, 0.08), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(255, 200, 87, 0.05), transparent 35%),
+                  linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    /* Header */
+    .header {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .role-badge {
+      padding: 6px 12px;
+      background: rgba(168,85,247,0.2);
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-2);
+    }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .stat-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      overflow-x: auto;
+    }
+    .tab {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .tab:hover {
+      color: var(--text);
+    }
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    
+    /* Table */
+    .table-container {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      background: rgba(255,255,255,0.02);
+      padding: 16px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    td {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+    
+    /* Status Badge */
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .status-pending {
+      background: rgba(251,191,36,0.2);
+      color: var(--warning);
+    }
+    .status-approved {
+      background: rgba(74,222,128,0.2);
+      color: var(--success);
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-approve {
+      background: rgba(74,222,128,0.2);
+      border: 1px solid rgba(74,222,128,0.3);
+      color: var(--success);
+    }
+    .btn-approve:hover {
+      background: rgba(74,222,128,0.3);
+    }
+    .btn-reject {
+      background: rgba(248,113,113,0.2);
+      border: 1px solid rgba(248,113,113,0.3);
+      color: var(--error);
+    }
+    .btn-reject:hover {
+      background: rgba(248,113,113,0.3);
+    }
+    .btn-view {
+      background: rgba(34,211,238,0.2);
+      border: 1px solid rgba(34,211,238,0.3);
+      color: var(--accent);
+    }
+    .btn-view:hover {
+      background: rgba(34,211,238,0.3);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      max-width: 400px;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .toast.success {
+      border-color: var(--success);
+    }
+    .toast.error {
+      border-color: var(--error);
+    }
+    
+    @media (max-width: 768px) {
+      .table-container {
+        overflow-x: auto;
+      }
+      table {
+        min-width: 600px;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+  <nav id="app" class="lu-header" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; padding: 1rem 5% !important; display: flex !important; justify-content: space-between !important; align-items: center !important;">
+    <a href="home.html" class="lu-logo-link" style="display: inline-flex !important; align-items: center !important; text-decoration: none !important;">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+    <div class="nav-buttons">
+      <a href="home.html" class="btn btn-secondary">Home</a>
+    </div>
+  </nav>
+  
+  <div style="padding-top: 80px;">
+<div id="app">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">🎮 LevelUp Academy - Admin</div>
+      <div class="header-right">
+        <span class="role-badge">ADMIN</span>
+        <button class="btn btn-secondary" @click="logout">Logout</button>
+      </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value">{{ pendingPros }}</div>
+          <div class="stat-label">Pending Pro Players</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value">{{ pendingTrainers }}</div>
+          <div class="stat-label">Pending Trainers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value">{{ approvedPros }}</div>
+          <div class="stat-label">Approved Pro Players</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value">{{ approvedTrainers }}</div>
+          <div class="stat-label">Approved Trainers</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab" :class="{ active: activeTab === 'pros' }" @click="activeTab = 'pros'">
+          Pro Players
+        </button>
+        <button class="tab" :class="{ active: activeTab === 'trainers' }" @click="activeTab = 'trainers'">
+          Trainers
+        </button>
+        <button class="tab" :class="{ active: activeTab === 'players' }" @click="activeTab = 'players'">
+          All Players
+        </button>
+        <button class="tab" :class="{ active: activeTab === 'parents' }" @click="activeTab = 'parents'">
+          Parents
+        </button>
+      </div>
+
+      <!-- Pro Players Table -->
+      <div v-if="activeTab === 'pros'" class="table-container">
+        <div v-if="loading" class="loading">Loading...</div>
+        <div v-else-if="pros.length === 0" class="empty-state">
+          <div class="empty-icon">⭐</div>
+          <div>No pro players found</div>
+        </div>
+        <table v-else>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>CV</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="pro in pros" :key="pro.id">
+              <td>{{ pro.id }}</td>
+              <td>{{ pro.user.username }}</td>
+              <td>{{ pro.user.firstName }} {{ pro.user.lastName }}</td>
+              <td>{{ pro.user.email }}</td>
+              <td>
+                <span class="status-badge" :class="pro.isApproved ? 'status-approved' : 'status-pending'">
+                  {{ pro.isApproved ? 'Approved' : 'Pending' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-view" @click="downloadCV('pro', pro.id)">
+                  📄 View CV
+                </button>
+              </td>
+              <td>
+                <div class="action-buttons" v-if="!pro.isApproved">
+                  <button class="btn btn-approve" @click="approvePro(pro.id)">
+                    ✓ Approve
+                  </button>
+                  <button class="btn btn-reject" @click="rejectPro(pro.id)">
+                    ✗ Reject
+                  </button>
+                </div>
+                <span v-else style="color: var(--success);">✓ Approved</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Trainers Table -->
+      <div v-if="activeTab === 'trainers'" class="table-container">
+        <div v-if="loading" class="loading">Loading...</div>
+        <div v-else-if="trainers.length === 0" class="empty-state">
+          <div class="empty-icon">🎓</div>
+          <div>No trainers found</div>
+        </div>
+        <table v-else>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>CV</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="trainer in trainers" :key="trainer.id">
+              <td>{{ trainer.id }}</td>
+              <td>{{ trainer.user.username }}</td>
+              <td>{{ trainer.user.firstName }} {{ trainer.user.lastName }}</td>
+              <td>{{ trainer.user.email }}</td>
+              <td>
+                <span class="status-badge" :class="trainer.isApproved ? 'status-approved' : 'status-pending'">
+                  {{ trainer.isApproved ? 'Approved' : 'Pending' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-view" @click="downloadCV('trainer', trainer.id)">
+                  📄 View CV
+                </button>
+              </td>
+              <td>
+                <div class="action-buttons" v-if="!trainer.isApproved">
+                  <button class="btn btn-approve" @click="approveTrainer(trainer.id)">
+                    ✓ Approve
+                  </button>
+                  <button class="btn btn-reject" @click="rejectTrainer(trainer.id)">
+                    ✗ Reject
+                  </button>
+                </div>
+                <span v-else style="color: var(--success);">✓ Approved</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Players Table -->
+      <div v-if="activeTab === 'players'" class="table-container">
+        <div v-if="loading" class="loading">Loading...</div>
+        <div v-else-if="players.length === 0" class="empty-state">
+          <div class="empty-icon">🎮</div>
+          <div>No players found</div>
+        </div>
+        <table v-else>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="player in players" :key="player.username">
+              <td>{{ player.username }}</td>
+              <td>{{ player.firstName }} {{ player.lastName }}</td>
+              <td>{{ player.email }}</td>
+              <td>{{ formatDate(player.createdAt) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Parents Table -->
+      <div v-if="activeTab === 'parents'" class="table-container">
+        <div v-if="loading" class="loading">Loading...</div>
+        <div v-else-if="parents.length === 0" class="empty-state">
+          <div class="empty-icon">👨‍👩‍👧</div>
+          <div>No parents found</div>
+        </div>
+        <table v-else>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Children</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="parent in parents" :key="parent.username">
+              <td>{{ parent.username }}</td>
+              <td>{{ parent.firstName }} {{ parent.lastName }}</td>
+              <td>{{ parent.email }}</td>
+              <td>{{ parent.phoneNumber || 'N/A' }}</td>
+              <td>{{ parent.childrenCount || 0 }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" :class="[toastType, { show: showToast }]">
+      {{ toastMessage }}
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, reactive, computed, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const activeTab = ref('pros');
+        const loading = ref(false);
+        const pros = ref([]);
+        const trainers = ref([]);
+        const players = ref([]);
+        const parents = ref([]);
+        
+        const showToast = ref(false);
+        const toastMessage = ref('');
+        const toastType = ref('success');
+
+        const token = localStorage.getItem('authToken');
+        const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+
+        // Stats
+        const pendingPros = computed(() => pros.value.filter(p => !p.isApproved).length);
+        const approvedPros = computed(() => pros.value.filter(p => p.isApproved).length);
+        const pendingTrainers = computed(() => trainers.value.filter(t => !t.isApproved).length);
+        const approvedTrainers = computed(() => trainers.value.filter(t => t.isApproved).length);
+
+        // Check auth and role
+        onMounted(() => {
+          const userRole = localStorage.getItem('userRole');
+          
+          if (!token) {
+            window.location.href = 'login.html';
+            return;
+          }
+          
+          // Only ADMIN can access this dashboard
+          if (userRole !== 'ADMIN') {
+            alert('Access Denied: Admin privileges required');
+            window.location.href = 'home.html';
+            return;
+          }
+          
+          loadData();
+        });
+
+        const apiCall = async (endpoint, options = {}) => {
+          const url = window.apiUrl ? window.apiUrl(endpoint) : endpoint;
+          const response = await fetch(url, {
+            ...options,
+            headers: {
+              ...options.headers,
+              'Authorization': `${tokenType} ${token}`
+            }
+          });
+          if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+              window.location.href = 'login.html';
+            }
+            throw new Error(await response.text());
+          }
+          return response.json();
+        };
+
+        const loadData = async () => {
+          loading.value = true;
+          try {
+            // Load all data - Note: These endpoints require MODERATOR role in your backend
+            // For admin, you might need to create admin-specific endpoints or adjust security config
+            const [prosData, trainersData] = await Promise.all([
+              apiCall('/api/v1/pro/get').catch(() => []),
+              apiCall('/api/v1/trainer/get').catch(() => [])
+            ]);
+            
+            pros.value = prosData;
+            trainers.value = trainersData;
+          } catch (error) {
+            console.error('Error loading data:', error);
+            showToastMessage('Failed to load data', 'error');
+          } finally {
+            loading.value = false;
+          }
+        };
+
+        const approvePro = async (proId) => {
+          if (!confirm('Approve this pro player?')) return;
+          try {
+            await apiCall(`/api/v1/pro/approve/${proId}`, { method: 'POST' });
+            showToastMessage('Pro player approved successfully!', 'success');
+            await loadData();
+          } catch (error) {
+            showToastMessage('Failed to approve pro player', 'error');
+          }
+        };
+
+        const rejectPro = async (proId) => {
+          if (!confirm('Reject and delete this pro player application?')) return;
+          try {
+            await apiCall(`/api/v1/pro/reject/${proId}`, { method: 'PUT' });
+            showToastMessage('Pro player rejected', 'success');
+            await loadData();
+          } catch (error) {
+            showToastMessage('Failed to reject pro player', 'error');
+          }
+        };
+
+        const approveTrainer = async (trainerId) => {
+          if (!confirm('Approve this trainer?')) return;
+          try {
+            await apiCall(`/api/v1/trainer/approve-trainer/${trainerId}`, { method: 'POST' });
+            showToastMessage('Trainer approved successfully!', 'success');
+            await loadData();
+          } catch (error) {
+            showToastMessage('Failed to approve trainer', 'error');
+          }
+        };
+
+        const rejectTrainer = async (trainerId) => {
+          if (!confirm('Reject and delete this trainer application?')) return;
+          try {
+            await apiCall(`/api/v1/trainer/reject-trainer/${trainerId}`, { method: 'PUT' });
+            showToastMessage('Trainer rejected', 'success');
+            await loadData();
+          } catch (error) {
+            showToastMessage('Failed to reject trainer', 'error');
+          }
+        };
+
+        const downloadCV = async (type, id) => {
+          try {
+            const endpoint = type === 'pro' ? `/api/v1/pro/cv/${id}` : `/api/v1/trainer/cv/${id}`;
+            const url = window.apiUrl ? window.apiUrl(endpoint) : endpoint;
+            
+            const response = await fetch(url, {
+              headers: {
+                'Authorization': `${tokenType} ${token}`
+              }
+            });
+            
+            if (!response.ok) throw new Error('Failed to download CV');
+            
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = `${type}_cv_${id}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(downloadUrl);
+            document.body.removeChild(a);
+          } catch (error) {
+            showToastMessage('Failed to download CV', 'error');
+          }
+        };
+
+        const showToastMessage = (message, type = 'success') => {
+          toastMessage.value = message;
+          toastType.value = type;
+          showToast.value = true;
+          setTimeout(() => {
+            showToast.value = false;
+          }, 3000);
+        };
+
+        const formatDate = (date) => {
+          if (!date) return 'N/A';
+          return new Date(date).toLocaleDateString();
+        };
+
+        const logout = () => {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('tokenType');
+          window.location.href = 'login.html';
+        };
+
+        return {
+          activeTab,
+          loading,
+          pros,
+          trainers,
+          players,
+          parents,
+          pendingPros,
+          approvedPros,
+          pendingTrainers,
+          approvedTrainers,
+          showToast,
+          toastMessage,
+          toastType,
+          approvePro,
+          rejectPro,
+          approveTrainer,
+          rejectTrainer,
+          downloadCV,
+          formatDate,
+          logout
+        };
+      }
+    }).mount('#app');
+  </script>
+      // Dark/Light Mode Toggle Script
+      (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+
+
+</div>
+
+  
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img" style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+        <span style="display:none; font-size: 18px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
+

@@ -18,8 +18,15 @@ public class GameController {
 
     //GET
     @GetMapping("/get")
-    public ResponseEntity getAllGames(@AuthenticationPrincipal User moderator){
-        return ResponseEntity.status(200).body(gameService.getAllGames(moderator.getId()));
+    public ResponseEntity getAllGames(@AuthenticationPrincipal User user){
+        // Check if user is player (no moderator) or moderator/admin
+        if (user.getRole().equals("PLAYER")) {
+            // Player can see all games without moderator filter
+            return ResponseEntity.status(200).body(gameService.getAllGamesForPlayer());
+        } else {
+            // Moderator/Admin needs their moderator ID
+            return ResponseEntity.status(200).body(gameService.getAllGames(user.getId()));
+        }
     }
 
     //ADD

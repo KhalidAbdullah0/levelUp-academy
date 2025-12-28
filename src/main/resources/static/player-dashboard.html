@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Player Dashboard | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --bg: var(--lu-bg);
+      --card: var(--lu-surface);
+      --accent: var(--lu-primary-light);
+      --accent-2: var(--lu-accent);
+      --text: var(--lu-text-primary);
+      --muted: var(--lu-text-muted);
+      --success: #4ade80;
+      --error: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: 80px;
+    }
+    
+    /* Header */
+    .header {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .user-name {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .user-name strong {
+      color: var(--text);
+    }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    
+    /* Welcome Section */
+    .welcome-section {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .welcome-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .welcome-text {
+      color: var(--muted);
+      font-size: 16px;
+    }
+    
+    /* Quick Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(34,211,238,0.1), transparent);
+      border-radius: 50%;
+      transform: translate(30%, -30%);
+    }
+    .stat-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Navigation Cards */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .nav-card {
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 28px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .nav-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px rgba(34,211,238,0.2);
+    }
+    .nav-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .nav-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .nav-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    @media (max-width: 768px) {
+      .stats-grid, .nav-grid {
+        grid-template-columns: 1fr;
+      }
+      .header-right {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <nav class="lu-header">
+      <a href="home.html" class="lu-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+        <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <div class="header-right">
+        <span class="user-name">Welcome, <strong style="color: var(--lu-accent);">{{ userName }}</strong></span>
+        <button class="btn lu-btn-secondary" @click="logout">Logout</button>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <div class="welcome-title">Welcome Back, {{ userName }}! 🎮</div>
+        <div class="welcome-text">Your gaming journey continues here. Explore games, trainers, classes, and more!</div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="stats-grid">
+        <div class="stat-card" @click="goToProfile">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-value">{{ stats.rating || '0.0' }}</div>
+          <div class="stat-label">Your Rating</div>
+        </div>
+        
+        <div class="stat-card" @click="goToProfile">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-value">{{ stats.wins || 0 }}</div>
+          <div class="stat-label">Wins</div>
+        </div>
+        
+        <div class="stat-card" @click="goToClasses">
+          <div class="stat-icon">📚</div>
+          <div class="stat-value">{{ stats.bookings || 0 }}</div>
+          <div class="stat-label">My Bookings</div>
+        </div>
+        
+        <div class="stat-card" @click="goToProfile">
+          <div class="stat-icon">🥇</div>
+          <div class="stat-value">{{ stats.rank || 'N/A' }}</div>
+          <div class="stat-label">Leaderboard Rank</div>
+        </div>
+      </div>
+
+      <!-- Navigation Cards -->
+      <div class="nav-grid">
+        <a href="player-games.html" class="nav-card">
+          <div class="nav-icon">🎮</div>
+          <div class="nav-title">Games</div>
+          <div class="nav-desc">Browse and explore all available games. Find your favorite and start playing!</div>
+        </a>
+        
+        <a href="player-trainers.html" class="nav-card">
+          <div class="nav-icon">👨‍🏫</div>
+          <div class="nav-title">Trainers</div>
+          <div class="nav-desc">Meet our professional trainers. Learn from the best and improve your skills!</div>
+        </a>
+        
+        <a href="player-classes.html" class="nav-card">
+          <div class="nav-icon">📖</div>
+          <div class="nav-title">Classes</div>
+          <div class="nav-desc">View available classes and sessions. Book your spot and start learning!</div>
+        </a>
+        
+        <a href="player-profile.html" class="nav-card">
+          <div class="nav-icon">👤</div>
+          <div class="nav-title">Profile</div>
+          <div class="nav-desc">View your statistics, achievements, and leaderboard position. Track your progress!</div>
+        </a>
+        
+        <a href="player-payment.html" class="nav-card">
+          <div class="nav-icon">💳</div>
+          <div class="nav-title">Subscriptions</div>
+          <div class="nav-desc">Subscribe to Basic, Standard, or Premium plans. Unlock more features!</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, reactive, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const userName = ref('Player');
+        const stats = reactive({
+          rating: '0.0',
+          wins: 0,
+          bookings: 0,
+          rank: 'N/A'
+        });
+
+        const token = localStorage.getItem('authToken');
+        const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+        const storedUserName = localStorage.getItem('userName');
+        const userRole = localStorage.getItem('userRole');
+
+        if (storedUserName) {
+          userName.value = storedUserName;
+        }
+
+        // Check auth
+        onMounted(() => {
+          if (!token || userRole !== 'PLAYER') {
+            window.location.href = 'login.html';
+            return;
+          }
+          
+          loadPlayerStats();
+        });
+
+        const apiCall = async (endpoint, options = {}) => {
+          const url = window.apiUrl ? window.apiUrl(endpoint) : endpoint;
+          const response = await fetch(url, {
+            ...options,
+            headers: {
+              ...options.headers,
+              'Authorization': `${tokenType} ${token}`
+            }
+          });
+          
+          if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+              localStorage.clear();
+              window.location.href = 'login.html';
+              throw new Error('Unauthorized');
+            }
+            throw new Error(await response.text());
+          }
+          return response.json();
+        };
+
+        const loadPlayerStats = async () => {
+          try {
+            // Load player statistics
+            const playerStats = await apiCall('/api/v1/player/player').catch(() => null);
+            if (playerStats) {
+              stats.rating = playerStats.rate?.toFixed(1) || '0.0';
+              stats.wins = playerStats.winGame || 0;
+            }
+            
+            // Load bookings count
+            const bookings = await apiCall('/api/v1/booking/get-all').catch(() => []);
+            stats.bookings = Array.isArray(bookings) ? bookings.length : 0;
+            
+            // Load leaderboard to find rank
+            const leaderboard = await apiCall('/api/v1/player-statistic/leaderboard').catch(() => []);
+            if (Array.isArray(leaderboard)) {
+              const playerId = localStorage.getItem('userId');
+              const rank = leaderboard.findIndex(p => p.player?.user?.id === parseInt(playerId)) + 1;
+              if (rank > 0) {
+                stats.rank = `#${rank}`;
+              }
+            }
+          } catch (error) {
+            console.error('Error loading stats:', error);
+          }
+        };
+
+        const goToProfile = () => {
+          window.location.href = 'player-profile.html';
+        };
+
+        const goToClasses = () => {
+          window.location.href = 'player-classes.html';
+        };
+
+        const logout = () => {
+          localStorage.clear();
+          window.location.href = 'login.html';
+        };
+
+        return {
+          userName,
+          stats,
+          logout,
+          goToProfile,
+          goToClasses
+        };
+      }
+    }).mount('#app');
+  </script>
+      // Dark/Light Mode Toggle Script
+      (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+
+
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
+        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
+

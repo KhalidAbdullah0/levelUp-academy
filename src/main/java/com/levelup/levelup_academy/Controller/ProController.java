@@ -26,8 +26,15 @@ public class ProController {
 
     //GET
     @GetMapping("/get")
-    public ResponseEntity getAllPro(@AuthenticationPrincipal User moderatorId) {
-        return ResponseEntity.status(200).body(proService.getAllPro(moderatorId.getModerator().getId()));
+    public ResponseEntity getAllPro(@AuthenticationPrincipal User user) {
+        // Check if user is admin (no moderator) or moderator
+        if (user.getRole().equals("ADMIN")) {
+            // Admin can see all pros without moderator filter
+            return ResponseEntity.status(200).body(proService.getAllProForAdmin());
+        } else {
+            // Moderator needs their moderator ID
+            return ResponseEntity.status(200).body(proService.getAllPro(user.getModerator().getId()));
+        }
     }
 
     //get pro player by id
@@ -76,8 +83,16 @@ public class ProController {
     }
 
     @GetMapping("/cv/{proId}")
-    public ResponseEntity<byte[]> downloadProCv(@AuthenticationPrincipal User moderatorId,@PathVariable Integer proId) {
-        byte[] cvContent = proService.downloadProPDF(moderatorId.getModerator().getId(),proId);
+    public ResponseEntity<byte[]> downloadProCv(@AuthenticationPrincipal User user,@PathVariable Integer proId) {
+        byte[] cvContent;
+        // Check if user is admin (no moderator) or moderator
+        if (user.getRole().equals("ADMIN")) {
+            // Admin can download CV without moderator ID
+            cvContent = proService.downloadProPDFForAdmin(proId);
+        } else {
+            // Moderator needs their moderator ID
+            cvContent = proService.downloadProPDF(user.getModerator().getId(), proId);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);

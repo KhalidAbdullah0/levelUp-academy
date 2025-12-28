@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LevelUp Academy | Gaming Training Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Override and extend global styles for homepage */
+    body {
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Navigation */
+    nav {
+      padding: 1rem 5%;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--lu-primary-light);
+      color: var(--lu-primary-light);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 106, 26, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--lu-gradient-brand);
+      color: #111827;
+      box-shadow: var(--lu-shadow-soft);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 20px 45px rgba(255, 106, 26, 0.4);
+    }
+
+    .role-badge {
+      background: var(--lu-accent);
+      color: #111827;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 3rem;
+      align-items: center;
+      padding: 8rem clamp(2rem, 5vw, 5rem) 4rem;
+      background: radial-gradient(circle at top left, #2d3748 0, var(--lu-bg) 55%, #000000 100%);
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 4vw, 3.6rem);
+      margin-bottom: 1rem;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .gradient-text {
+      background: var(--lu-gradient-brand);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.25rem);
+      color: var(--lu-text-secondary);
+      margin-bottom: 2rem;
+      max-width: 32rem;
+      line-height: 1.6;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-large {
+      padding: 16px 40px;
+      font-size: 16px;
+    }
+
+    .hero-character {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 2rem;
+    }
+
+    .hero-character-img {
+      max-width: 100%;
+      max-height: 600px;
+      height: auto;
+      width: auto;
+      filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.9));
+      animation: float 3s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-15px);
+      }
+    }
+
+    /* Glow effect behind character */
+    .hero-character::before {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(255, 106, 26, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+    }
+
+    /* Features Section */
+    .features {
+      padding: 80px 5%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      margin-bottom: 50px;
+      font-weight: 700;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+
+    .feature-card {
+      background: var(--lu-surface);
+      border: 1px solid var(--lu-border-subtle);
+      border-radius: 18px;
+      padding: 30px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--lu-primary-light);
+    }
+
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--lu-text-primary);
+    }
+
+    .feature-desc {
+      color: var(--lu-text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Roles Section */
+    .roles {
+      padding: 80px 5%;
+      background: radial-gradient(circle at center, rgba(255, 106, 26, 0.05), transparent);
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .role-card {
+      background: var(--lu-surface);
+      border: 1px solid var(--lu-border-subtle);
+      border-radius: 18px;
+      padding: 24px;
+      text-align: center;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .role-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--lu-primary-light);
+    }
+
+    .role-emoji {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+
+    .role-name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--lu-text-primary);
+    }
+
+    .role-desc {
+      color: var(--lu-text-muted);
+      font-size: 13px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+        text-align: center;
+        padding: 6rem clamp(1.5rem, 4vw, 2rem) 3rem;
+      }
+
+      .hero-content {
+        order: 1;
+      }
+
+      .hero-character {
+        order: 2;
+      }
+
+      .subtitle {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn-large {
+        width: 100%;
+      }
+
+      .nav-buttons {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="app" class="lu-header" style="background: var(--lu-bg) !important; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; padding: 1rem 5% !important; display: flex !important; justify-content: space-between !important; align-items: center !important;">
+    <a href="home.html" class="lu-logo-link" style="display: inline-flex !important; align-items: center !important; text-decoration: none !important; visibility: visible !important;">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="console.error('Logo image failed to load:', this.src); this.style.display='none'; var fallback = this.nextElementSibling; if(fallback) fallback.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+      <span class="logo-fallback" style="display: none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #ff6a1a;">🎮 LevelUp Academy</span>
+    </a>
+    <div class="nav-buttons" v-if="!isLoggedIn">
+      <a href="login.html" class="btn btn-secondary">Login</a>
+      <a href="role-selector.html" class="btn btn-primary">Sign Up</a>
+    </div>
+    <div class="nav-buttons" v-else>
+      <span style="color: var(--lu-text-muted); margin-right: 12px;">
+        Welcome, <strong style="color: var(--lu-accent);">{{ userName }}</strong>
+      </span>
+      <span class="role-badge">{{ userRole }}</span>
+      <a href="admin-dashboard.html" v-if="userRole === 'ADMIN'" class="btn btn-secondary">Dashboard</a>
+      <button class="btn btn-secondary" @click="logout">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero lu-hero">
+    <div class="hero-content lu-hero-content">
+      <h1 class="lu-hero-title">
+        Level Up Your <br/>
+        <span class="gradient-text">Gaming Skills</span>
+      </h1>
+      <p class="subtitle lu-hero-subtitle">
+        Master gaming skills, compete in tournaments, and connect with top gamers worldwide. Professional training platform connecting players with expert trainers and pro players.
+      </p>
+      <div class="cta-buttons lu-hero-actions">
+        <a href="role-selector.html" class="btn btn-primary lu-btn lu-btn-primary btn-large lu-btn-large">Get Started</a>
+        <a href="login.html" class="btn btn-secondary lu-btn lu-btn-secondary btn-large lu-btn-large">Sign In</a>
+      </div>
+    </div>
+    <div class="hero-character lu-hero-character">
+      <img
+        src="/assets/characters/main-hero.png"
+        alt="LevelUp Academy main character - A powerful gaming fighter"
+        class="hero-character-img lu-hero-character-img"
+        onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'600\' viewBox=\'0 0 400 600\'%3E%3Crect fill=\'%23111827\' width=\'400\' height=\'600\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'24\' fill=\'%23ff6a1a\' text-anchor=\'middle\' dominant-baseline=\'middle\'%3ECharacter Image%3C/text%3E%3C/svg%3E'"
+      />
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <h2 class="section-title">Why Choose LevelUp Academy?</h2>
+    <div class="feature-grid">
+      <div class="feature-card lu-card">
+        <div class="feature-icon">🎯</div>
+        <h3 class="feature-title">Expert Training</h3>
+        <p class="feature-desc">Learn from professional trainers and pro players with proven track records</p>
+      </div>
+      <div class="feature-card lu-card">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">Track Progress</h3>
+        <p class="feature-desc">Monitor your improvement with detailed statistics and performance analytics</p>
+      </div>
+      <div class="feature-card lu-card">
+        <div class="feature-icon">🎮</div>
+        <h3 class="feature-title">Multiple Games</h3>
+        <p class="feature-desc">Training available for various popular competitive games</p>
+      </div>
+      <div class="feature-card lu-card">
+        <div class="feature-icon">⏰</div>
+        <h3 class="feature-title">Flexible Scheduling</h3>
+        <p class="feature-desc">Book sessions that fit your schedule with easy booking management</p>
+      </div>
+      <div class="feature-card lu-card">
+        <div class="feature-icon">👨‍👩‍👧</div>
+        <h3 class="feature-title">Parent Control</h3>
+        <p class="feature-desc">Parents can manage their children's training and monitor progress</p>
+      </div>
+      <div class="feature-card lu-card">
+        <div class="feature-icon">💎</div>
+        <h3 class="feature-title">Premium Quality</h3>
+        <p class="feature-desc">All trainers and pros are verified and approved by our team</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roles Section -->
+  <section class="roles">
+    <h2 class="section-title">Join As</h2>
+    <div class="role-grid">
+      <div class="role-card lu-card">
+        <div class="role-emoji">🎮</div>
+        <h3 class="role-name">Player</h3>
+        <p class="role-desc">Learn and improve your gaming skills</p>
+      </div>
+      <div class="role-card lu-card">
+        <div class="role-emoji">⭐</div>
+        <h3 class="role-name">Pro Player</h3>
+        <p class="role-desc">Share your expertise and earn</p>
+      </div>
+      <div class="role-card lu-card">
+        <div class="role-emoji">🎓</div>
+        <h3 class="role-name">Trainer</h3>
+        <p class="role-desc">Teach and train aspiring gamers</p>
+      </div>
+      <div class="role-card lu-card">
+        <div class="role-emoji">👨‍👩‍👧</div>
+        <h3 class="role-name">Parent</h3>
+        <p class="role-desc">Manage your child's gaming journey</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">
+        <span style="display:none; font-size: 18px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+  
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle" id="darkModeToggle" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; display: flex !important;">
+    <span class="dark-mode-label">Dark Mode</span>
+    <div class="dark-mode-switch active" id="darkModeSwitch"></div>
+  </div>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const isLoggedIn = ref(false);
+        const userName = ref('');
+        const userRole = ref('');
+
+        onMounted(() => {
+          const token = localStorage.getItem('authToken');
+          const role = localStorage.getItem('userRole');
+          
+          if (token && role) {
+            isLoggedIn.value = true;
+            userRole.value = role;
+            
+            // Try to get user info from API
+            fetchUserInfo(token, role);
+          }
+        });
+
+        const fetchUserInfo = async (token, role) => {
+          // Get username from localStorage
+          const storedUsername = localStorage.getItem('userName');
+          if (storedUsername) {
+            userName.value = storedUsername;
+          } else {
+            userName.value = role.charAt(0) + role.slice(1).toLowerCase();
+          }
+        };
+
+        const logout = () => {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('tokenType');
+          localStorage.removeItem('userName');
+          window.location.reload();
+        };
+
+        return {
+          isLoggedIn,
+          userName,
+          userRole,
+          logout
+        };
+      }
+    }).mount('#app');
+  
+      // Dark/Light Mode Toggle Script
+      (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+
+    </script></script>
+</body>
+</html>

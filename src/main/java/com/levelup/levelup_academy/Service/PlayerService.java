@@ -4,6 +4,7 @@ import com.levelup.levelup_academy.Api.ApiException;
 import com.levelup.levelup_academy.DTO.EmailRequest;
 import com.levelup.levelup_academy.DTO.PlayerDTO;
 import com.levelup.levelup_academy.DTOOut.PlayerDTOOut;
+import com.levelup.levelup_academy.DTOOut.PlayerRegistrationResponse;
 import com.levelup.levelup_academy.Model.*;
 import com.levelup.levelup_academy.Repository.AuthRepository;
 import com.levelup.levelup_academy.Repository.ModeratorRepository;
@@ -43,6 +44,16 @@ public class PlayerService {
         return dtoList;
     }
 
+    //GET for Admin (no moderator required) - returns User objects for players
+    public List<User> getAllPlayersForAdmin(){
+        List<Player> players = playerRepository.findAll();
+        List<User> userList = new ArrayList<>();
+        for (Player player : players) {
+            userList.add(player.getUser());
+        }
+        return userList;
+    }
+
     public Player getPlayer(Integer moderatorId,Integer playerId){
         Moderator moderator= moderatorRepository.findModeratorById(moderatorId);
         if(moderator == null){
@@ -56,33 +67,44 @@ public class PlayerService {
     }
     //Register player
 
-    public void registerPlayer(PlayerDTO playerDTO){
+    public PlayerRegistrationResponse registerPlayer(PlayerDTO playerDTO){
         playerDTO.setRole("PLAYER");
         String hashPassword = new BCryptPasswordEncoder().encode(playerDTO.getPassword());
-        User user = new User(null, playerDTO.getUsername(), hashPassword, playerDTO.getEmail(), playerDTO.getFirstName(), playerDTO.getLastName(), playerDTO.getRole(), LocalDate.now(),null,null,null,null,null,null,null,null);
+        User user = new User(null, playerDTO.getUsername(), hashPassword, playerDTO.getEmail(), playerDTO.getFirstName(), playerDTO.getLastName(), playerDTO.getRole(), LocalDate.now(), true, null,null,null,null,null,null,null,null);
         Player player = new Player(null,user,null);
-        authRepository.save(user);
+        User savedUser = authRepository.save(user);
         playerRepository.save(player);
 
-        String subject = "Welcome to LevelUp Academy ";
-        String message = "<html><body style='font-family: Arial, sans-serif; color: #fff; line-height: 1.6; background-color: #A53A10; padding: 40px 20px;'>" +
-                "<div style='max-width: 600px; margin: auto; background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; text-align: center;'>" +
-                "<img src='https://i.imgur.com/Q6FtCEu.jpeg' alt='LevelUp Academy Logo' style='width:90px; border-radius: 10px; margin-bottom: 20px;'/>" +
-                "<h2 style='color: #fff;'>🎮 Welcome to <span style='color: #FFD700;'>LevelUp Academy</span>, " + playerDTO.getFirstName() + "!</h2>" +
-                "<p style='font-size: 16px;'>We're thrilled to have you on board. Get ready to train, play, and level up your skills with an amazing community of players just like you!</p>" +
-                "<p style='font-size: 16px;'>👉 <a href='https://discord.gg/3KQPVdrv' style='color: #FFD700; text-decoration: none;'>Join our Discord server</a> to chat, learn, and team up with other LevelUp members!</p>" +
-                "<p style='font-size: 15px;'>🚀 Let’s grow stronger together.<br/><b>– The LevelUp Academy Team</b></p>" +
-                "</div>" +
-                "</body></html>";
+        // Try to send welcome email (non-blocking - registration succeeds even if email fails)
+        try {
+            String subject = "Welcome to LevelUp Academy ";
+            String message = "<html><body style='font-family: Arial, sans-serif; color: #fff; line-height: 1.6; background-color: #A53A10; padding: 40px 20px;'>" +
+                    "<div style='max-width: 600px; margin: auto; background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; text-align: center;'>" +
+                    "<img src='https://i.imgur.com/Q6FtCEu.jpeg' alt='LevelUp Academy Logo' style='width:90px; border-radius: 10px; margin-bottom: 20px;'/>" +
+                    "<h2 style='color: #fff;'>🎮 Welcome to <span style='color: #FFD700;'>LevelUp Academy</span>, " + playerDTO.getFirstName() + "!</h2>" +
+                    "<p style='font-size: 16px;'>We're thrilled to have you on board. Get ready to train, play, and level up your skills with an amazing community of players just like you!</p>" +
+                    "<p style='font-size: 16px;'>👉 <a href='https://discord.gg/3KQPVdrv' style='color: #FFD700; text-decoration: none;'>Join our Discord server</a> to chat, learn, and team up with other LevelUp members!</p>" +
+                    "<p style='font-size: 15px;'>🚀 Let's grow stronger together.<br/><b>– The LevelUp Academy Team</b></p>" +
+                    "</div>" +
+                    "</body></html>";
 
-        EmailRequest emailRequest = new EmailRequest(playerDTO.getEmail(),message, subject);
-        emailNotificationService.sendEmail(emailRequest);
-
-        authRepository.save(user);
-        playerRepository.save(player);
+            EmailRequest emailRequest = new EmailRequest(playerDTO.getEmail(),message, subject);
+            emailNotificationService.sendEmail(emailRequest);
+        } catch (Exception e) {
+            // Log email failure but don't stop registration
+            System.out.println("Warning: Could not send welcome email to " + playerDTO.getEmail() + " - " + e.getMessage());
+        }
 //        String proPhoneNumber = "+447723275615";
 //        String whatsAppMessage = " New player registered: " + playerDTO.getFirstName() + " " + playerDTO.getLastName() + ".";
 //        ultraMsgService.sendWhatsAppMessage(proPhoneNumber, whatsAppMessage);
+        
+        // Return user info for auto-login
+        return new PlayerRegistrationResponse(
+            savedUser.getId(),
+            savedUser.getUsername(),
+            savedUser.getEmail(),
+            savedUser.getRole()
+        );
     }
     public void updatePlayer(Integer playerId, PlayerDTO playerDTO) {
         Player player = playerRepository.findById(playerId)
@@ -114,9 +136,30 @@ public class PlayerService {
         playerRepository.delete(player);
     }
 
-    public StatisticPlayer getMyStatisticsByPlayerId(Integer playerId) {
-        StatisticPlayer stat = statisticPlayerRepository.findByPlayer_Id(playerId);
-        if (stat == null) throw new ApiException("Statistic not found for this player");
+    public StatisticPlayer getMyStatisticsByPlayerId(Integer userId) {
+        // First, find the Player record associated with this User
+        Player player = playerRepository.findPlayerByUser_Id(userId);
+        if (player == null) {
+            throw new ApiException("Player record not found for this user");
+        }
+        
+        // Now get statistics for this player
+        StatisticPlayer stat = statisticPlayerRepository.findByPlayer_Id(player.getId());
+        if (stat == null) {
+            // Return default statistics if player doesn't have statistics yet
+            // Create default statistics
+            StatisticPlayer defaultStat = new StatisticPlayer();
+            defaultStat.setPlayer(player);
+            defaultStat.setRate(1.0);
+            defaultStat.setWinGame(0);
+            defaultStat.setLossGame(0);
+            defaultStat.setTrophy("NO_TROPHY");
+            defaultStat.setField("General");
+            defaultStat.setDate(java.time.LocalDate.now());
+            
+            // Save default statistics
+            return statisticPlayerRepository.save(defaultStat);
+        }
         return stat;
     }
 

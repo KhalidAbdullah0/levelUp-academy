@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LevelUp Academy | Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(255, 106, 26, 0.08), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(255, 200, 87, 0.05), transparent 35%),
+                  linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
+      color: var(--lu-text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .login-wrapper {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      padding: 6rem 1rem 2rem;
+    }
+    .card {
+      width: min(420px, 90vw);
+      background: var(--lu-surface);
+      border: 1px solid var(--lu-border-subtle);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: var(--lu-shadow-soft);
+      position: relative;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(34,211,238,0.09), transparent 40%),
+                  radial-gradient(circle at 80% 0%, rgba(168,85,247,0.09), transparent 35%);
+      pointer-events: none;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+    p.subtitle {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.01em;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(15,23,42,0.7);
+      color: var(--text);
+      font-size: 14px;
+      transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+      outline: none;
+    }
+    input {
+      background: var(--lu-surface-alt);
+      border: 1px solid var(--lu-border-subtle);
+      color: var(--lu-text-primary);
+    }
+    input:focus {
+      border-color: var(--lu-primary-light);
+      box-shadow: 0 0 0 3px rgba(255, 106, 26, 0.15);
+      transform: translateY(-1px);
+    }
+    .field {
+      margin-bottom: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: var(--lu-gradient-brand);
+      color: #111827;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(255, 106, 26, 0.4); }
+    button:active { transform: translateY(0); }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .status {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      min-height: 18px;
+    }
+    .status.success { color: var(--lu-success); }
+    .status.error { color: var(--lu-danger); }
+    .link-text {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--lu-text-muted);
+    }
+    .link-text a {
+      color: var(--lu-primary-light);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .link-text a:hover {
+      color: var(--lu-accent);
+    }
+    .token-preview {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.6);
+      border: 1px solid rgba(255,255,255,0.05);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: var(--muted);
+      word-break: break-all;
+    }
+    .token-preview strong {
+      color: var(--text);
+    }
+    nav.lu-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <nav class="lu-header">
+    <a href="home.html" class="lu-logo-link">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+  </nav>
+
+  <div class="login-wrapper">
+    <div id="app" class="card">
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to LevelUp Academy</p>
+
+    <form @submit.prevent="handleLogin">
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" v-model="form.username" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" v-model="form.password" autocomplete="current-password" required />
+      </div>
+      <button type="submit" :disabled="loading">
+        {{ loading ? 'Signing in…' : 'Login' }}
+      </button>
+    </form>
+
+    <div class="status" :class="statusClass">{{ statusMessage }}</div>
+
+    <div v-if="token" class="token-preview">
+      <div><strong>Role:</strong> {{ role }}</div>
+      <div style="margin-top:6px;"><strong>Token:</strong> {{ token.substring(0, 50) }}...</div>
+    </div>
+
+    <div class="link-text">
+      Don't have an account? <a href="signup.html">Sign up</a>
+    </div>
+  </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
+        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+  
+</div>
+<script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, reactive, computed, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const DASHBOARD_REDIRECT = window.CONFIG?.DASHBOARD_URL || 'dashboard.html';
+
+        const form = reactive({ username: '', password: '' });
+        const state = reactive({
+          loading: false,
+          status: '',
+          statusType: '',
+          token: '',
+          role: ''
+        });
+
+        const statusMessage = computed(() => state.status);
+        const statusClass = computed(() => state.statusType);
+
+        // Check if already logged in
+        onMounted(() => {
+          const existingToken = localStorage.getItem('authToken');
+          const existingRole = localStorage.getItem('userRole');
+          
+          if (existingToken && existingRole) {
+            // User already logged in, redirect based on role
+            if (existingRole === 'ADMIN') {
+              window.location.href = 'admin-dashboard.html';
+            } else {
+              window.location.href = 'home.html';
+            }
+          }
+        });
+
+        const handleLogin = async () => {
+          state.loading = true;
+          state.status = '';
+          state.statusType = '';
+          state.token = '';
+          state.role = '';
+
+          if (!form.username.trim() || !form.password) {
+            state.status = 'Username and password are required';
+            state.statusType = 'error';
+            state.loading = false;
+            return;
+          }
+
+          try {
+            const apiEndpoint = window.apiUrl ? window.apiUrl('/api/v1/auth/login') : '/api/v1/auth/login';
+            const res = await fetch(apiEndpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                username: form.username.trim(),
+                password: form.password
+              })
+            });
+
+            if (!res.ok) {
+              const text = await res.text();
+              let message = 'Invalid username or password';
+              try {
+                const data = JSON.parse(text);
+                message = data.message || data.error || message;
+                
+                // Handle specific error messages
+                if (message.toLowerCase().includes('not approved') || 
+                    message.toLowerCase().includes('pending') ||
+                    message.toLowerCase().includes('approval')) {
+                  message = '⏳ Your account is pending admin approval. Please check your email for updates.';
+                } else if (message.toLowerCase().includes('credentials') || 
+                           message.toLowerCase().includes('username') || 
+                           message.toLowerCase().includes('password')) {
+                  message = '❌ Invalid username or password. Please try again.';
+                }
+              } catch (_) {}
+              throw new Error(message);
+            }
+
+            const data = await res.json();
+            state.token = data.token;
+            state.role = data.role;
+            state.status = 'Login successful! Redirecting...';
+            state.statusType = 'success';
+
+            // Store token in localStorage
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('userRole', data.role);
+            localStorage.setItem('tokenType', data.tokenType || 'Bearer');
+            localStorage.setItem('userName', form.username.trim());
+
+            // Redirect based on role
+            setTimeout(() => {
+              if (data.role === 'ADMIN') {
+                window.location.href = 'admin-dashboard.html';
+              } else if (data.role === 'PLAYER') {
+                window.location.href = 'player-dashboard.html';
+              } else {
+                window.location.href = 'home.html';
+              }
+            }, 800);
+
+          } catch (err) {
+            state.status = err.message || 'Login failed';
+            state.statusType = 'error';
+          } finally {
+            state.loading = false;
+          }
+        };
+
+        return {
+          form,
+          handleLogin,
+          loading: computed(() => state.loading),
+          statusMessage,
+          statusClass,
+          token: computed(() => state.token),
+          role: computed(() => state.role)
+        };
+      }
+    }).mount('#app');
+  
+      // Dark/Light Mode Toggle Script
+      (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+
+    </script></script>
+</body>
+</html>
+

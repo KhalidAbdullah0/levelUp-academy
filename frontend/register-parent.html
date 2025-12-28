@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parent Registration | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: var(--lu-bg);
+      --card: var(--lu-surface);
+      --accent: var(--lu-primary-light);
+      --accent-2: var(--lu-accent);
+      --text: var(--lu-text-primary);
+      --muted: var(--lu-text-muted);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(255, 106, 26, 0.08), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(255, 200, 87, 0.05), transparent 35%),
+                  linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
+      color: var(--text);
+      padding-top: 80px;
+    min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+    .card {
+      width: min(520px, 100%);
+      background: var(--lu-surface), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 20px 70px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(34,211,238,0.09), transparent 40%),
+                  radial-gradient(circle at 80% 0%, rgba(168,85,247,0.09), transparent 35%);
+      pointer-events: none;
+    }
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(34,211,238,0.15);
+      border: 1px solid rgba(34,211,238,0.3);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .info-box {
+      background: rgba(34,211,238,0.1);
+      border: 1px solid rgba(34,211,238,0.2);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+    p.subtitle {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.01em;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(15,23,42,0.7);
+      color: var(--text);
+      font-size: 14px;
+      transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+      outline: none;
+      font-family: inherit;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(34,211,238,0.15);
+      transform: translateY(-1px);
+    }
+    .field {
+      margin-bottom: 16px;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+    button:hover { 
+      transform: translateY(-1px); 
+      box-shadow: 0 12px 30px rgba(34,211,238,0.25); 
+    }
+    button:active { transform: translateY(0); }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .status {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--muted);
+      min-height: 18px;
+      text-align: center;
+    }
+    .status.success { color: #4ade80; }
+    .status.error { color: #f87171; }
+    .link-text {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .link-text a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .link-text a:hover {
+      color: var(--accent-2);
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <nav class="lu-header">
+    <a href="home.html" class="lu-logo-link">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+  </nav>
+
+
+  <div id="app" class="card">
+    <span class="role-badge">
+      <span>👨‍👩‍👧</span>
+      <span>Parent Registration</span>
+    </span>
+    <h1>Join as Parent</h1>
+    <p class="subtitle">Manage your children's gaming journey and track their progress</p>
+
+    <div class="info-box">
+      ✅ <strong>Instant Access:</strong> After registration, you can login immediately and add your children to start their training journey.
+    </div>
+
+    <form @submit.prevent="handleRegister">
+      <div class="field">
+        <label for="username">Username</label>
+        <input 
+          id="username" 
+          v-model="form.username" 
+          autocomplete="username" 
+          required 
+          minlength="3"
+          maxlength="30"
+          placeholder="Choose a unique username" />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="firstName">First Name</label>
+          <input 
+            id="firstName" 
+            v-model="form.firstName" 
+            autocomplete="given-name" 
+            required 
+            placeholder="John" />
+        </div>
+        <div class="field">
+          <label for="lastName">Last Name</label>
+          <input 
+            id="lastName" 
+            v-model="form.lastName" 
+            autocomplete="family-name" 
+            required 
+            placeholder="Doe" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email Address</label>
+        <input 
+          id="email" 
+          type="email" 
+          v-model="form.email" 
+          autocomplete="email" 
+          required 
+          placeholder="john.doe@example.com" />
+      </div>
+
+      <div class="field">
+        <label for="phoneNumber">Phone Number (Saudi format)</label>
+        <input 
+          id="phoneNumber" 
+          v-model="form.phoneNumber" 
+          autocomplete="tel" 
+          required
+          pattern="^(05\d{8}|\+9665\d{8}|9665\d{8})$"
+          placeholder="05XXXXXXXX or +9665XXXXXXXX" />
+        <small style="color: var(--muted); font-size: 11px;">Format: 05XXXXXXXX, +9665XXXXXXXX, or 9665XXXXXXXX</small>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input 
+          id="password" 
+          type="password" 
+          v-model="form.password" 
+          autocomplete="new-password" 
+          required 
+          minlength="8"
+          placeholder="Minimum 8 characters" />
+      </div>
+
+      <div class="field">
+        <label for="confirm">Confirm Password</label>
+        <input 
+          id="confirm" 
+          type="password" 
+          v-model="form.confirm" 
+          autocomplete="new-password" 
+          required 
+          placeholder="Re-enter your password" />
+      </div>
+
+      <button type="submit" :disabled="loading">
+        {{ loading ? 'Creating Account…' : 'Register as Parent' }}
+      </button>
+    </form>
+
+    <div class="status" :class="statusClass">{{ statusMessage }}</div>
+
+    <div class="link-text">
+      <a href="role-selector.html">← Choose Different Role</a><br/>
+      Already have an account? <a href="login.html">Login</a>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, reactive, computed } = Vue;
+
+    createApp({
+      setup() {
+        const form = reactive({
+          username: '',
+          firstName: '',
+          lastName: '',
+          email: '',
+          phoneNumber: '',
+          password: '',
+          confirm: ''
+        });
+        const state = reactive({ loading: false, status: '', statusType: '' });
+
+        const statusMessage = computed(() => state.status);
+        const statusClass = computed(() => state.statusType);
+
+        const validateForm = () => {
+          const errors = [];
+          if (form.username.trim().length < 3) errors.push('Username must be at least 3 characters.');
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) errors.push('Enter a valid email.');
+          if (!/^(05\d{8}|\+9665\d{8}|9665\d{8})$/.test(form.phoneNumber.trim())) {
+            errors.push('Invalid Saudi phone number format.');
+          }
+          if (form.password.length < 8) errors.push('Password must be at least 8 characters.');
+          if (form.password !== form.confirm) errors.push('Passwords do not match.');
+          if (!form.firstName.trim() || !form.lastName.trim()) errors.push('First and last name are required.');
+          return errors;
+        };
+
+        const handleRegister = async () => {
+          state.loading = true;
+          state.status = '';
+          state.statusType = '';
+          
+          const errors = validateForm();
+          if (errors.length) {
+            state.status = errors.join(' ');
+            state.statusType = 'error';
+            state.loading = false;
+            return;
+          }
+
+          try {
+            const payload = {
+              username: form.username.trim(),
+              password: form.password,
+              email: form.email.trim(),
+              firstName: form.firstName.trim(),
+              lastName: form.lastName.trim(),
+              phoneNumber: form.phoneNumber.trim()
+            };
+
+            const apiEndpoint = window.apiUrl ? window.apiUrl('/api/v1/parent/register') : '/api/v1/parent/register';
+            const res = await fetch(apiEndpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+              const text = await res.text();
+              let message = text || 'Registration failed';
+              try {
+                const data = JSON.parse(text);
+                message = data.message || data.error || message;
+              } catch (_) {}
+              throw new Error(message);
+            }
+
+            const data = await res.json();
+            state.status = data.message || '✓ Account created! Redirecting to login...';
+            state.statusType = 'success';
+            
+            setTimeout(() => {
+              const loginUrl = window.CONFIG?.LOGIN_URL || 'login.html';
+              window.location.href = loginUrl;
+            }, 1500);
+
+          } catch (err) {
+            state.status = err.message || 'Registration failed';
+            state.statusType = 'error';
+          } finally {
+            state.loading = false;
+          }
+        };
+
+        return {
+          form,
+          handleRegister,
+          loading: computed(() => state.loading),
+          statusMessage,
+          statusClass
+        };
+      }
+    }).mount('#app');
+      // Dark/Light Mode Toggle Script
+      (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+
+
+  </script>
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
+        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle" id="darkModeToggle" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; display: flex !important;">
+    <span class="dark-mode-label">Dark Mode</span>
+    <div class="dark-mode-switch active" id="darkModeSwitch"></div>
+  </div>
+
+</html>
+

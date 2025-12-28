@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class SessionController {
     private final SessionService sessionService;
 
-    //GET
+    //GET - Accessible by all authenticated users (MODERATOR, ADMIN, PLAYER)
     @GetMapping("/get")
     public ResponseEntity getAllSession(){
         return ResponseEntity.status(200).body(sessionService.getAllClasses());
@@ -24,24 +24,22 @@ public class SessionController {
 
     //ADD
     @PostMapping("/add/{trainerId}/{gameId}")
-    public ResponseEntity addSession(@AuthenticationPrincipal User moderator, @RequestBody @Valid Session session, @PathVariable Integer trainerId, @PathVariable Integer gameId){
-        sessionService.addClass(moderator.getModerator().getId(),session,trainerId,gameId);
+    public ResponseEntity addSession(@AuthenticationPrincipal User user, @RequestBody @Valid Session session, @PathVariable Integer trainerId, @PathVariable Integer gameId){
+        // Check if user is ADMIN or MODERATOR
+        if (user.getRole().equals("ADMIN")) {
+            sessionService.addClassForAdmin(session, trainerId, gameId);
+        } else if (user.getRole().equals("MODERATOR")) {
+            if (user.getModerator() == null) {
+                return ResponseEntity.status(403).body(new ApiResponse("Moderator not found"));
+            }
+            sessionService.addClass(user.getModerator().getId(), session, trainerId, gameId);
+        } else {
+            return ResponseEntity.status(403).body(new ApiResponse("Access denied"));
+        }
         return ResponseEntity.status(200).body(new ApiResponse("Session Added"));
     }
 
-    //Assign
-//    @PostMapping("assignTrainer/{trainerId}/{sessionId}")
-//    public ResponseEntity assignTrainerToSession(@PathVariable Integer trainerId,@PathVariable Integer sessionId){
-//        sessionService.assignTrainerToSession(trainerId, sessionId);
-//        return ResponseEntity.status(200).body(new ApiResponse("Assigned"));
-//    }
 
-    //Assign
-//    @PostMapping("assignGame/{sessionId}")
-//    public ResponseEntity assignGameToSession(@PathVariable Integer sessionId){
-//        sessionService.assignGameToTrainer(sessionId);
-//        return ResponseEntity.status(200).body(new ApiResponse("Assigned"));
-//    }
 
     //update
     @PutMapping("/update/{sessionId}")

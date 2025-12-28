@@ -2,7 +2,6 @@ package com.levelup.levelup_academy.Controller;
 
 import com.levelup.levelup_academy.Api.ApiResponse;
 import com.levelup.levelup_academy.Model.User;
-import com.levelup.levelup_academy.Repository.BookingRepository;
 import com.levelup.levelup_academy.Service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +36,15 @@ public class BookingController {
     public ResponseEntity cancelBooking(@AuthenticationPrincipal User user,@PathVariable Integer bookingId) {
         bookingService.cancelPendingBooking(user.getId(),bookingId);
         return ResponseEntity.ok(new ApiResponse("Booking cancelled successfully."));
+    }
+    
+    // Admin endpoint to get all bookings with details
+    @GetMapping("/admin/get-all")
+    public ResponseEntity getAllBookingsForAdmin(@AuthenticationPrincipal User admin) {
+        if (!admin.getRole().equals("ADMIN")) {
+            return ResponseEntity.status(403).body(new ApiResponse("Access denied"));
+        }
+        return ResponseEntity.ok(bookingService.getAllBookingsWithDetails());
     }
 
 }

@@ -48,10 +48,20 @@ public class ParentService {
         return parentDTOOuts;
     }
 
+    //GET for Admin (no moderator required) - returns User objects for parents
+    public List<User> getAllParentsForAdmin() {
+        List<Parent> parents = parentRepository.findAll();
+        List<User> userList = new ArrayList<>();
+        for (Parent parent : parents){
+            userList.add(parent.getUser());
+        }
+        return userList;
+    }
+
     public void registerParent(ParentDTO parentDTO) {
         parentDTO.setRole("PARENTS");
         String hashPassword = new BCryptPasswordEncoder().encode(parentDTO.getPassword());
-        User user = new User(null, parentDTO.getUsername(), hashPassword, parentDTO.getEmail(), parentDTO.getFirstName(), parentDTO.getLastName(), parentDTO.getRole(), LocalDate.now(),null,null,null,null,null,null,null,null);
+        User user = new User(null, parentDTO.getUsername(), hashPassword, parentDTO.getEmail(), parentDTO.getFirstName(), parentDTO.getLastName(), parentDTO.getRole(), LocalDate.now(), true, null,null,null,null,null,null,null,null);
 
         Parent parent = new Parent(null, user,parentDTO.getPhoneNumber(),null);
         authRepository.save(user);

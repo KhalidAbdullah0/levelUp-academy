@@ -29,8 +29,15 @@ public class ParentController {
 
 
     @GetMapping("/get")
-    public ResponseEntity getAllParents(@AuthenticationPrincipal User moderator) {
-        return ResponseEntity.status(200).body(parentService.getAllParents(moderator.getModerator().getId()));
+    public ResponseEntity getAllParents(@AuthenticationPrincipal User user) {
+        // Check if user is admin (no moderator) or moderator
+        if (user.getRole().equals("ADMIN")) {
+            // Admin can see all parents without moderator filter
+            return ResponseEntity.status(200).body(parentService.getAllParentsForAdmin());
+        } else {
+            // Moderator needs their moderator ID
+            return ResponseEntity.status(200).body(parentService.getAllParents(user.getModerator().getId()));
+        }
     }
 
     @PostMapping("/register")

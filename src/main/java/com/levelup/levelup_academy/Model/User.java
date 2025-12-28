@@ -46,6 +46,9 @@ public class User implements UserDetails {
     private String role;
 
     private LocalDate registration= LocalDate.now() ;
+    
+    @Column(columnDefinition = "boolean default true")
+    private Boolean enabled = true;
 
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
@@ -95,6 +98,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled != null && enabled;
     }
 }

@@ -2,6 +2,7 @@ package com.levelup.levelup_academy.Model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -34,17 +35,17 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnore
+    @JsonIgnoreProperties({"password", "authorities", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "pro", "player", "trainer", "moderator", "parent", "booking", "subscriptions", "reviews"})
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "subscription_id", referencedColumnName = "id")
-    @JsonIgnore
+    @JsonIgnoreProperties({"user", "bookings"})
     private Subscription subscription;
 
     @ManyToOne
     @JoinColumn(name = "session_id", referencedColumnName = "id")
-    @JsonIgnore
+    @JsonIgnoreProperties({"trainer", "game", "reviews", "bookings"})
     private Session session;
 
 }

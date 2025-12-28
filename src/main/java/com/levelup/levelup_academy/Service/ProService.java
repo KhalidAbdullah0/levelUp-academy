@@ -52,6 +52,12 @@ public class ProService {
         return dtoList;
     }
 
+    //GET for Admin (no moderator required) - returns full Pro objects with approval status
+    public List<Pro> getAllProForAdmin(){
+        // Use query that eagerly loads user relationship
+        return proRepository.findAllWithUser();
+    }
+
     public Pro getPro(Integer moderatorId,Integer proId){
         Moderator moderator= moderatorRepository.findModeratorById(moderatorId);
         if(moderator == null){
@@ -82,7 +88,7 @@ public class ProService {
             }
         }
         String hashPassword = new BCryptPasswordEncoder().encode(proDTO.getPassword());
-        User user = new User(null, proDTO.getUsername(), hashPassword, proDTO.getEmail(), proDTO.getFirstName(), proDTO.getLastName(), proDTO.getRole(), LocalDate.now(),null,null,null,null,null,null,null,null);
+        User user = new User(null, proDTO.getUsername(), hashPassword, proDTO.getEmail(), proDTO.getFirstName(), proDTO.getLastName(), proDTO.getRole(), LocalDate.now(), true, null,null,null,null,null,null,null,null);
         Pro pro = new Pro(null, filePath, user, null, null,false);
         authRepository.save(user);
         proRepository.save(pro);
@@ -101,7 +107,13 @@ public class ProService {
         emailRequest.setSubject("Welcome to LevelUp Academy!");
         emailRequest.setMessage(message);
 
-        emailNotificationService.sendEmail(emailRequest);
+        // Try to send email, but don't fail registration if email fails
+        try {
+            emailNotificationService.sendEmail(emailRequest);
+        } catch (Exception e) {
+            // Log error but continue with registration
+            System.err.println("Failed to send welcome email to " + proDTO.getEmail() + ": " + e.getMessage());
+        }
 
 
 
@@ -148,6 +160,27 @@ public class ProService {
         authRepository.delete(user);
     }
 
+
+    // Download CV for Admin (no moderator required)
+    public byte[] downloadProPDFForAdmin(Integer proId) {
+        Pro pro = proRepository.findProById(proId);
+        if (pro == null) {
+            throw new ApiException("Pro player not found");
+        }
+        String filePath = pro.getCvPath();
+        if (filePath == null || filePath.isEmpty()) {
+            throw new ApiException("CV not uploaded for this pro player");
+        }
+        try {
+            Path path = Paths.get(filePath).toAbsolutePath().normalize();
+            if (!Files.exists(path) || !Files.isReadable(path)) {
+                throw new ApiException("CV file not found or not readable");
+            }
+            return Files.readAllBytes(path);
+        } catch (IOException e) {
+            throw new ApiException("Failed to read CV file: " + e.getMessage());
+        }
+    }
 
     public byte[] downloadProPDF(Integer moderateId,Integer proId) {
         Moderator moderator = moderatorRepository.findModeratorById(moderateId);
@@ -207,7 +240,12 @@ public class ProService {
         emailRequest.setSubject("You've Been Approved – Welcome to LevelUp Academy!");
         emailRequest.setMessage(message);
 
-        emailNotificationService.sendEmail(emailRequest);
+        // Try to send email, but don't fail approval if email fails
+        try {
+            emailNotificationService.sendEmail(emailRequest);
+        } catch (Exception e) {
+            System.err.println("Failed to send approval email to " + user.getEmail() + ": " + e.getMessage());
+        }
     }
 
     // rejecting the professional player request by admin if the pdf not match the requirement
@@ -240,7 +278,12 @@ public class ProService {
         emailRequest.setSubject("LevelUp Academy – Application Status");
         emailRequest.setMessage(message);
 
-        emailNotificationService.sendEmail(emailRequest);
+        // Try to send email, but don't fail rejection if email fails
+        try {
+            emailNotificationService.sendEmail(emailRequest);
+        } catch (Exception e) {
+            System.err.println("Failed to send rejection email to " + user.getEmail() + ": " + e.getMessage());
+        }
     }
 
 //moderator can see all the requests

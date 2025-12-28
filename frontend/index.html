@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="refresh" content="0; url=home.html" />
+  <title>LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--lu-bg);
+      color: var(--lu-text-primary);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+    }
+    .card {
+      width: min(480px, 90vw);
+      background: var(--lu-surface);
+      border: 1px solid var(--lu-border-subtle);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: var(--lu-shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+    p.subtitle {
+      margin: 0 0 20px;
+      color: var(--lu-text-muted);
+      font-size: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--lu-text-muted);
+      font-size: 13px;
+      letter-spacing: 0.01em;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--lu-border-subtle);
+      background: var(--lu-surface-alt);
+      color: var(--lu-text-primary);
+      font-size: 14px;
+      transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--lu-primary-light);
+      box-shadow: 0 0 0 3px rgba(255, 148, 77, 0.15);
+      transform: translateY(-1px);
+    }
+    .field {
+      margin-bottom: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: var(--lu-gradient-brand);
+      color: #111827;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: var(--lu-shadow-glow); }
+    button:active { transform: translateY(0); }
+    .status {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--lu-text-muted);
+      min-height: 18px;
+    }
+    .status.success { color: var(--lu-success); }
+    .status.error { color: var(--lu-danger); }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .link-text {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--lu-text-muted);
+    }
+    .link-text a {
+      color: var(--lu-primary-light);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .link-text a:hover {
+      color: var(--lu-accent);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <nav class="lu-header">
+    <a href="home.html" class="lu-logo-link">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+  </nav>
+
+  <div id="app" class="card">
+    <h1>Create your account</h1>
+    <p class="subtitle">Join LevelUp Academy in a few seconds</p>
+
+    <form @submit.prevent="handleSignup">
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" v-model="form.username" autocomplete="username" required minlength="3" />
+      </div>
+      <div class="field" style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <label for="firstName">First name</label>
+          <input id="firstName" v-model="form.firstName" autocomplete="given-name" required />
+        </div>
+        <div style="flex:1;">
+          <label for="lastName">Last name</label>
+          <input id="lastName" v-model="form.lastName" autocomplete="family-name" required />
+        </div>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" v-model="form.email" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" v-model="form.password" autocomplete="new-password" required />
+      </div>
+      <div class="field">
+        <label for="confirm">Confirm password</label>
+        <input id="confirm" type="password" v-model="form.confirm" autocomplete="new-password" required />
+      </div>
+      <button type="submit" :disabled="loading">
+        {{ loading ? 'Creating account…' : 'Sign up' }}
+      </button>
+    </form>
+
+    <div class="status" :class="statusClass">{{ statusMessage }}</div>
+
+    <div class="link-text">
+      Already have an account? <a href="login.html">Login</a>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, reactive, computed } = Vue;
+
+    createApp({
+      setup() {
+        const LOGIN_REDIRECT = window.CONFIG?.LOGIN_URL || 'login.html';
+
+        const form = reactive({
+          username: '',
+          firstName: '',
+          lastName: '',
+          email: '',
+          password: '',
+          confirm: ''
+        });
+        const state = reactive({ loading: false, status: '', statusType: '' });
+
+        const statusMessage = computed(() => state.status);
+        const statusClass = computed(() => state.statusType);
+
+        const validateForm = () => {
+          const errors = [];
+          if (form.username.trim().length < 3) errors.push('Username must be at least 3 characters.');
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) errors.push('Enter a valid email.');
+          if (form.password.length < 8) errors.push('Password must be at least 8 characters.');
+          if (form.password !== form.confirm) errors.push('Passwords do not match.');
+          if (!form.firstName.trim() || !form.lastName.trim()) errors.push('First and last name are required.');
+          return errors;
+        };
+
+        const handleSignup = async () => {
+          state.loading = true;
+          state.status = '';
+          state.statusType = '';
+          const errors = validateForm();
+          if (errors.length) {
+            state.status = errors.join(' ');
+            state.statusType = 'error';
+            state.loading = false;
+            return;
+          }
+          try {
+            const payload = {
+              username: form.username.trim(),
+              password: form.password,
+              email: form.email.trim(),
+              firstName: form.firstName.trim(),
+              lastName: form.lastName.trim()
+            };
+
+            const apiEndpoint = window.apiUrl ? window.apiUrl('/api/v1/player/register') : '/api/v1/player/register';
+            const res = await fetch(apiEndpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (!res.ok) {
+              const text = await res.text();
+              let message = text || 'Sign up failed';
+              try {
+                const data = JSON.parse(text);
+                message = data.message || data.error || message;
+              } catch (_) {}
+              throw new Error(message);
+            }
+            const data = await res.json();
+            state.status = data.message || 'Account created! Redirecting to login...';
+            state.statusType = 'success';
+            setTimeout(() => {
+              window.location.href = LOGIN_REDIRECT;
+            }, 900);
+          } catch (err) {
+            state.status = err.message || 'Sign up failed';
+            state.statusType = 'error';
+          } finally {
+            state.loading = false;
+          }
+        };
+
+        return {
+          form,
+          handleSignup,
+          loading: computed(() => state.loading),
+          statusMessage,
+          statusClass
+        };
+      }
+    }).mount('#app');
+  </script>
+      // Dark/Light Mode Toggle Script
+      (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+
+
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
+        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle" id="darkModeToggle" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; display: flex !important;">
+    <span class="dark-mode-label">Dark Mode</span>
+    <div class="dark-mode-switch active" id="darkModeSwitch"></div>
+  </div>
+</body>
+</html>

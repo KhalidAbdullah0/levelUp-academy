@@ -1,6 +1,7 @@
 package com.levelup.levelup_academy.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +25,6 @@ public class Trainer {
     private String cvPath;
     @JsonIgnore
     private Boolean isAvailable = false;
-    @JsonIgnore
     private Boolean isApproved=false;
 
 //    @Lob
@@ -32,7 +32,7 @@ public class Trainer {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnore
+    @JsonIgnoreProperties({"password", "authorities", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "pro", "player", "trainer", "moderator", "parent", "booking", "subscriptions", "reviews"})
     private User user;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "trainer")
