@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | LevelUp Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="js/auth-utils.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(255, 106, 26, 0.08), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(255, 200, 87, 0.05), transparent 35%),
+                  linear-gradient(135deg, var(--lu-secondary-dark) 0%, var(--lu-bg) 50%, var(--lu-secondary-dark) 100%);
+      color: var(--lu-text-primary);
+      min-height: 100vh;
+      padding-top: 80px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .card {
+      background: var(--lu-surface);
+      border: 1px solid var(--lu-border-subtle);
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: var(--lu-shadow-soft);
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 32px;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      color: var(--lu-text-muted);
+      font-size: 16px;
+      margin-bottom: 32px;
+    }
+    .field {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--lu-text-muted);
+      font-size: 14px;
+      font-weight: 500;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--lu-border-subtle);
+      background: var(--lu-surface-alt);
+      color: var(--lu-text-primary);
+      font-size: 14px;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--lu-primary-light);
+      box-shadow: 0 0 0 3px rgba(255, 106, 26, 0.15);
+    }
+    input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary {
+      background: var(--lu-gradient-brand);
+      color: #111827;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(255, 106, 26, 0.4);
+    }
+    .btn-secondary {
+      background: var(--lu-surface-alt);
+      color: var(--lu-text-primary);
+      border: 1px solid var(--lu-border-subtle);
+    }
+    .btn-secondary:hover {
+      background: var(--lu-surface);
+    }
+    .status {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .status.success {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--lu-success);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    .status.error {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--lu-danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    /* User Menu Styles */
+    .user-menu-trigger:hover {
+      background: var(--lu-surface-alt);
+    }
+    .user-menu-dropdown {
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .user-menu-item:hover {
+      background: var(--lu-surface-alt);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <nav class="lu-header" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; padding: 1rem 5% !important; display: flex !important; justify-content: space-between !important; align-items: center !important;">
+    <a :href="logoLink" class="lu-logo-link" style="display: inline-flex !important; align-items: center !important; text-decoration: none !important;">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important;">
+    </a>
+    <div class="header-right" style="display: flex; align-items: center; gap: 12px; position: relative;">
+      <div class="user-menu-container" style="position: relative;">
+        <div class="user-menu-trigger" @click="toggleUserMenu" style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 8px 12px; border-radius: 8px; transition: background 0.2s;">
+          <span style="color: var(--lu-text-muted);">
+            Welcome, <strong style="color: var(--lu-accent);">{{ userInfo.fullName || 'User' }}</strong>
+          </span>
+          <span class="role-badge" style="background: var(--lu-accent); color: #111827; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">{{ formattedRole }}</span>
+          <span style="font-size: 12px; color: var(--lu-text-muted);">▼</span>
+        </div>
+        <div v-if="showUserMenu" class="user-menu-dropdown" style="position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--lu-surface); border: 1px solid var(--lu-border-subtle); border-radius: 12px; box-shadow: var(--lu-shadow-soft); min-width: 200px; z-index: 1000; overflow: hidden;">
+          <a :href="dashboardLink" class="user-menu-item" style="display: block; padding: 12px 16px; color: var(--lu-text-primary); text-decoration: none; transition: background 0.2s;">📊 Dashboard</a>
+          <a href="profile.html" class="user-menu-item" style="display: block; padding: 12px 16px; color: var(--lu-text-primary); text-decoration: none; transition: background 0.2s;">👤 Profile</a>
+          <a href="settings.html" class="user-menu-item" style="display: block; padding: 12px 16px; color: var(--lu-text-primary); text-decoration: none; transition: background 0.2s;">⚙️ Settings</a>
+          <div class="user-menu-divider" style="height: 1px; background: var(--lu-border-subtle); margin: 4px 0;"></div>
+          <button @click="logout" class="user-menu-item" style="display: block; width: 100%; text-align: left; padding: 12px 16px; color: var(--lu-text-danger); background: none; border: none; cursor: pointer; transition: background 0.2s;">🚪 Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div id="app" class="container">
+    <div class="card">
+      <h1>Profile</h1>
+      <p class="subtitle">View and edit your profile information</p>
+
+      <form @submit.prevent="handleSave">
+        <div class="field">
+          <label for="fullName">Full Name</label>
+          <input 
+            id="fullName" 
+            v-model="form.fullName" 
+            placeholder="Enter your full name"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="role">Role</label>
+          <input 
+            id="role" 
+            :value="formattedRole" 
+            disabled
+          />
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input 
+            id="email" 
+            :value="userInfo.email || 'N/A'" 
+            disabled
+          />
+        </div>
+
+        <div v-if="statusMessage" class="status" :class="statusClass">
+          {{ statusMessage }}
+        </div>
+
+        <div class="btn-group">
+          <button type="submit" :disabled="loading" class="btn btn-primary">
+            {{ loading ? 'Saving...' : 'Save Changes' }}
+          </button>
+          <a href="home.html" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const userInfo = ref({});
+        const form = ref({ fullName: '' });
+        const loading = ref(false);
+        const statusMessage = ref('');
+        const statusClass = ref('');
+
+        const formattedRole = computed(() => {
+          return AuthUtils.formatRoleName(userInfo.value.role || '');
+        });
+
+        const logoLink = computed(() => {
+          if (userInfo.value.role === 'ADMIN') return 'admin-dashboard.html';
+          return 'player-dashboard.html';
+        });
+
+        const dashboardLink = computed(() => {
+          if (userInfo.value.role === 'ADMIN') return 'admin-dashboard.html';
+          return 'player-dashboard.html';
+        });
+
+        const showUserMenu = ref(false);
+
+        const toggleUserMenu = () => {
+          showUserMenu.value = !showUserMenu.value;
+        };
+
+        onMounted(async () => {
+          // Require authentication
+          if (!AuthUtils.requireAuth()) {
+            return;
+          }
+
+          // Load user info
+          await loadUserInfo();
+
+          // Close menu when clicking outside
+          document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu-container')) {
+              showUserMenu.value = false;
+            }
+          });
+        });
+
+        const loadUserInfo = async () => {
+          try {
+            const user = await AuthUtils.getCurrentUser();
+            if (user) {
+              userInfo.value = user;
+              form.value.fullName = user.fullName || '';
+            } else {
+              window.location.href = 'login.html';
+            }
+          } catch (error) {
+            console.error('Error loading user info:', error);
+            window.location.href = 'login.html';
+          }
+        };
+
+        const handleSave = async () => {
+          loading.value = true;
+          statusMessage.value = '';
+          statusClass.value = '';
+
+          try {
+            const names = form.value.fullName.trim().split(' ');
+            const firstName = names[0] || '';
+            const lastName = names.slice(1).join(' ') || '';
+
+            if (!firstName || !lastName) {
+              statusMessage.value = 'Please enter both first and last name';
+              statusClass.value = 'error';
+              loading.value = false;
+              return;
+            }
+
+            const res = await AuthUtils.apiRequest('/api/me/profile', {
+              method: 'PUT',
+              body: JSON.stringify({
+                firstName: firstName,
+                lastName: lastName
+              })
+            });
+
+            if (res.ok) {
+              statusMessage.value = 'Profile updated successfully!';
+              statusClass.value = 'success';
+              await loadUserInfo(); // Reload to show updated name
+            } else {
+              const data = await res.json();
+              statusMessage.value = data.message || 'Failed to update profile';
+              statusClass.value = 'error';
+            }
+          } catch (error) {
+            statusMessage.value = 'Error updating profile: ' + error.message;
+            statusClass.value = 'error';
+          } finally {
+            loading.value = false;
+          }
+        };
+
+        const logout = () => {
+          AuthUtils.logout();
+        };
+
+        return {
+          userInfo,
+          form,
+          loading,
+          statusMessage,
+          statusClass,
+          formattedRole,
+          logoLink,
+          dashboardLink,
+          showUserMenu,
+          toggleUserMenu,
+          handleSave,
+          logout
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+
+
