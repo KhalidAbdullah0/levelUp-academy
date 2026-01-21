@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+<head>
+  <title>Toggle Test</title>
+  <style>
+    body { padding: 50px; background: #f0f0f0; }
+    .test-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .dark-mode-toggle {
+      position: fixed !important;
+      bottom: 20px !important;
+      right: 20px !important;
+      z-index: 99999 !important;
+      background: #333 !important;
+      color: white !important;
+      padding: 12px 16px !important;
+      border-radius: 50px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      cursor: pointer !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+  <nav id="app" class="lu-header" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; padding: 1rem 5% !important; display: flex !important; justify-content: space-between !important; align-items: center !important;">
+    <a href="home.html" class="lu-logo-link" style="display: inline-flex !important; align-items: center !important; text-decoration: none !important;">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+    <div class="nav-buttons">
+      <a href="home.html" class="btn btn-secondary">Home</a>
+    </div>
+  </nav>
+  
+  <div style="padding-top: 80px;">
+<div class="test-box">
+    <h1>Toggle Visibility Test</h1>
+    <p>Look at the bottom-right corner of this page.</p>
+    <p>You should see a dark rounded button with "Dark Mode" text.</p>
+  </div>
+  <div class="dark-mode-toggle">
+    <span>Dark Mode</span>
+    <div style="width: 50px; height: 26px; background: #666; border-radius: 13px; position: relative;">
+      <div style="position: absolute; width: 20px; height: 20px; background: white; border-radius: 50%; top: 3px; left: 3px;"></div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img" style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+        <span style="display:none; font-size: 18px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

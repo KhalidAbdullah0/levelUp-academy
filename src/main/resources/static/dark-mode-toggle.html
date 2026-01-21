@@ -1,0 +1,180 @@
+<!-- Dark Mode Toggle Component -->
+<style>
+  .dark-mode-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: var(--lu-surface);
+    border: 1px solid var(--lu-border-subtle);
+    border-radius: 50px;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .dark-mode-toggle:hover {
+    box-shadow: 0 6px 16px rgba(255, 106, 26, 0.3);
+    border-color: var(--lu-primary-light);
+  }
+
+  .dark-mode-switch {
+    position: relative;
+    width: 50px;
+    height: 26px;
+    background: var(--lu-surface-alt);
+    border-radius: 13px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border: 1px solid var(--lu-border-subtle);
+  }
+
+  .dark-mode-switch.active {
+    background: var(--lu-primary);
+  }
+
+  .dark-mode-switch::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--lu-text-primary);
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .dark-mode-switch.active::after {
+    transform: translateX(24px);
+    background: var(--lu-accent);
+  }
+
+  .dark-mode-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--lu-text-secondary);
+    white-space: nowrap;
+    margin-right: 4px;
+  }
+
+  .dark-mode-icon {
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .dark-mode-toggle {
+      bottom: 15px;
+      right: 15px;
+      padding: 6px;
+      gap: 6px;
+    }
+
+    .dark-mode-label {
+      display: none;
+    }
+
+    .dark-mode-switch {
+      width: 44px;
+      height: 24px;
+    }
+
+    .dark-mode-switch::after {
+      width: 18px;
+      height: 18px;
+    }
+
+    .dark-mode-switch.active::after {
+      transform: translateX(20px);
+    }
+  }
+</style>
+
+<div class="dark-mode-toggle" id="darkModeToggle" style="position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; display: flex !important;">
+  <span class="dark-mode-label">Dark Mode</span>
+  <div class="dark-mode-switch active" id="darkModeSwitch">
+    <span class="dark-mode-icon">🌙</span>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // Check localStorage for saved preference
+    const savedMode = localStorage.getItem('darkMode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+    function applyTheme(dark) {
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      localStorage.setItem('darkMode', dark.toString());
+      
+      const switchEl = document.getElementById('darkModeSwitch');
+      if (switchEl) {
+        if (dark) {
+          switchEl.classList.add('active');
+        } else {
+          switchEl.classList.remove('active');
+        }
+      }
+    }
+
+    // Apply initial mode
+    applyDarkMode(isDarkMode);
+
+    // Toggle switch
+    const switchEl = document.getElementById('darkModeSwitch');
+    const toggleContainer = document.getElementById('darkModeToggle');
+    
+    if (switchEl && toggleContainer) {
+      toggleContainer.addEventListener('click', function() {
+        const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+        applyTheme(!currentMode);
+      });
+    }
+  })();
+      // Dark/Light Mode Toggle Script
+      (function() {
+        // Check localStorage for saved preference or default to dark
+        const savedMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+
+        function applyTheme(dark) {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', dark ? 'dark' : 'light');
+          localStorage.setItem('darkMode', dark.toString());
+          
+          const switchEl = document.getElementById('darkModeSwitch');
+          if (switchEl) {
+            if (dark) {
+              switchEl.classList.add('active');
+            } else {
+              switchEl.classList.remove('active');
+            }
+          }
+        }
+
+        // Apply initial theme
+        applyTheme(isDarkMode);
+
+        // Toggle switch handler
+        const switchEl = document.getElementById('darkModeSwitch');
+        const toggleContainer = document.getElementById('darkModeToggle');
+        
+        if (switchEl && toggleContainer) {
+          toggleContainer.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            applyTheme(!currentMode);
+          });
+        }
+      })();
+
+
+</script>
+
