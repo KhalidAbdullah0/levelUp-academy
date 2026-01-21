@@ -24,6 +24,46 @@
       gap: 12px;
     }
 
+    /* User Menu Styles */
+    .user-menu-trigger:hover {
+      background: var(--lu-surface-alt);
+    }
+
+    .user-menu-dropdown {
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-menu-item {
+      border: none;
+      font-size: 14px;
+    }
+
+    .user-menu-item:hover {
+      background: var(--lu-surface-alt);
+    }
+
+    .user-menu-divider {
+      margin: 8px 0;
+    }
+
+    /* Nav Card Hover Effects */
+    .nav-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--lu-primary-light);
+      box-shadow: var(--lu-shadow-glow);
+    }
+
     .btn {
       padding: 10px 24px;
       border: none;
@@ -306,9 +346,10 @@
   </style>
 </head>
 <body>
+<div id="app">
   <!-- Navigation -->
-  <nav id="app" class="lu-header" style="background: var(--lu-bg) !important; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; padding: 1rem 5% !important; display: flex !important; justify-content: space-between !important; align-items: center !important;">
-    <a href="home.html" class="lu-logo-link" style="display: inline-flex !important; align-items: center !important; text-decoration: none !important; visibility: visible !important;">
+  <nav class="lu-header" style="background: var(--lu-bg) !important; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; padding: 1rem 5% !important; display: flex !important; justify-content: space-between !important; align-items: center !important;">
+    <a :href="logoLink" class="lu-logo-link" style="display: inline-flex !important; align-items: center !important; text-decoration: none !important; visibility: visible !important;">
       <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="console.error('Logo image failed to load:', this.src); this.style.display='none'; var fallback = this.nextElementSibling; if(fallback) fallback.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
       <span class="logo-fallback" style="display: none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #ff6a1a;">🎮 LevelUp Academy</span>
     </a>
@@ -316,30 +357,67 @@
       <a href="login.html" class="btn btn-secondary">Login</a>
       <a href="role-selector.html" class="btn btn-primary">Sign Up</a>
     </div>
-    <div class="nav-buttons" v-else>
-      <span style="color: var(--lu-text-muted); margin-right: 12px;">
-        Welcome, <strong style="color: var(--lu-accent);">{{ userName }}</strong>
-      </span>
-      <span class="role-badge">{{ userRole }}</span>
-      <a href="admin-dashboard.html" v-if="userRole === 'ADMIN'" class="btn btn-secondary">Dashboard</a>
-      <button class="btn btn-secondary" @click="logout">Logout</button>
+    <div class="nav-buttons" v-else style="display: flex; align-items: center; gap: 12px; position: relative;">
+      <div class="user-menu-container" style="position: relative;">
+        <div class="user-menu-trigger" @click="toggleUserMenu" style="display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 8px 12px; border-radius: 8px; transition: background 0.2s;">
+          <span style="color: var(--lu-text-muted);">
+            Welcome, <strong style="color: var(--lu-accent);">{{ userFullName || userName }}</strong>
+          </span>
+          <span class="role-badge">{{ formattedRole }}</span>
+          <span style="font-size: 12px; color: var(--lu-text-muted);">▼</span>
+        </div>
+        <div v-if="showUserMenu" class="user-menu-dropdown" style="position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--lu-surface); border: 1px solid var(--lu-border-subtle); border-radius: 12px; box-shadow: var(--lu-shadow-soft); min-width: 200px; z-index: 1000; overflow: hidden;">
+          <a :href="dashboardLink" class="user-menu-item" style="display: block; padding: 12px 16px; color: var(--lu-text-primary); text-decoration: none; transition: background 0.2s;">
+            📊 Dashboard
+          </a>
+          <a href="profile.html" class="user-menu-item" style="display: block; padding: 12px 16px; color: var(--lu-text-primary); text-decoration: none; transition: background 0.2s;">
+            👤 Profile
+          </a>
+          <a href="settings.html" class="user-menu-item" style="display: block; padding: 12px 16px; color: var(--lu-text-primary); text-decoration: none; transition: background 0.2s;">
+            ⚙️ Settings
+          </a>
+          <div class="user-menu-divider" style="height: 1px; background: var(--lu-border-subtle); margin: 4px 0;"></div>
+          <button @click="logout" class="user-menu-item" style="display: block; width: 100%; text-align: left; padding: 12px 16px; color: var(--lu-text-danger); background: none; border: none; cursor: pointer; transition: background 0.2s;">
+            🚪 Logout
+          </button>
+        </div>
+      </div>
     </div>
   </nav>
 
   <!-- Hero Section -->
   <section class="hero lu-hero">
     <div class="hero-content lu-hero-content">
-      <h1 class="lu-hero-title">
-        Level Up Your <br/>
-        <span class="gradient-text">Gaming Skills</span>
-      </h1>
-      <p class="subtitle lu-hero-subtitle">
-        Master gaming skills, compete in tournaments, and connect with top gamers worldwide. Professional training platform connecting players with expert trainers and pro players.
-      </p>
-      <div class="cta-buttons lu-hero-actions">
-        <a href="role-selector.html" class="btn btn-primary lu-btn lu-btn-primary btn-large lu-btn-large">Get Started</a>
-        <a href="login.html" class="btn btn-secondary lu-btn lu-btn-secondary btn-large lu-btn-large">Sign In</a>
-      </div>
+      <!-- Guest View -->
+      <template v-if="!isLoggedIn">
+        <h1 class="lu-hero-title">
+          Level Up Your <br/>
+          <span class="gradient-text">Gaming Skills</span>
+        </h1>
+        <p class="subtitle lu-hero-subtitle">
+          Master gaming skills, compete in tournaments, and connect with top gamers worldwide. Professional training platform connecting players with expert trainers and pro players.
+        </p>
+        <div class="cta-buttons lu-hero-actions">
+          <a href="role-selector.html" class="btn btn-primary lu-btn lu-btn-primary btn-large lu-btn-large">Get Started</a>
+          <a href="login.html" class="btn btn-secondary lu-btn lu-btn-secondary btn-large lu-btn-large">Sign In</a>
+        </div>
+      </template>
+      
+      <!-- Authenticated View -->
+      <template v-else>
+        <h1 class="lu-hero-title" style="font-size: 48px; line-height: 1.2;">
+          Welcome <br/>
+          <span class="gradient-text">{{ userFullName || 'Gamer' }}</span>
+        </h1>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+          <span class="role-badge" style="background: var(--lu-accent); color: #111827; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+            {{ formattedRole }}
+          </span>
+        </div>
+        <p class="subtitle lu-hero-subtitle">
+          Ready to level up your gaming journey? Explore training, compete with champions, and join our community.
+        </p>
+      </template>
     </div>
     <div class="hero-character lu-hero-character">
       <img
@@ -351,8 +429,46 @@
     </div>
   </section>
 
-  <!-- Features Section -->
-  <section class="features">
+  <!-- Authenticated User Content (shown when logged in) -->
+  <section v-if="isLoggedIn" class="authenticated-content" style="padding: 80px 5%;">
+    <div class="container" style="max-width: 1400px; margin: 0 auto;">
+      
+      <!-- Quick Access Sections for All Logged-in Users -->
+      <div class="quick-access-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+        <!-- Player Section -->
+        <a href="player-dashboard.html" class="nav-card" style="background: var(--lu-surface); border: 1px solid var(--lu-border-subtle); border-radius: 16px; padding: 32px; text-decoration: none; color: inherit; transition: all 0.3s ease; display: block; text-align: center;">
+          <div style="font-size: 64px; margin-bottom: 20px;">🎮</div>
+          <div style="font-size: 24px; font-weight: 600; margin-bottom: 12px;">Player</div>
+          <div style="color: var(--lu-text-muted); font-size: 15px; line-height: 1.6;">Access your dashboard, games, trainers, and training sessions</div>
+        </a>
+
+        <!-- Champ Section -->
+        <a href="player-profile.html" class="nav-card" style="background: var(--lu-surface); border: 1px solid var(--lu-border-subtle); border-radius: 16px; padding: 32px; text-decoration: none; color: inherit; transition: all 0.3s ease; display: block; text-align: center;">
+          <div style="font-size: 64px; margin-bottom: 20px;">🏆</div>
+          <div style="font-size: 24px; font-weight: 600; margin-bottom: 12px;">Champ</div>
+          <div style="color: var(--lu-text-muted); font-size: 15px; line-height: 1.6;">View your achievements, rankings, and competitive stats</div>
+        </a>
+
+        <!-- Community Section -->
+        <a href="player-trainers.html" class="nav-card" style="background: var(--lu-surface); border: 1px solid var(--lu-border-subtle); border-radius: 16px; padding: 32px; text-decoration: none; color: inherit; transition: all 0.3s ease; display: block; text-align: center;">
+          <div style="font-size: 64px; margin-bottom: 20px;">👥</div>
+          <div style="font-size: 24px; font-weight: 600; margin-bottom: 12px;">Community</div>
+          <div style="color: var(--lu-text-muted); font-size: 15px; line-height: 1.6;">Connect with trainers, pros, and fellow gamers</div>
+        </a>
+
+        <!-- Discord Section (only shown when logged in) -->
+        <a href="https://discord.gg/Vjq2rR2GF7" target="_blank" rel="noopener noreferrer" class="nav-card" style="background: var(--lu-surface); border: 1px solid var(--lu-border-subtle); border-radius: 16px; padding: 32px; text-decoration: none; color: inherit; transition: all 0.3s ease; display: block; text-align: center;">
+          <div style="font-size: 64px; margin-bottom: 20px;">💬</div>
+          <div style="font-size: 24px; font-weight: 600; margin-bottom: 12px;">Discord</div>
+          <div style="color: var(--lu-text-muted); font-size: 15px; line-height: 1.6;">Join our Discord community to chat, learn, and team up</div>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Features Section (shown when not logged in) -->
+  <section v-if="!isLoggedIn" class="features">
     <h2 class="section-title">Why Choose LevelUp Academy?</h2>
     <div class="feature-grid">
       <div class="feature-card lu-card">
@@ -388,8 +504,8 @@
     </div>
   </section>
 
-  <!-- Roles Section -->
-  <section class="roles">
+  <!-- Roles Section (shown when not logged in) -->
+  <section v-if="!isLoggedIn" class="roles">
     <h2 class="section-title">Join As</h2>
     <div class="role-grid">
       <div class="role-card lu-card">
@@ -432,94 +548,220 @@
     <span class="dark-mode-label">Dark Mode</span>
     <div class="dark-mode-switch active" id="darkModeSwitch"></div>
   </div>
+</div>
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="js/auth-utils.js"></script>
   <script>
-    const { createApp, ref, onMounted } = Vue;
+    const { createApp, ref, computed, onMounted } = Vue;
 
     createApp({
       setup() {
         const isLoggedIn = ref(false);
         const userName = ref('');
+        const userFullName = ref('');
         const userRole = ref('');
+        const userId = ref(null);
+        const showUserMenu = ref(false);
 
-        onMounted(() => {
-          const token = localStorage.getItem('authToken');
-          const role = localStorage.getItem('userRole');
-          
-          if (token && role) {
-            isLoggedIn.value = true;
-            userRole.value = role;
-            
-            // Try to get user info from API
-            fetchUserInfo(token, role);
-          }
+        // Helper function to format role name for display (using AuthUtils)
+        const formatRoleName = (role) => {
+          return AuthUtils.formatRoleName(role);
+        };
+
+        // Computed property for formatted role display
+        const formattedRole = computed(() => formatRoleName(userRole.value));
+
+        // Computed property for logo link - redirects to dashboard if logged in, home otherwise
+        const logoLink = computed(() => {
+          if (!isLoggedIn.value) return 'home.html';
+          if (userRole.value === 'ADMIN') return 'admin-dashboard.html';
+          return 'player-dashboard.html';
         });
 
-        const fetchUserInfo = async (token, role) => {
-          // Get username from localStorage
-          const storedUsername = localStorage.getItem('userName');
-          if (storedUsername) {
-            userName.value = storedUsername;
-          } else {
-            userName.value = role.charAt(0) + role.slice(1).toLowerCase();
+        // Computed property for dashboard link
+        const dashboardLink = computed(() => {
+          if (userRole.value === 'ADMIN') return 'admin-dashboard.html';
+          return 'player-dashboard.html';
+        });
+
+        // Computed property for profile link
+        const profileLink = computed(() => {
+          if (userRole.value === 'ADMIN') return 'admin-dashboard.html';
+          return 'player-profile.html';
+        });
+
+        // Computed property for welcome message
+        const welcomeMessage = computed(() => {
+          if (!isLoggedIn.value || !userFullName.value || !userRole.value) return '';
+          const roleName = formatRoleName(userRole.value);
+          return `Welcome ${roleName} ${userFullName.value}`;
+        });
+
+        onMounted(async () => {
+          // Initialize as guest view first - FORCE guest view initially
+          isLoggedIn.value = false;
+          userFullName.value = '';
+          userRole.value = '';
+          userName.value = '';
+          
+          // Close menu when clicking outside
+          document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu-container')) {
+              showUserMenu.value = false;
+            }
+          });
+          
+          // Then check authentication state and update UI accordingly
+          await checkAuthState();
+        });
+
+        const checkAuthState = async () => {
+          const token = AuthUtils.getToken();
+          
+          // No token = definitely guest view
+          if (!token) {
+            isLoggedIn.value = false;
+            userFullName.value = '';
+            userRole.value = '';
+            userName.value = '';
+            return;
+          }
+
+          // Check if token is valid by checking expiration
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const isExpired = payload.exp * 1000 < Date.now();
+            
+            if (isExpired) {
+              // Token expired, clear and show guest view
+              AuthUtils.clearAuth();
+              isLoggedIn.value = false;
+              userFullName.value = '';
+              userRole.value = '';
+              userName.value = '';
+              return;
+            }
+          } catch (e) {
+            // Invalid token format, clear and show guest view
+            AuthUtils.clearAuth();
+            isLoggedIn.value = false;
+            userFullName.value = '';
+            userRole.value = '';
+            userName.value = '';
+            return;
+          }
+
+          // Token exists and is not expired, verify with API
+          try {
+            const user = await AuthUtils.getCurrentUser();
+            if (user && user.fullName && user.role) {
+              // Valid token and user data - show authenticated view
+              isLoggedIn.value = true;
+              userId.value = user.id;
+              userFullName.value = user.fullName;
+              userRole.value = user.role;
+              userName.value = user.fullName.split(' ')[0] || localStorage.getItem('userName') || '';
+              
+              // Update localStorage with fresh data
+              localStorage.setItem('userFullName', user.fullName);
+              localStorage.setItem('userRole', user.role);
+            } else {
+              // Invalid token or missing data, clear and show guest view
+              AuthUtils.clearAuth();
+              isLoggedIn.value = false;
+              userFullName.value = '';
+              userRole.value = '';
+              userName.value = '';
+            }
+          } catch (error) {
+            // API error - if token exists and is not expired, try to use localStorage data
+            const storedRole = localStorage.getItem('userRole');
+            const storedFullName = localStorage.getItem('userFullName');
+            
+            if (storedRole && token) {
+              // Use localStorage data as fallback (optimistic UI)
+              isLoggedIn.value = true;
+              userRole.value = storedRole;
+              userFullName.value = storedFullName || '';
+              userName.value = storedFullName ? storedFullName.split(' ')[0] : localStorage.getItem('userName') || '';
+            } else {
+              // No valid data, show guest view
+              AuthUtils.clearAuth();
+              isLoggedIn.value = false;
+              userFullName.value = '';
+              userRole.value = '';
+              userName.value = '';
+            }
           }
         };
 
+        const toggleUserMenu = () => {
+          showUserMenu.value = !showUserMenu.value;
+        };
+
         const logout = () => {
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('userRole');
-          localStorage.removeItem('tokenType');
-          localStorage.removeItem('userName');
-          window.location.reload();
+          AuthUtils.logout();
         };
 
         return {
           isLoggedIn,
           userName,
+          userFullName,
           userRole,
-          logout
+          userId,
+          showUserMenu,
+          logoLink,
+          dashboardLink,
+          profileLink,
+          welcomeMessage,
+          formattedRole,
+          toggleUserMenu,
+          logout,
+          checkAuthState
         };
       }
     }).mount('#app');
+  </script>
   
-      // Dark/Light Mode Toggle Script
-      (function() {
-        // Check localStorage for saved preference or default to dark
-        const savedMode = localStorage.getItem('darkMode');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+  <script>
+    // Dark/Light Mode Toggle Script (only on home page)
+    (function() {
+      // Check localStorage for saved preference or default to dark
+      const savedMode = localStorage.getItem('darkMode');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
 
-        function applyTheme(dark) {
-          const html = document.documentElement;
-          html.setAttribute('data-theme', dark ? 'dark' : 'light');
-          localStorage.setItem('darkMode', dark.toString());
-          
-          const switchEl = document.getElementById('darkModeSwitch');
-          if (switchEl) {
-            if (dark) {
-              switchEl.classList.add('active');
-            } else {
-              switchEl.classList.remove('active');
-            }
+      function applyTheme(dark) {
+        const html = document.documentElement;
+        html.setAttribute('data-theme', dark ? 'dark' : 'light');
+        localStorage.setItem('darkMode', dark.toString());
+        
+        const switchEl = document.getElementById('darkModeSwitch');
+        if (switchEl) {
+          if (dark) {
+            switchEl.classList.add('active');
+          } else {
+            switchEl.classList.remove('active');
           }
         }
+      }
 
-        // Apply initial theme
-        applyTheme(isDarkMode);
+      // Apply initial theme
+      applyTheme(isDarkMode);
 
-        // Toggle switch handler
-        const switchEl = document.getElementById('darkModeSwitch');
-        const toggleContainer = document.getElementById('darkModeToggle');
-        
-        if (switchEl && toggleContainer) {
-          toggleContainer.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
-            applyTheme(!currentMode);
-          });
-        }
-      })();
+      // Toggle switch handler
+      const switchEl = document.getElementById('darkModeSwitch');
+      const toggleContainer = document.getElementById('darkModeToggle');
+      
+      if (switchEl && toggleContainer) {
+        toggleContainer.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
+          applyTheme(!currentMode);
+        });
+      }
+    })();
   </script>
 </body>
 </html>

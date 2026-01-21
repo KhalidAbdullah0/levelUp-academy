@@ -119,6 +119,12 @@ public class ConfigurationSecurity {
                                 "/api/v1/payments/callback",
                                 "/api/v1/auth/login"      // ضع هنا login اللي يرجّع JWT
                         ).permitAll()
+                        
+                        // ======== User Profile Endpoints (Authenticated users only) ========
+                        .requestMatchers(
+                                "/api/v1/auth/me",        // GET /api/v1/auth/me requires authentication
+                                "/api/me/**"              // All /api/me endpoints require authentication
+                        ).authenticated()
 
                         // ======== ROLE: PARENTS ========
                         .requestMatchers(
