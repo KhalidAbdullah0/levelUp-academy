@@ -51,7 +51,7 @@
     }
     p.subtitle {
       margin: 0 0 20px;
-      color: var(--muted);
+      color: var(--lu-text-muted);
       font-size: 15px;
     }
     label {
@@ -65,17 +65,12 @@
       width: 100%;
       padding: 12px 14px;
       border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(15,23,42,0.7);
-      color: var(--text);
-      font-size: 14px;
-      transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
-      outline: none;
-    }
-    input {
       background: var(--lu-surface-alt);
       border: 1px solid var(--lu-border-subtle);
       color: var(--lu-text-primary);
+      font-size: 14px;
+      transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+      outline: none;
     }
     input:focus {
       border-color: var(--lu-primary-light);
@@ -107,7 +102,7 @@
     .status {
       margin-top: 12px;
       font-size: 13px;
-      color: var(--muted);
+      color: var(--lu-text-muted);
       min-height: 18px;
     }
     .status.success { color: var(--lu-success); }
@@ -131,15 +126,15 @@
       margin-top: 12px;
       padding: 12px;
       border-radius: 10px;
-      background: rgba(15,23,42,0.6);
-      border: 1px solid rgba(255,255,255,0.05);
+      background: var(--lu-surface-alt);
+      border: 1px solid var(--lu-border-subtle);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 12px;
-      color: var(--muted);
+      color: var(--lu-text-muted);
       word-break: break-all;
     }
     .token-preview strong {
-      color: var(--text);
+      color: var(--lu-text-primary);
     }
     nav.lu-header {
       position: fixed;
@@ -185,7 +180,7 @@
       <div style="margin-top:6px;"><strong>Token:</strong> {{ token.substring(0, 50) }}...</div>
     </div>
 
-    <div class="link-text">
+    <div v-if="!token" class="link-text">
       Don't have an account? <a href="signup.html">Sign up</a>
     </div>
   </div>
@@ -195,8 +190,8 @@
   <footer class="lu-footer">
     <div class="lu-footer-inner">
       <a href="home.html" class="lu-footer-logo-link">
-        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
-        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">
+        <span style="display:none; font-size: 18px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
       </a>
       <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
     </div>
@@ -205,6 +200,7 @@
   
 </div>
 <script src="config.js"></script>
+  <script src="js/auth-utils.js"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script>
     const { createApp, reactive, computed, onMounted } = Vue;
@@ -225,17 +221,22 @@
         const statusMessage = computed(() => state.status);
         const statusClass = computed(() => state.statusType);
 
-        // Check if already logged in
-        onMounted(() => {
-          const existingToken = localStorage.getItem('authToken');
-          const existingRole = localStorage.getItem('userRole');
-          
-          if (existingToken && existingRole) {
-            // User already logged in, redirect based on role
-            if (existingRole === 'ADMIN') {
-              window.location.href = 'admin-dashboard.html';
+        // Check if already logged in - redirect to dashboard if authenticated
+        onMounted(async () => {
+          if (AuthUtils.isAuthenticated()) {
+            // Verify token is still valid
+            const user = await AuthUtils.getCurrentUser();
+            if (user) {
+              // Valid token, redirect to appropriate dashboard
+              const role = localStorage.getItem('userRole');
+              if (role === 'ADMIN') {
+                window.location.href = 'admin-dashboard.html';
+              } else {
+                window.location.href = 'player-dashboard.html';
+              }
             } else {
-              window.location.href = 'home.html';
+              // Invalid token, clear and allow login
+              AuthUtils.clearAuth();
             }
           }
         });
@@ -292,28 +293,35 @@
             state.status = 'Login successful! Redirecting...';
             state.statusType = 'success';
 
-            // Store token in localStorage
+            // Store token and user info in localStorage
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('userRole', data.role);
             localStorage.setItem('tokenType', data.tokenType || 'Bearer');
             localStorage.setItem('userName', form.username.trim());
+            
+            // Store additional user info if available
+            if (data.user) {
+              if (data.user.id) localStorage.setItem('userId', data.user.id.toString());
+              if (data.user.fullName) localStorage.setItem('userFullName', data.user.fullName);
+              if (data.user.email) localStorage.setItem('userEmail', data.user.email);
+            }
 
-            // Redirect based on role
+            // Redirect based on role - send users to their dashboard, not back to home
             setTimeout(() => {
               if (data.role === 'ADMIN') {
                 window.location.href = 'admin-dashboard.html';
-              } else if (data.role === 'PLAYER') {
-                window.location.href = 'player-dashboard.html';
               } else {
-                window.location.href = 'home.html';
+                // All other roles (PLAYER, PRO, TRAINER, PARENTS, MODERATOR) go to player-dashboard.html
+                // Home page stays as landing page with "Get Started" and "Sign In" buttons for guests
+                window.location.href = 'player-dashboard.html';
               }
             }, 800);
 
           } catch (err) {
             state.status = err.message || 'Login failed';
             state.statusType = 'error';
-          } finally {
             state.loading = false;
+            // Don't redirect on error - stay on login page to show error message
           }
         };
 
@@ -367,8 +375,7 @@
           });
         }
       })();
-
-    </script></script>
+  </script>
 </body>
 </html>
 

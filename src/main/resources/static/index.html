@@ -253,57 +253,15 @@
       }
     }).mount('#app');
   </script>
-      // Dark/Light Mode Toggle Script
-      (function() {
-        // Check localStorage for saved preference or default to dark
-        const savedMode = localStorage.getItem('darkMode');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
-
-        function applyTheme(dark) {
-          const html = document.documentElement;
-          html.setAttribute('data-theme', dark ? 'dark' : 'light');
-          localStorage.setItem('darkMode', dark.toString());
-          
-          const switchEl = document.getElementById('darkModeSwitch');
-          if (switchEl) {
-            if (dark) {
-              switchEl.classList.add('active');
-            } else {
-              switchEl.classList.remove('active');
-            }
-          }
-        }
-
-        // Apply initial theme
-        applyTheme(isDarkMode);
-
-        // Toggle switch handler
-        const switchEl = document.getElementById('darkModeSwitch');
-        const toggleContainer = document.getElementById('darkModeToggle');
-        
-        if (switchEl && toggleContainer) {
-          toggleContainer.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
-            applyTheme(!currentMode);
-          });
-        }
-      })();
-
-
-  <!-- Footer -->
-  <footer class="lu-footer">
-    <div class="lu-footer-inner">
-      <a href="home.html" class="lu-footer-logo-link">
-        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img"
-        <span style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">🎮 LevelUp Academy</span>
-      </a>
-      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
-    </div>
-  </footer>
-
-</div>
+      // 
+  <script>
+    // Apply theme from localStorage (no toggle UI)
+    (function() {
+      const savedMode = localStorage.getItem('darkMode');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+      document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    })();
+  </script>
 </body>
 </html>

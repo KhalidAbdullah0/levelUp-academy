@@ -132,6 +132,14 @@
 </head>
 <body>
   <!-- Header -->
+  <nav class="lu-header" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1000 !important; padding: 1rem 5% !important; display: flex !important; justify-content: space-between !important; align-items: center !important;">
+    <a href="home.html" class="lu-logo-link" style="display: inline-flex !important; align-items: center !important; text-decoration: none !important;">
+      <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
+      <span style="display:none; font-size: 24px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+    </a>
+  </nav>
+
+  <!-- Header -->
   <nav class="lu-header">
     <a href="home.html" class="lu-logo-link">
       <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="height: 40px !important; width: auto !important; max-width: 180px !important; min-width: 120px !important; display: block !important; visibility: visible !important; opacity: 1 !important;">
@@ -179,9 +187,9 @@
       </div>
     </div>
 
-    <div class="back-link">
+    <div class="back-link" id="back-link-section">
       <a href="home.html">← Back to Home</a> | 
-      <a href="login.html">Already have an account? Login</a>
+      <a v-if="!isLoggedIn" href="login.html">Already have an account? Login</a>
     </div>
   </div>
 
@@ -196,7 +204,48 @@
     </div>
   </footer>
 
-</div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="lu-footer">
+    <div class="lu-footer-inner">
+      <a href="home.html" class="lu-footer-logo-link">
+        <img src="/assets/logo/logo.png" alt="LevelUp Academy" class="lu-footer-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" style="height: 18px !important; width: auto !important; max-width: 100px !important; display: block !important;">
+        <span style="display:none; font-size: 18px; font-weight: 700; background: var(--lu-gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎮 LevelUp Academy</span>
+      </a>
+      <p class="lu-footer-text">© 2024 LevelUp Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    // Apply theme from localStorage (no toggle UI)
+    (function() {
+      const savedMode = localStorage.getItem('darkMode');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
+      document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    })();
+
+    // Vue app for login detection
+    const { createApp, ref, onMounted } = Vue;
+    createApp({
+      setup() {
+        const isLoggedIn = ref(false);
+
+        onMounted(() => {
+          const token = localStorage.getItem('authToken');
+          if (token) {
+            isLoggedIn.value = true;
+          }
+        });
+
+        return {
+          isLoggedIn
+        };
+      }
+    }).mount('#back-link-section');
+  </script>
 </body>
 </html>
 

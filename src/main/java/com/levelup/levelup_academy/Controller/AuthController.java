@@ -2,6 +2,7 @@ package com.levelup.levelup_academy.Controller;
 
 import com.levelup.levelup_academy.DTO.LoginRequest;
 import com.levelup.levelup_academy.DTOOut.AuthResponse;
+import com.levelup.levelup_academy.DTOOut.UserMeResponse;
 import com.levelup.levelup_academy.Model.User;
 import com.levelup.levelup_academy.Service.JwtService;
 import jakarta.validation.Valid;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,8 +61,25 @@ public class AuthController {
         userInfo.setId(user.getId());
         userInfo.setUsername(user.getUsername());
         userInfo.setRole(user.getRole());
+        userInfo.setFullName(user.getFirstName() + " " + user.getLastName());
+        userInfo.setEmail(user.getEmail());
         response.setUser(userInfo);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserMeResponse> getCurrentUser(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
+        UserMeResponse response = new UserMeResponse();
+        response.setId(user.getId());
+        response.setFullName(user.getFirstName() + " " + user.getLastName());
+        response.setRole(user.getRole());
+        response.setEmail(user.getEmail());
+        
         return ResponseEntity.ok(response);
     }
 }
