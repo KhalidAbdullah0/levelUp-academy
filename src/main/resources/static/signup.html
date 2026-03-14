@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -177,21 +177,19 @@
 
     <div class="status" :class="statusClass">{{ statusMessage }}</div>
 
-    <div v-if="!isLoggedIn" class="link-text">
+    <div class="link-text">
       Already have an account? <a href="login.html">Login</a>
     </div>
   </div>
 
   <script src="config.js"></script>
-  <script src="js/auth-utils.js"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script>
-    const { createApp, reactive, computed, ref, onMounted } = Vue;
+    const { createApp, reactive, computed } = Vue;
 
     createApp({
       setup() {
         const LOGIN_REDIRECT = window.CONFIG?.LOGIN_URL || 'login.html';
-        const isLoggedIn = ref(false);
 
         const form = reactive({
           username: '',
@@ -205,21 +203,6 @@
 
         const statusMessage = computed(() => state.status);
         const statusClass = computed(() => state.statusType);
-
-        // Check if already logged in - redirect to home if authenticated
-        onMounted(async () => {
-          if (AuthUtils.isAuthenticated()) {
-            // Verify token is still valid
-            const user = await AuthUtils.getCurrentUser();
-            if (user) {
-              // Valid token, redirect to home
-              window.location.href = 'home.html';
-            } else {
-              // Invalid token, clear and allow signup
-              AuthUtils.clearAuth();
-            }
-          }
-        });
 
         const validateForm = () => {
           const errors = [];
@@ -285,8 +268,7 @@
           handleSignup,
           loading: computed(() => state.loading),
           statusMessage,
-          statusClass,
-          isLoggedIn
+          statusClass
         };
       }
     }).mount('#app');

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -287,9 +287,7 @@
     </div>
   </div>
 
-  <script src="config.js"></script>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  <script>
+  <script src="js/language.js"></script>  <script src="config.js"></script>
     const { createApp, reactive, computed } = Vue;
 
     createApp({
@@ -481,44 +479,6 @@
         };
       }
     }).mount('#app');
-      // Dark/Light Mode Toggle Script
-      (function() {
-        // Check localStorage for saved preference or default to dark
-        const savedMode = localStorage.getItem('darkMode');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const isDarkMode = savedMode !== null ? savedMode === 'true' : prefersDark;
-
-        function applyTheme(dark) {
-          const html = document.documentElement;
-          html.setAttribute('data-theme', dark ? 'dark' : 'light');
-          localStorage.setItem('darkMode', dark.toString());
-          
-          const switchEl = document.getElementById('darkModeSwitch');
-          if (switchEl) {
-            if (dark) {
-              switchEl.classList.add('active');
-            } else {
-              switchEl.classList.remove('active');
-            }
-          }
-        }
-
-        // Apply initial theme
-        applyTheme(isDarkMode);
-
-        // Toggle switch handler
-        const switchEl = document.getElementById('darkModeSwitch');
-        const toggleContainer = document.getElementById('darkModeToggle');
-        
-        if (switchEl && toggleContainer) {
-          toggleContainer.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const currentMode = document.documentElement.getAttribute('data-theme') === 'dark';
-            applyTheme(!currentMode);
-          });
-        }
-      })();
 
 
   </script>
@@ -536,5 +496,6 @@
 
 </div>
 
+</body>
 </html>
 
